@@ -15,7 +15,7 @@ class Dealer(models.Model):
     dealership_name = models.CharField()
     bdm = models.ForeignKey(Bdm, on_delete=models.CASCADE)
 
-class Dealercontact(models.Model):
+class Contact(models.Model):
     name = models.CharField(max_length=30)
     designation = models.CharField(max_length=30)
     email = models.CharField(max_length=50)
@@ -26,6 +26,7 @@ class Dealercontact(models.Model):
     pincode = models.IntegerField()
     latitude = models.DecimalField()
     longitude = models.DecimalField()
+    type = models.CharField()#for dealer or outlet
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
 
 
@@ -43,16 +44,4 @@ class Outlet(models.Model):
     longitude = models.DecimalField()
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
 
-class Outletcontact(models.Model):
-    name = models.CharField(max_length=30)
-    designation = models.CharField(max_length=30)
-    email = models.CharField(max_length=50)
-    contact_no_1 = models.IntegerField()
-    contact_no_2 = models.IntegerField()
-    address = models.CharField()
-    city = models.CharField(max_length=30)
-    pincode = models.IntegerField()
-    latitude = models.DecimalField()
-    longitude = models.DecimalField()
-    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
-    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE)
+
