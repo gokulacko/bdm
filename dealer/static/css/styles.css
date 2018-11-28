@@ -1,0 +1,23 @@
+/* #show {
+  background-color: red;
+} */
+.dashboard tr th {
+  text-align: center;
+}
+.dashboard tr td {
+  text-align: center;
+}
+#home {
+  border-style: hidden groove groove groove;
+}
+.borderless tbody tr td {
+  border: none !important;
+  width: 400px;
+}
+.outlettable {
+  width: 1100px !important;
+}
+.outlettable tr th,
+.outlettable tr td {
+  text-align: center;
+}

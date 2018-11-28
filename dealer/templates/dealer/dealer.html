@@ -1,1 +1,108 @@
-<h1>dealer show</h1>
+{% extends "base.html" %}{% block content %}
+
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
+    <li><a data-toggle="tab" href="#price">Inventory & Prices</a></li>
+  </ul>
+</div>
+<div class="tab-content">
+  <div id="home" class="tab-pane fade in active container">
+    <br />
+    <table class="table table-responsive borderless">
+      <tbody>
+        <tr>
+          <td align="right">Company Name:</td>
+          <td>{{ dealer_info.dealer_company }}</td>
+          <td>Brand: {{ dealer_info.brand }}</td>
+          <td>Acko Manager: {{ dealer_info.bdm.name }}</td>
+          <td align="right">
+            <a href="/dealer/{{dealer_info.id}}/dealer-edit"
+              ><button class="btn btn-success">Edit</button></a
+            >
+          </td>
+        </tr>
+        <tr>
+          <td align="right">Dealership Name:</td>
+          <td>{{ dealer_info.dealership_name }}</td>
+          <td> Status: {{ dealer_info.status }}</td>
+        </tr>
+        {% for dc in dealer_contact %}
+        <tr>
+          <td align="right">Contact:</td>
+          <td>
+            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <br />
+            {{ dc.contact_no_1 }} <br />
+            {{ dc.contact_no_2 }}
+          </td>
+          <td><button class="btn btn-info">Add Contact</button></td>
+        </tr>
+
+        {% endfor%}
+      </tbody>
+    </table>
+
+    <br />
+    <div class="outlet">
+      <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets</h3>
+    </div>
+
+    <div class="container">
+      <table class="outlettable table table-striped table-bordered table-hover">
+        <thead>
+          <tr class="head info">
+            <th>Name</th>
+            <th>Area - Pincode</th>
+            <th>contact</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for outlet in outlet_info %}
+
+          <tr>
+            <td>{{ outlet.dealer.dealership_name }}</td>
+            <td>{{ outlet.area }} - {{ outlet.pincode }}</td>
+            <td>
+              {% for contact in outlet_contact %} 
+                {% if contact.outlet.id == outlet.id %}
+                    <span class="glyphicon glyphicon-user"> </span>
+                    {{ contact.name }} - {{ contact.contact_no_1 }}
+                    <a href="/dealer/{{outlet.id}}/contact-edit"><span class="glyphicon glyphicon-eye-open"></span></a>
+                {% endif %}
+              {% endfor %}
+            </td>
+            <td>{{ outlet.status }}</td>
+            <td align="center">
+              <a href="/dealer/{{outlet.id}}/outlet-edit">
+                <button class="btn btn-success">Edit</button>
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <br />
+
+    <!--
+      <h1 id="show">dealer show</h1>
+      <h4>Company Name: {{ dealer_info.dealer_company }}</h4>
+      <h4>Dealership Name: {{ dealer_info.dealership_name }}</h4>
+      <br />
+      <br />
+      <h3>Contact Details</h3>
+      {% for dc in dealer_contact %} {{ dc.name }} <br />
+      {{ dc.contact_no_1 }}
+
+      {% endfor%}
+    -->
+  </div>
+
+  <div id="price" class="tab-pane fade container">
+    <h1 id="show">Price details</h1>
+  </div>
+</div>
+{% endblock%}

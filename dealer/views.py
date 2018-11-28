@@ -25,6 +25,7 @@ def index(request):
         form = BdmForm()
         dealerform = DealerForm()
         contactform = ContactForm()
+        dealer = Dealer.objects.all()
         # gmaps = googlemaps.Client(key='')
         # geolocator = Nominatim(timeout= 10)
         # address = "okilipuram, bangalore"
@@ -33,7 +34,7 @@ def index(request):
         # print((location.latitude, location.longitude))
         # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
         # print(geocode_result)
-    return render(request, 'dealer/index.html', {'form':form, 'dealerform':dealerform, 'contactform':contactform})
+    return render(request, 'dealer/index.html', {'form':form, 'dealerform':dealerform, 'contactform':contactform, 'dealer':dealer})
 
 
 def dealer(request, id):
@@ -41,8 +42,9 @@ def dealer(request, id):
     dealer_contact = Contact.objects.filter(dealer_id = id)
     outlet_info = Outlet.objects.filter(dealer_id = id)
     outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
+    print(outlet_contact)
 
-    return render(request, 'dealer/dealer.html', { 'dealer_info':dealer_info, 'dealer_contact':dealer_contact, 'outlet_info':outlet_info })
+    return render(request, 'dealer/dealer.html', { 'dealer_info':dealer_info, 'dealer_contact':dealer_contact, 'outlet_info':outlet_info, 'outlet_contact':outlet_contact })
 
 
 
@@ -71,3 +73,6 @@ def dealerEdit(request, id):
 def outletEdit(request, id):
     outlet_info = Outlet.objects.get(id=id)
     return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info })
+def contactEdit(request, id):
+    contact = Contact.objects.get(id=id)
+    return render(request, 'dealer/contact_edit.html', { 'contact':contact })

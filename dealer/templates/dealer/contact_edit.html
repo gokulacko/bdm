@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+<!--
+  <h÷3>dealer edit</h3>
+  <input type="text" value="{{dealer_info.brand}}" name="brand" />
+  <input
+    type="checkbox"
+    value="True"
+    {%
+    if
+    dealer_info.sales_outlet
+    %}
+    checked="checked"
+    {%
+    endif
+    %}
+    name="outlet"
+  />
+  <button>edit</button>
+-->
+
+{% block content %}
+<div class="container">
+  <h2>Edit Contact</h2>
+  <form action="/dealer/{{ contact.id }}/contact-edit/" method="POST">
+    <div class="form-group">
+      <label for="email">Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        value="{{contact.name}}"
+      />
+      <br />
+      <label for="email">Designation:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="designation"
+        name="designation"
+        value="{{contact.designation}}"
+      />
+      <br />
+      <label for="email">Email:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="email"
+        name="email"
+        value="{{contact.email}}"
+      />
+      <br />
+      <label for="email">Contact No 1:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="contact_no_1"
+        name="contact_no_1"
+        value="{{contact.contact_no_1}}"
+      />
+      <br />
+      <label for="email">Contact No 2:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="contact_no_2"
+        name="contact_no_2"
+        value="{{contact.contact_no_2}}"
+      />
+      <br />
+      <label for="email">Is Active:</label>
+      <input
+        type="checkbox"
+        value="True"
+        {%
+        ifd
+        contact.active
+        %}
+        checked="checked"
+        {%
+        endif
+        %}
+        name="status"
+      />
+      <br />
+      <!--
+        <label for="email">Dealer:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="dealer"
+          name="dealer"
+          value="{{outlet_info.dealer}}"
+        />
+        <br />
+      -->
+    </div>
+    <!--
+      <div class="form-group">
+        <label for="pwd">Status:</label>
+        <input type="text" class="form-control" id="status" name="status" />
+      </div>
+    -->
+
+    <button type="submit" class="btn btn-success">Edit</button>
+  </form>
+</div>
+{% endblock %}
