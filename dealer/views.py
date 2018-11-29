@@ -12,6 +12,7 @@ def index(request):
         form = BdmForm(request.POST)
         dealerform = DealerForm(request.POST)
         contactform = ContactForm(request.POST)
+        dealer = Dealer.objects.all()
         if form.is_valid():
             form.save()
             form = BdmForm()
@@ -75,4 +76,17 @@ def outletEdit(request, id):
     return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info })
 def contactEdit(request, id):
     contact = Contact.objects.get(id=id)
-    return render(request, 'dealer/contact_edit.html', { 'contact':contact })
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        print(form['active'].value())
+        # contact = Contact.objects.get(id=id)
+        contact.name = request.POST.get('name')
+        contact.designation = request.POST.get('designation')
+        contact.email = request.POST.get('email')
+        contact.contact_no_1 = request.POST.get('contact_no_1')
+        contact.contact_no_2 = request.POST.get('contact_no_2')   
+        contact.active = form['active'].value()
+        contact.save()
+    contactform = ContactForm(instance=contact)
+    
+    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform })

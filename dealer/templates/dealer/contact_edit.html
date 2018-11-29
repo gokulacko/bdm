@@ -23,6 +23,7 @@
 <div class="container">
   <h2>Edit Contact</h2>
   <form action="/dealer/{{ contact.id }}/contact-edit/" method="POST">
+    {% csrf_token %}
     <div class="form-group">
       <label for="email">Name:</label>
       <input
@@ -44,7 +45,7 @@
       <br />
       <label for="email">Email:</label>
       <input
-        type="text"
+        type="email"
         class="form-control"
         id="email"
         name="email"
@@ -53,7 +54,7 @@
       <br />
       <label for="email">Contact No 1:</label>
       <input
-        type="text"
+        type="number"
         class="form-control"
         id="contact_no_1"
         name="contact_no_1"
@@ -62,7 +63,7 @@
       <br />
       <label for="email">Contact No 2:</label>
       <input
-        type="text"
+        type="number"
         class="form-control"
         id="contact_no_2"
         name="contact_no_2"
@@ -70,11 +71,11 @@
       />
       <br />
       <label for="email">Is Active:</label>
-      <input
+      <!-- <input
         type="checkbox"
-        value="True"
+        value = "on"
         {%
-        ifd
+        if
         contact.active
         %}
         checked="checked"
@@ -82,7 +83,8 @@
         endif
         %}
         name="status"
-      />
+      /> -->
+      {{ contactform.active }}
       <br />
       <!--
         <label for="email">Dealer:</label>

@@ -70,7 +70,7 @@
                 {% if contact.outlet.id == outlet.id %}
                     <span class="glyphicon glyphicon-user"> </span>
                     {{ contact.name }} - {{ contact.contact_no_1 }}
-                    <a href="/dealer/{{outlet.id}}/contact-edit"><span class="glyphicon glyphicon-eye-open"></span></a>
+                    <a href="/dealer/{{contact.id}}/contact-edit"><span class="glyphicon glyphicon-eye-open"></span></a><br>
                 {% endif %}
               {% endfor %}
             </td>
