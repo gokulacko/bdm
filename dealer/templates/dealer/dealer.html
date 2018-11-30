@@ -27,18 +27,24 @@
           <td>{{ dealer_info.dealership_name }}</td>
           <td> Status: {{ dealer_info.status }}</td>
         </tr>
-        {% for dc in dealer_contact %}
+        
         <tr>
           <td align="right">Contact:</td>
+          
           <td>
-            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <br />
+              {% for dc in dealer_contact %}
+            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="/dealer/{{dc.id}}/contact-edit"><span class="glyphicon glyphicon-eye-open"></span></a> <br />
             {{ dc.contact_no_1 }} <br />
-            {{ dc.contact_no_2 }}
+            {{ dc.contact_no_2 }} <br>
+            <br>
+            {% endfor%}
           </td>
-          <td><button class="btn btn-info">Add Contact</button></td>
+          
+          <td><a href="/dealer/{{dealer_info.id}}/add-dealer-contact"
+            ><button class="btn btn-info">Add Contact</button></a></td>
         </tr>
 
-        {% endfor%}
+       
       </tbody>
     </table>
 

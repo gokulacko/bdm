@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib import messages
 from .forms import BdmForm, DealerForm, ContactForm
 from .models import Dealer, Bdm, Outlet, Contact
 # from geopy.geocoders import Nominatim
@@ -16,12 +17,31 @@ def index(request):
         if form.is_valid():
             form.save()
             form = BdmForm()
-        if dealerform.is_valid():
+        elif dealerform.is_valid():
             dealerform.save()
             dealerform = DealerForm()
-        if contactform.is_valid():
+        elif contactform.is_valid():
             contactform.save()
-            contactform = DealerForm()
+            contactform = ContactForm()
+        elif request.POST.get('filter'):
+            print(request.POST.get('filter'))
+            city = request.POST.get('city')
+            brand = request.POST.get('brand')
+            status = request.POST.get('status')
+            if not brand:
+                brand = ""
+            if not city:
+                city = ""
+            if not status:
+                status = ""
+            dealer = Dealer.objects.filter(city__icontains=city, brand__icontains = brand, status__icontains = status)
+            print(dealer)
+            print(city)
+            form = BdmForm()
+            dealerform = DealerForm()
+            contactform = ContactForm()
+            return render(request, 'dealer/index.html', {'form':form, 'dealerform':dealerform, 'contactform':contactform, 'dealer':dealer})
+        
     else:
         form = BdmForm()
         dealerform = DealerForm()
@@ -77,16 +97,33 @@ def outletEdit(request, id):
 def contactEdit(request, id):
     contact = Contact.objects.get(id=id)
     if request.method == "POST":
-        form = ContactForm(request.POST)
-        print(form['active'].value())
+        contactform = ContactForm(request.POST, instance=contact)
+        if contactform.is_valid():
+            contactform.save()
+            contactform = ContactForm()
+        # print(form['active'].value())
         # contact = Contact.objects.get(id=id)
-        contact.name = request.POST.get('name')
-        contact.designation = request.POST.get('designation')
-        contact.email = request.POST.get('email')
-        contact.contact_no_1 = request.POST.get('contact_no_1')
-        contact.contact_no_2 = request.POST.get('contact_no_2')   
-        contact.active = form['active'].value()
-        contact.save()
+        # contact.name = request.POST.get('name')
+        # contact.designation = request.POST.get('designation')
+        # contact.email = request.POST.get('email')
+        # contact.contact_no_1 = request.POST.get('contact_no_1')
+        # contact.contact_no_2 = request.POST.get('contact_no_2')   
+        # contact.active = form['active'].value()
+        # contact.save()
     contactform = ContactForm(instance=contact)
     
     return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform })
+
+def addDealerContact(request, id):
+    dealer_id = id
+    print(dealer_id)
+    messages =""
+    if request.method == "POST":
+        contactform = ContactForm(request.POST)
+        if contactform.is_valid():
+            contactform.save()
+            messages = "Contact added successfully"
+            
+    contactform = ContactForm()
+    
+    return render(request, 'dealer/add_dealer_contact.html', { 'contactform':contactform, 'messages':messages, 'dealer_id':dealer_id } )

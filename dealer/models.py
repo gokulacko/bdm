@@ -198,8 +198,8 @@ class Contact(models.Model):
 #         landing_url = models.CharField(max_length=100)
 #         referrer = models.CharField(max_length=100)
 #         bounce_url = models.CharField(max_length=100)
-#         created_on = models.DateField(_("Date"), default=datetime.date.today)
-#         updated_on = models.DateField(_("Date"), default=datetime.date.today)
+#         created_on = models.DateField(_("Date"), default=datetime.now)
+#         updated_on = models.DateField(_("Date"), default=datetime.now)
 #         tracker = models.CharField(max_length=100)
 #         utm_campaign = models.TextField()
 #         utm_content = models.TextField()
@@ -220,8 +220,8 @@ class Contact(models.Model):
 #         ackodrivedicsount_id = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
 #         rto_id = models.ForeignKey(Rto, on_delete=models.CASCADE)
 #         #field =  models.BigIntegerField() json field
-#         created_on = models.DateField(_("Date"), default=datetime.date.today)
-#         updated_on = models.DateField(_("Date"), default=datetime.date.today)
+#         created_on = models.DateField(_("Date"), default=datetime.now)
+#         updated_on = models.DateField(_("Date"), default=datetime.now)
 
 #     class VariantCorporateDiscount(models.Model):
 #         discount = models.IntegerField()
@@ -239,15 +239,15 @@ class Contact(models.Model):
 #         preferred_time_1 =models.TimeField()
 #         preferred_time_2 =models.TimeField()
 #         status = models.CharField(max_length=30 )
-#         created_on = models.DateField(_("Date"), default=datetime.date.today)
-#         updated_on = models.DateField(_("Date"), default=datetime.date.today)
+#         created_on = models.DateField(_("Date"), default=datetime.now)
+#         updated_on = models.DateField(_("Date"), default=datetime.now)
 #         quote = models.ForeignKey(AckodriveQuote, on_delete=models.CASCADE)
 #         testdrive = models.ForeignKey(Testdrive, on_delete=models.CASCADE)
 #         #field =  models.BigIntegerField() json field
 
 #     class Bookings(models.Model):
-#         created_on = models.DateField(_("Date"), default=datetime.date.today)
-#         updated_on = models.DateField(_("Date"), default=datetime.date.today)
+#         created_on = models.DateField(_("Date"), default=datetime.now)
+#         updated_on = models.DateField(_("Date"), default=datetime.now)
 #         quote = models.ForeignKey(AckodriveQuote, on_delete=models.CASCADE)
 #         testdrive = models.ForeignKey(Testdrive, on_delete=models.CASCADE)
 #         #field =  models.BigIntegerField() json field

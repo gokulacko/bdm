@@ -1,0 +1,43 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}
+
+<!--
+  <h÷3>dealer edit</h3>
+  <input type="text" value="{{dealer_info.brand}}" name="brand" />
+  <input
+    type="checkbox"
+    value="True"
+    {%
+    if
+    dealer_info.sales_outlet
+    %}
+    checked="checked"
+    {%
+    endif
+    %}
+    name="outlet"
+  />
+  <button>edit</button>
+-->
+
+{% block content %}
+<div class="container"> 
+  {{dealer_id}}
+    {% if messages %}
+    <ul class="messages">
+        <!-- {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}  -->
+        <p>message id passing</p>
+        {{ messages }}
+    </ul>
+    {% endif %}
+  <h2>Add dealer Contact</h2>
+  <form action="/dealer/{{ dealer_id }}/add-dealer-contact/" method="POST">
+    {% csrf_token %}
+    <!-- {{ contactform.name.label_tag }} -->
+    <!-- {{ contactform.name }} -->
+    {{ contactform | crispy }}
+    <button type="submit" class="btn btn-success">Add</button>
+  </form>
+</div>
+{% endblock %}

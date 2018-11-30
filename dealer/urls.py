@@ -8,5 +8,6 @@ urlpatterns = [
 	url(r'^(?P<id>\d+)/dealer-edit/$', views.dealerEdit, name='dealer-edit' ),
 	url(r'^(?P<id>\d+)/outlet-edit/$', views.outletEdit, name='outlet-edit' ),
 	url(r'^(?P<id>\d+)/contact-edit/$', views.contactEdit, name='contact-edit' ),
+	url(r'^(?P<id>\d+)/add-dealer-contact/$', views.addDealerContact, name='add-dealer-contact' ),
 	
 ]
