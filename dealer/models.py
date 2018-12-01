@@ -245,7 +245,7 @@ class Contact(models.Model):
 #         testdrive = models.ForeignKey(Testdrive, on_delete=models.CASCADE)
 #         #field =  models.BigIntegerField() json field
 
-#     class Bookings(models.Model):
+#     class Booking(models.Model):
 #         created_on = models.DateField(_("Date"), default=datetime.now)
 #         updated_on = models.DateField(_("Date"), default=datetime.now)
 #         quote = models.ForeignKey(AckodriveQuote, on_delete=models.CASCADE)
@@ -253,5 +253,28 @@ class Contact(models.Model):
 #         #field =  models.BigIntegerField() json field
 
 
+
+
+# class Payment(models.Model):
+#     app = models.CharField(max_length=50 )
+#     okind = models.CharField(max_length=50)
+#     oid = models.CharField(max_length=30)
+#     status = models.CharField(max_length=30)
+#     amount = models.DecimalField(max_digits=10, decimal_places=8)
+#     pg = models.CharField(max_length=100)
+#     pg_token = models.CharField(max_length=100)
+#     pg_response = model.CharField(max_length=100)
+#     transaction_type = models.CharField(max_length=30)
+#     payment_on = models.CharField(max_length=30)
+#     payment_method = models.CharField(max_length=30)
+#     order_id = models.CharField(max_length=100)
+#     status = models.CharField(max_length=30)
+
+#     created_on = models.DateField(_("Date"), default=datetime.now)
+#     updated_on = models.DateField(_("Date"), default=datetime.now)
+#     #fk user
+#     quote = models.ForeignKey(AckodriveQuote, on_delete=models.CASCADE)
+#     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
+#     form_data = 
 
     
