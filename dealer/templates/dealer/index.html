@@ -1,28 +1,30 @@
 {% extends "base.html" %} {% load crispy_forms_tags %}{% block content %}
-<!-- <button
-  type="button"
-  class="btn btn-primary "
-  data-toggle="modal"
-  data-target="#myModal"
->
-  Add Manager
-</button>
-<button
-  type="button"
-  class="btn btn-primary"
-  data-toggle="modal"
-  data-target="#Modal"
->
-  Add Dealer
-</button>
-<button
-  type="button"
-  class="btn btn-primary"
-  data-toggle="modal"
-  data-target="#contact"
->
-  Add Contact
-</button> -->
+<!--
+  <button
+    type="button"
+    class="btn btn-primary "
+    data-toggle="modal"
+    data-target="#myModal"
+  >
+    Add Manager
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    data-toggle="modal"
+    data-target="#Modal"
+  >
+    Add Dealer
+  </button>
+  <button
+    type="button"
+    class="btn btn-primary"
+    data-toggle="modal"
+    data-target="#contact"
+  >
+    Add Contact
+  </button>
+-->
 <div class="modal fade" id="myModal" role="dialog">
   <div class="modal-dialog">
     <!-- Modal content -->
@@ -141,45 +143,47 @@
 <br />
 <br />
 <div class="container">
-
   <div class="filter">
-    <form action="/" method="POST" class=" form-inline">{% csrf_token %}
+    <form action="/" method="POST" class=" form-inline">
+      {% csrf_token %}
       <div class="form-group filterform">
-          
-          <select class="form-control" id="Brand" name="brand">
-            <option disabled selected>Brand</option>
-            <option value="Honda">Honda</option>
-            <option value="hundai">Hundai</option>
-            <option value="Toyota">Toyota</option>
-            <option value="Tata">Tata</option>
-          </select>
-        </div>
-        <div class="form-group filterform">
-            
-            <select class="form-control" id="City" name="city" >
-              <option disabled selected>City</option>
-              <option value="bangalore">Bangalore</option>
-              <option value="chennai">Chennai</option>
-              <option value="mumbai" >Mumbai</option>
-              <option value ="delhi">Delhi</option>
-            </select>
-          </div>
-          <div class="form-group filterform">
-              
-              <select class="form-control" id="Status" name="status">
-                <option disabled selected>Status</option>
-                <option value="Active">Active</option>
-                <option value="inactive">In-Active</option>
-                <option value="expired">Expired</option>
-                
-              </select>
-            </div>
-            <input type="hidden" name="filter" value ="filter" />
-            <button type="submit" class="save btn btn-danger">Filter</button>
+        <select class="form-control" id="Brand" name="brand">
+          <option disabled selected>Brand</option>
+          <option value="Honda">Honda</option>
+          <option value="hundai">Hundai</option>
+          <option value="Toyota">Toyota</option>
+          <option value="Tata">Tata</option>
+        </select>
+      </div>
+      <div class="form-group filterform">
+        <select class="form-control" id="City" name="city">
+          <option disabled selected>City</option>
+          <option value="bangalore">Bangalore</option>
+          <option value="chennai">Chennai</option>
+          <option value="mumbai">Mumbai</option>
+          <option value="delhi">Delhi</option>
+        </select>
+      </div>
+      <div class="form-group filterform">
+        <select class="form-control" id="Status" name="status">
+          <option disabled selected>Status</option>
+          <option value="Active">Active</option>
+          <option value="inactive">In-Active</option>
+          <option value="expired">Expired</option>
+        </select>
+      </div>
+      <input type="hidden" name="filter" value="filter" />
+      <button type="submit" class="save btn btn-danger filterform">
+        Filter
+      </button>
+      <a href="/"
+        ><button type="button" class="save btn btn-info">Clear</button></a
+      >
     </form>
   </div>
-  <br>
-  <br>
+
+  <br />
+  <br />
   <table class="dashboard table table-striped table-bordered table-hover">
     <thead>
       <tr class="head info">
@@ -216,7 +220,7 @@
 
 <div class="container">
   <ul class="nav nav-tabs">
-    <li ><a data-toggle="tab" href="#dealer">Add Dealership</a></li>
+    <li><a data-toggle="tab" href="#dealer">Add Dealership</a></li>
     <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li>
     <li><a data-toggle="tab" href="#manager">Add Manager</a></li>
   </ul>
@@ -228,10 +232,9 @@
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
-
   </div>
 
-  <div class=" tab-pane fade container" id="addcontact"> 
+  <div class=" tab-pane fade container" id="addcontact">
     <form method="POST" class="contactform">
       {% csrf_token %} {{ contactform | crispy }}
 
@@ -244,7 +247,7 @@
       {% csrf_token %} {{ form | crispy }}
 
       <button type="submit" class="save btn btn-success">Save</button>
-    </form> 
+    </form>
   </div>
 </div>
 

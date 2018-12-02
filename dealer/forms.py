@@ -47,3 +47,33 @@ class ContactForm(forms.ModelForm):
 			'outlet'
 
 		]
+class ContactFormOutlet(forms.ModelForm):
+	class Meta:
+		model = Contact
+		fields = [
+			'name',
+			'designation',
+			'email',
+			'contact_no_1',
+			'contact_no_2',
+			'is_primary_contact',
+			'type', 
+			'active', 
+			#'image', 
+			'outlet'
+
+		]
+
+class OutletForm(forms.ModelForm):
+	class Meta:
+		model = Outlet
+		fields = [
+			'address',
+			'area',
+			'city',
+			'pincode',
+			'status',
+			'dealer',
+			
+
+		]

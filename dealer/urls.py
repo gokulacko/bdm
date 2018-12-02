@@ -9,5 +9,7 @@ urlpatterns = [
 	url(r'^(?P<id>\d+)/outlet-edit/$', views.outletEdit, name='outlet-edit' ),
 	url(r'^(?P<id>\d+)/contact-edit/$', views.contactEdit, name='contact-edit' ),
 	url(r'^(?P<id>\d+)/add-dealer-contact/$', views.addDealerContact, name='add-dealer-contact' ),
+	url(r'^(?P<id>\d+)/add-outlet-contact/$', views.addOutletContact, name='add-outlet-contact' ),
+	url(r'^(?P<id>\d+)/outlet-delete/$', views.deleteOutlet, name='outlet-delete' ),
 	
 ]

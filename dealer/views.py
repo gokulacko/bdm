@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib import messages
-from .forms import BdmForm, DealerForm, ContactForm
+from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet
 from .models import Dealer, Bdm, Outlet, Contact
 # from geopy.geocoders import Nominatim
 import googlemaps
@@ -24,7 +24,6 @@ def index(request):
             contactform.save()
             contactform = ContactForm()
         elif request.POST.get('filter'):
-            print(request.POST.get('filter'))
             city = request.POST.get('city')
             brand = request.POST.get('brand')
             status = request.POST.get('status')
@@ -35,8 +34,6 @@ def index(request):
             if not status:
                 status = ""
             dealer = Dealer.objects.filter(city__icontains=city, brand__icontains = brand, status__icontains = status)
-            print(dealer)
-            print(city)
             form = BdmForm()
             dealerform = DealerForm()
             contactform = ContactForm()
@@ -93,14 +90,23 @@ def dealerEdit(request, id):
 
 def outletEdit(request, id):
     outlet_info = Outlet.objects.get(id=id)
-    return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info })
+    if request.method == "POST":
+        form = OutletForm(request.POST, instance=outlet_info)
+        if form.is_valid():
+            form.save()
+            dealer_id = outlet_info.dealer.id
+            return dealer(request,dealer_id)
+
+    form = OutletForm(instance=outlet_info)   
+    return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info, 'form':form })
+
 def contactEdit(request, id):
     contact = Contact.objects.get(id=id)
     if request.method == "POST":
         contactform = ContactForm(request.POST, instance=contact)
         if contactform.is_valid():
             contactform.save()
-            contactform = ContactForm()
+            
         # print(form['active'].value())
         # contact = Contact.objects.get(id=id)
         # contact.name = request.POST.get('name')
@@ -116,7 +122,6 @@ def contactEdit(request, id):
 
 def addDealerContact(request, id):
     dealer_id = id
-    print(dealer_id)
     messages =""
     if request.method == "POST":
         contactform = ContactForm(request.POST)
@@ -127,3 +132,28 @@ def addDealerContact(request, id):
     contactform = ContactForm()
     
     return render(request, 'dealer/add_dealer_contact.html', { 'contactform':contactform, 'messages':messages, 'dealer_id':dealer_id } )
+
+def deleteOutlet(request,id):
+    outlet=Outlet.objects.get(id=id)
+    dealer_id = outlet.dealer.id
+    outlet.delete()
+    return dealer(request,dealer_id)
+
+def addOutletContact(request, id):
+    outlet_id = id
+    outlet=Outlet.objects.get(id=outlet_id)
+    dealer_id = outlet.dealer.id
+    messages =""
+    if request.method == "POST":
+        contactform = ContactFormOutlet(request.POST)
+        if contactform.is_valid():
+            contactform.save()
+            messages = "Contact added successfully"
+            return dealer(request, dealer_id)
+            
+    contactform = ContactFormOutlet()
+    
+    return render(request, 'dealer/add_outlet_contact.html', { 'contactform':contactform, 'messages':messages, 'dealer_id':outlet_id } )
+
+
+
