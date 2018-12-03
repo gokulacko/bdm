@@ -45,6 +45,7 @@ class ContactForm(forms.ModelForm):
 			#'image', 
 			'dealer',
 			'outlet'
+			
 
 		]
 class ContactFormOutlet(forms.ModelForm):
