@@ -21,7 +21,11 @@
 
 {% block content %}
 <div class="container">
-  <h2>Edit dealer</h2>
+  <h2>Edit dealer 
+      <a href="/dealer/{{dealer_info.id}}/dealer-view"
+      ><button type="button" class="btn btn-primary back">Back</button></a
+    >
+  </h2>
   <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-edit/">
     {% csrf_token %}
     <div class="form-group">

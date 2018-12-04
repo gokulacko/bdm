@@ -120,6 +120,7 @@ def addOutlet(request, id):
 
 def outletEdit(request, id):
     outlet_info = Outlet.objects.get(id=id)
+    dealer_id = outlet_info.dealer.id
     if request.method == "POST":
         form = OutletForm(request.POST, instance=outlet_info)
         if form.is_valid():
@@ -131,11 +132,12 @@ def outletEdit(request, id):
             messages.error(request, 'Outlet not edited successfully')
 
     form = OutletForm(instance=outlet_info)   
-    return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info, 'form':form })
+    return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info, 'form':form, 'dealer_id':dealer_id })
 
 def contactEdit(request, id):
     storage = messages.get_messages(request)
     contact = Contact.objects.get(id=id)
+    dealer_id = contact.dealer.id
     if request.method == "POST":
         
         contactform = ContactForm(request.POST, instance=contact)
@@ -156,11 +158,12 @@ def contactEdit(request, id):
         # contact.save()
     contactform = ContactForm(instance=contact)
     
-    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage})
+    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage, 'dealer_id':dealer_id})
 
 def outletContactEdit(request, id):
     storage = messages.get_messages(request)
     contact = Contact.objects.get(id=id)
+    dealer_id = contact.outlet.dealer.id
     if request.method == "POST":
         
         contactform = ContactFormOutlet(request.POST, instance=contact)
@@ -181,7 +184,7 @@ def outletContactEdit(request, id):
         # contact.save()
     contactform = ContactFormOutlet(instance=contact)
     
-    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage})
+    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage, 'dealer_id':dealer_id})
 
 def addDealerContact(request, id):
     dealer_id = id
@@ -218,7 +221,7 @@ def deleteDealer(request,id):
    
     outlet.delete()
     dealer.delete()
-    messages.success(request, 'Outlet deleted successfully')
+    messages.success(request, 'Dealer deleted successfully')
     return HttpResponseRedirect('/')
     
     

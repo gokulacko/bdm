@@ -7,6 +7,9 @@
 
     {{ contactform | crispy }}
     <button type="submit" class="btn btn-success">Add</button>
+    <a href="/dealer/{{dealer_id}}/dealer-view"
+    ><button type="button" class="btn btn-primary addback">Back</button></a
+  >
   </form>
 </div>
 {% endblock %}

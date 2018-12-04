@@ -24,6 +24,7 @@
     {% endif %}
   </div>
 <div class="container">
+    
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
     <li><a data-toggle="tab" href="#price">Inventory & Prices</a></li>
@@ -56,7 +57,7 @@
           
           <td>
               {% for dc in dealer_contact %}
-            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="/dealer/{{dc.id}}/contact-edit"><span class="glyphicon glyphicon-eye-open"></span></a> <br />
+            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="/dealer/{{dc.id}}/contact-edit"><span class="glyphicon glyphicon-pencil"></span></a> <br />
             {{ dc.contact_no_1 }} <br />
             {{ dc.contact_no_2 }} <br>
             <br>
@@ -100,7 +101,7 @@
                 {% if contact.outlet.id == outlet.id %}
                     <span class="glyphicon glyphicon-user"> </span>
                     {{ contact.name }} - {{ contact.contact_no_1 }}
-                    <a href="/dealer/{{contact.id}}/edit-outlet-contact/"><span class="glyphicon glyphicon-eye-open"></span></a><br>
+                    <a href="/dealer/{{contact.id}}/edit-outlet-contact/"><span class="glyphicon glyphicon-pencil"></span></a><br>
                 {% endif %}
               {% endfor %}
               <a href="/dealer/{{outlet.id}}/add-outlet-contact">+</a>

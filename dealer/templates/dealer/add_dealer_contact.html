@@ -35,9 +35,11 @@
   <form action="/dealer/{{ dealer_id }}/add-dealer-contact/" method="POST">
     {% csrf_token %}
     <!-- {{ contactform.name.label_tag }} -->
-    <!-- {{ contactform.name }} -->
+    <!-- {{ contactform.name|as_crispy_field }} -->
     {{ contactform | crispy }}
-    <button type="submit" class="btn btn-success">Add</button>
+    <button type="submit" class="btn btn-success">Add</button><a href="/dealer/{{dealer_id}}/dealer-view"
+    ><button type="button" class="btn btn-primary addback">Back</button></a
+  >
   </form>
 </div>
 {% endblock %}

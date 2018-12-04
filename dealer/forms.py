@@ -14,6 +14,12 @@ class BdmForm(forms.ModelForm):
 
 
 class DealerForm(forms.ModelForm):
+	CATEGORIES=(
+        ('Active', 'Active'),
+        ('Inactive', 'In-Active'),
+        ('Expired', 'Expired'),
+    )
+	status = forms.ChoiceField(choices=CATEGORIES)
 	class Meta:
 		model = Dealer
 		fields = [
@@ -31,35 +37,47 @@ class DealerForm(forms.ModelForm):
 		]
 
 class ContactForm(forms.ModelForm):
+	dealer = forms.CharField(
+		widget=forms.TextInput(attrs={ 'readonly':'True' })
+	)
+	type = forms.CharField(
+		widget=forms.TextInput(attrs={ 'readonly':'True' })
+	)
 	class Meta:
 		model = Contact
 		fields = [
 			'name',
 			'designation',
 			'email',
+			'is_primary_contact',
 			'contact_no_1',
 			'contact_no_2',
-			'is_primary_contact',
-			'type', 
 			'active', 
+			'type', 
 			#'image', 
-			'dealer',
-			'outlet'
+			'dealer'
+			
 			
 
 		]
 class ContactFormOutlet(forms.ModelForm):
+	outlet = forms.CharField(
+		widget=forms.TextInput(attrs={ 'readonly':'True' })
+	)
+	type = forms.CharField(
+		widget=forms.TextInput(attrs={ 'readonly':'True' })
+	)
 	class Meta:
 		model = Contact
 		fields = [
 			'name',
 			'designation',
 			'email',
+			'is_primary_contact',
 			'contact_no_1',
 			'contact_no_2',
-			'is_primary_contact',
-			'type', 
 			'active', 
+			'type', 
 			#'image', 
 			'outlet'
 

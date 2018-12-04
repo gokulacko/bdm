@@ -270,7 +270,7 @@
 <div class="container">
   <ul class="nav nav-tabs">
     <li><a data-toggle="tab" href="#dealer">Add Dealership</a></li>
-    <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li>
+    <!-- <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li> -->
     <li><a data-toggle="tab" href="#manager">Add Manager</a></li>
   </ul>
 </div>
@@ -283,13 +283,13 @@
     </form>
   </div>
 
-  <div class=" tab-pane fade container" id="addcontact">
+  <!-- <div class=" tab-pane fade container" id="addcontact">
     <form method="POST" class="contactform">
       {% csrf_token %} {{ contactform | crispy }}
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
-  </div>
+  </div> -->
 
   <div class="tab-pane fade container" id="manager">
     <form method="POST" class="bdmform">
