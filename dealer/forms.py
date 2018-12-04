@@ -84,6 +84,15 @@ class ContactFormOutlet(forms.ModelForm):
 		]
 
 class OutletForm(forms.ModelForm):
+	CATEGORIES=(
+        ('Active', 'Active'),
+        ('Inactive', 'In-Active'),
+        
+    )
+	status = forms.ChoiceField(choices=CATEGORIES)
+	dealer = forms.CharField(
+		widget=forms.TextInput(attrs={ 'readonly':'True' })
+	)
 	class Meta:
 		model = Outlet
 		fields = [
