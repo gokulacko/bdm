@@ -137,7 +137,10 @@ def outletEdit(request, id):
 def contactEdit(request, id):
     storage = messages.get_messages(request)
     contact = Contact.objects.get(id=id)
-    dealer_id = contact.dealer.id
+    if contact.dealer:
+        dealer_id = contact.dealer.id
+    else:
+        dealer_id = contact.outlet.dealer.id
     if request.method == "POST":
         
         contactform = ContactForm(request.POST, instance=contact)

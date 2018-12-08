@@ -20,6 +20,15 @@ class DealerForm(forms.ModelForm):
         ('Expired', 'Expired'),
     )
 	status = forms.ChoiceField(choices=CATEGORIES)
+	# brand = forms.CharField(widget=forms.TextInput(attrs={'class': 'brand', 'placeholder':'Brand'}))
+	# status = forms.CharField(widget=forms.TextInput(attrs={'class': 'status'}))
+	# dealer_company = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))    
+	# dealership_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
+	# address = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
+	# city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
+	# sales_outlet = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
+	# pincode = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
+	# bdm = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control-dealer'}))
 	class Meta:
 		model = Dealer
 		fields = [
@@ -37,12 +46,12 @@ class DealerForm(forms.ModelForm):
 		]
 
 class ContactForm(forms.ModelForm):
-	dealer = forms.CharField(
-		widget=forms.TextInput(attrs={ 'readonly':'True' })
-	)
-	type = forms.CharField(
-		widget=forms.TextInput(attrs={ 'readonly':'True' })
-	)
+	# dealer = forms.CharField(
+	# 	widget=forms.TextInput(attrs={ 'readonly':'True' })
+	# )
+	# type = forms.CharField(
+	# 	widget=forms.TextInput(attrs={ 'readonly':'True' })
+	# )
 	class Meta:
 		model = Contact
 		fields = [
@@ -61,12 +70,12 @@ class ContactForm(forms.ModelForm):
 
 		]
 class ContactFormOutlet(forms.ModelForm):
-	outlet = forms.CharField(
-		widget=forms.TextInput(attrs={ 'readonly':'True' })
-	)
-	type = forms.CharField(
-		widget=forms.TextInput(attrs={ 'readonly':'True' })
-	)
+	# outlet = forms.CharField(
+	# 	widget=forms.TextInput(attrs={ 'readonly':'True' })
+	# )
+	# type = forms.CharField(
+	# 	widget=forms.TextInput(attrs={ 'readonly':'True' })
+	# )
 	class Meta:
 		model = Contact
 		fields = [
@@ -90,9 +99,9 @@ class OutletForm(forms.ModelForm):
         
     )
 	status = forms.ChoiceField(choices=CATEGORIES)
-	dealer = forms.CharField(
-		widget=forms.TextInput(attrs={ 'readonly':'True' })
-	)
+	# dealer = forms.CharField(
+	# 	widget=forms.TextInput(attrs={ 'readonly':'True' })
+	# )
 	class Meta:
 		model = Outlet
 		fields = [

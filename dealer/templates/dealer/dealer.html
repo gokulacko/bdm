@@ -1,6 +1,8 @@
 {% extends "base.html" %}{% block content %}
 
-<div class="message">
+
+<div class="container">
+  <div class="message">
     {% if messages %}
     {% for message in messages %}
     {% if message.tags == "success" %}
@@ -22,9 +24,7 @@
     {%  endfor %}
   
     {% endif %}
-  </div>
-<div class="container">
-    
+  </div> 
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
     <li><a data-toggle="tab" href="#price">Inventory & Prices</a></li>

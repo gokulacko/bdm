@@ -277,10 +277,16 @@
 <div class="tab-content">
   <div class=" tab-pane fade container" id="dealer">
     <form method="POST" class="dealerform">
-      {% csrf_token %} {{ dealerform | crispy }}
+      {% csrf_token %} 
+      {{ dealerform | crispy }}
+      <!-- {{ dealerform.brand.label_tag }}
+      {{dealerform.brand}}
+      {{ dealerform.status.label_tag }}
+      {{dealerform.status}} -->
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
+    <br>
   </div>
 
   <!-- <div class=" tab-pane fade container" id="addcontact">
