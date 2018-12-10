@@ -174,10 +174,12 @@
       <div class="form-group filterform">
         <select class="form-control" id="Brand" name="brand">
           <option disabled selected>Brand</option>
-          <option value="Honda">Honda</option>
-          <option value="hundai">Hundai</option>
-          <option value="Toyota">Toyota</option>
-          <option value="Tata">Tata</option>
+          {% for bra in brand %}
+            <option value="{{bra.name}}">
+                {{bra.name}}
+            </option>
+          {% endfor %}
+          
         </select>
       </div>
       <div class="form-group filterform">

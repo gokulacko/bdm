@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet
-from .models import Dealer, Bdm, Outlet, Contact
+from .models import Dealer, Bdm, Outlet, Contact, Brand
 # from geopy.geocoders import Nominatim
 import googlemaps
 from datetime import datetime
@@ -36,15 +36,24 @@ def index(request):
             if not status:
                 status = ""
             dealer = Dealer.objects.filter(city__icontains=city, brand__icontains = brand, status__icontains = status)
+            brand = Brand.objects.all()
             form = BdmForm()
             dealerform = DealerForm()
             contactform = ContactForm()
             paginator = Paginator(dealer,10)
             page = request.GET.get('page')
             dealer = paginator.get_page(page)
-            return render(request, 'dealer/index.html', {'form':form, 'dealerform':dealerform, 'contactform':contactform, 'dealer':dealer})
+            context = {
+                'form': form,
+                'dealerform': dealerform,
+                'contactform': contactform,
+                'dealer': dealer,
+                'brand':brand,
+            }
+            return render(request, 'dealer/index.html', context)
         
     else:
+        brand = Brand.objects.all()
         form = BdmForm()
         dealerform = DealerForm()
         contactform = ContactForm()
@@ -60,7 +69,14 @@ def index(request):
     paginator = Paginator(dealer,10)
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
-    return render(request, 'dealer/index.html', {'form':form, 'dealerform':dealerform, 'contactform':contactform, 'dealer':dealer})
+    context = {
+                'form': form,
+                'dealerform': dealerform,
+                'contactform': contactform,
+                'dealer': dealer,
+                'brand':brand,
+            }
+    return render(request, 'dealer/index.html', context)
 
 
 def dealer(request, id):
@@ -69,9 +85,15 @@ def dealer(request, id):
     dealer_contact = Contact.objects.filter(dealer_id = id)
     outlet_info = Outlet.objects.filter(dealer_id = id)
     outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
-    
+    context = {
+                'dealer_info': dealer_info,
+                'dealer_contact': dealer_contact,
+                'outlet_info': outlet_info,
+                'outlet_contact': outlet_contact,
+                'messages':storage,
+            }
 
-    return render(request, 'dealer/dealer.html', { 'dealer_info':dealer_info, 'dealer_contact':dealer_contact, 'outlet_info':outlet_info, 'outlet_contact':outlet_contact, 'messages':storage })
+    return render(request, 'dealer/dealer.html', context)
 
 
 
@@ -95,8 +117,11 @@ def dealerEdit(request, id):
 
 
     dealer_info = Dealer.objects.get(id=id)
-    
-    return render(request, 'dealer/dealer_edit.html', { 'dealer_info':dealer_info })
+    context = {
+                'dealer_info': dealer_info,
+                
+            } 
+    return render(request, 'dealer/dealer_edit.html', context)
 
 
 
@@ -114,8 +139,12 @@ def addOutlet(request, id):
         else:
             messages.error(request, 'Outlet not added successfully')
     else:
-        form = OutletForm(initial={'dealer': dealers})   
-    return render(request, 'dealer/add_outlet.html', { 'dealer_id':dealer_id, 'outletform':form})
+        form = OutletForm(initial={'dealer': dealers})  
+    context = {
+                'dealer_id': dealer_id,
+                'outletform': form,
+            } 
+    return render(request, 'dealer/add_outlet.html', context)
 
 
 def outletEdit(request, id):
@@ -127,12 +156,17 @@ def outletEdit(request, id):
             form.save()
             messages.success(request, 'Outlet edited successfully')
             dealer_id = outlet_info.dealer.id
-            return redirect('dealer-view', id=dealer_id)
+            return redirect('dealer:dealer-view', id=dealer_id)
         else:
             messages.error(request, 'Outlet not edited successfully')
 
-    form = OutletForm(instance=outlet_info)   
-    return render(request, 'dealer/outlet_edit.html', { 'outlet_info':outlet_info, 'form':form, 'dealer_id':dealer_id })
+    form = OutletForm(instance=outlet_info) 
+    context = {
+                'outlet_info': outlet_info,
+                'form': form,
+                'dealer_id': dealer_id,
+            }   
+    return render(request, 'dealer/outlet_edit.html', context)
 
 def contactEdit(request, id):
     storage = messages.get_messages(request)
@@ -160,8 +194,13 @@ def contactEdit(request, id):
         # contact.active = form['active'].value()
         # contact.save()
     contactform = ContactForm(instance=contact)
-    
-    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage, 'dealer_id':dealer_id})
+    context = {
+                'contact': contact,
+                'contactform': contactform,
+                'dealer_id': dealer_id,
+                'messages':storage, 
+            }   
+    return render(request, 'dealer/contact_edit.html', context)
 
 def outletContactEdit(request, id):
     storage = messages.get_messages(request)
@@ -186,8 +225,13 @@ def outletContactEdit(request, id):
         # contact.active = form['active'].value()
         # contact.save()
     contactform = ContactFormOutlet(instance=contact)
-    
-    return render(request, 'dealer/contact_edit.html', { 'contact':contact, 'contactform':contactform, 'messages':storage, 'dealer_id':dealer_id})
+    context = {
+                'contact': contact,
+                'contactform': contactform,
+                'dealer_id': dealer_id,
+                'messages':storage, 
+            }   
+    return render(request, 'dealer/contact_edit.html', context)
 
 def addDealerContact(request, id):
     dealer_id = id
@@ -198,14 +242,20 @@ def addDealerContact(request, id):
         if contactform.is_valid():
             contactform.save()
             messages.success(request, 'Contact added successfully')
-            return redirect('dealer-view', id=dealer_id)
+            return redirect('dealer:dealer-view', id=dealer_id)
         else:
             messages.error(request, 'Contact not added successfully')
-            return redirect('dealer-view', id=dealer_id)
+            return redirect('dealer:dealer-view', id=dealer_id)
             
     contactform = ContactForm(initial={'dealer': dealers, 'type': "dealer"})
+    context = {
+                
+                'contactform': contactform,
+                'dealer_id': dealer_id,
+                
+            } 
     
-    return render(request, 'dealer/add_dealer_contact.html', { 'contactform':contactform, 'dealer_id':dealer_id } )
+    return render(request, 'dealer/add_dealer_contact.html', context )
 
 def deleteOutlet(request,id):
     outlet=Outlet.objects.get(id=id)
@@ -213,7 +263,7 @@ def deleteOutlet(request,id):
     Contact.objects.filter(outlet_id=id).delete()
     outlet.delete()
     messages.success(request, 'Outlet deleted successfully')
-    return redirect('dealer-view', id=dealer_id)
+    return redirect('dealer:dealer-view', id=dealer_id)
 
 def deleteDealer(request,id):
     dealer=Dealer.objects.get(id=id)
@@ -246,12 +296,18 @@ def addOutletContact(request, id):
         if contactform.is_valid():
             contactform.save()
             messages.success(request, 'Contact added successfully')
-            return redirect('dealer-view', id=dealer_id)
+            return redirect('dealer:dealer-view', id=dealer_id)
         else:
             messages.error(request, 'Contact not added successfully')
             
     contactform = ContactFormOutlet(initial={'outlet': outlet, 'type': "outlet"})
-    
+    context = {
+                
+                'contactform': contactform,
+                'dealer_id': outlet_id,
+                'messages':messages,
+                
+            } 
     return render(request, 'dealer/add_outlet_contact.html', { 'contactform':contactform, 'messages':messages, 'dealer_id':outlet_id } )
 
 

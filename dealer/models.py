@@ -267,7 +267,7 @@ class Payment(models.Model):
     payment_on = models.CharField(max_length=30)
     payment_method = models.CharField(max_length=30)
     order_id = models.CharField(max_length=100)
-    user_id = models.IntegerField(max_length=30)
+    user_id = models.IntegerField()
 
     created_on = models.DateField()
     updated_on = models.DateField()
@@ -277,3 +277,10 @@ class Payment(models.Model):
     # form_data = 
 
     
+class Brand(models.Model):
+    name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return str(self.name)
+    def __str__(self):
+        return str(self.name)
