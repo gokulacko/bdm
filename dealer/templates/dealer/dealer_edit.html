@@ -22,7 +22,7 @@
 {% block content %}
 <div class="container">
   <h2>Edit dealer 
-      <a href="/dealer/{{dealer_info.id}}/dealer-view"
+      <a href="{% url 'dealer:dealer-view' dealer_info.id %}"
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
@@ -116,7 +116,7 @@
     -->
 
     <button type="submit" class="btn btn-success">Edit</button>
-    <a href="/dealer/{{dealer_info.id}}/dealer-delete"
+    <a href="{% url 'dealer:dealer-delete' dealer_info.id %}"
       ><button type="button" class="btn btn-danger dealerDelete">Delete</button></a
     >
   </form>

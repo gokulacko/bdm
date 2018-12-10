@@ -19,7 +19,7 @@ from django.conf.urls import include, url
 from dealer.views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', index),
+    url(r'^$', index, name='index'),
     url(r'^dealer/', include('dealer.urls')),
 
 ]

@@ -45,7 +45,7 @@
         {% endif %}
       </div>
   <h2>Edit Contact
-      <a href="/dealer/{{dealer_id}}/dealer-view"
+      <a href="{% url 'dealer:dealer-view' dealer_id %}"
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
@@ -57,7 +57,7 @@
     -->
     {{ contactform | crispy }}
     <button type="submit" class="btn btn-success">Edit</button
-    ><a href="/dealer/{{contact.id}}/contact-delete"
+    ><a href="{% url 'dealer:contact-delete' contact.id%}"
       ><button type="button" class="btn btn-danger delete">Delete</button></a
     >
   </form>

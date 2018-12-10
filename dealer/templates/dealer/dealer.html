@@ -28,9 +28,7 @@
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
     <li><a data-toggle="tab" href="#price">Inventory & Prices</a></li>
-    <li class="pull-right"><a href="/"
-      >Back</a
-    ></li>
+      <li class="pull-right"><a href="{% url 'index' %}">Back</a></li>
   </ul>
 </div>
 <div class="tab-content">
@@ -44,9 +42,7 @@
           <td>Brand: {{ dealer_info.brand }}</td>
           <td>Acko Manager: {{ dealer_info.bdm.name }}</td>
           <td align="right">
-            <a href="/dealer/{{dealer_info.id}}/dealer-edit"
-              ><button class="btn btn-success">Edit</button></a
-            >
+            <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>
           </td>
         </tr>
         <tr>
@@ -60,15 +56,16 @@
           
           <td>
               {% for dc in dealer_contact %}
-            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="/dealer/{{dc.id}}/contact-edit"><span class="glyphicon glyphicon-pencil"></span></a> <br />
+            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="{% url 'dealer:contact-edit' dc.id %}"><span class="glyphicon glyphicon-pencil"></span></a> <br />
             {{ dc.contact_no_1 }} <br />
             {{ dc.contact_no_2 }} <br>
             <br>
             {% endfor%}
           </td>
           
-          <td><a href="/dealer/{{dealer_info.id}}/add-dealer-contact"
-            ><button class="btn btn-info">Add Contact</button></a></td>
+          <td>
+            <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
+          </td>
         </tr>
 
        
@@ -77,8 +74,9 @@
 
     <br />
     <div class="outlet">
-      <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets <a href="/dealer/{{dealer_info.id}}/add-outlet"
-        ><button class="btn btn-primary outletButton">Add Outlet</button></a> </h3>
+      <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets  
+        <a href="{% url 'dealer:add-outlet' dealer_info.id %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+      </h3>
     </div>
 
     <div class="container">
@@ -104,14 +102,16 @@
                 {% if contact.outlet.id == outlet.id %}
                     <span class="glyphicon glyphicon-user"> </span>
                     {{ contact.name }} - {{ contact.contact_no_1 }}
-                    <a href="/dealer/{{contact.id}}/edit-outlet-contact/"><span class="glyphicon glyphicon-pencil"></span></a><br>
+                    <a href="{% url 'dealer:edit-outlet-contact' contact.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+
+                    <br>
                 {% endif %}
               {% endfor %}
-              <a href="/dealer/{{outlet.id}}/add-outlet-contact">+</a>
+              <a href="{% url 'dealer:add-outlet-contact' outlet.id %}">+</a>
             </td>
             <td>{{ outlet.status }}</td>
             <td align="center">
-              <a href="/dealer/{{outlet.id}}/outlet-edit">
+              <a href="{% url 'dealer:outlet-edit' outlet.id %}">
                 <button class="btn btn-success">Edit</button>
               </a>
             </td>

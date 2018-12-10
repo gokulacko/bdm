@@ -281,10 +281,13 @@ def deleteDealer(request,id):
 
 def deleteContact(request,id):
     contact=Contact.objects.get(id=id)
-    
+    if contact.dealer:
+        dealer_id = contact.dealer.id
+    else:
+        dealer_id = contact.outlet.dealer.id
     contact.delete()
     messages.success(request, 'Contact deleted successfully')
-    return HttpResponseRedirect('/')
+    return redirect('dealer:dealer-view', id=dealer_id)
 
 def addOutletContact(request, id):
     outlet_id = id
@@ -304,11 +307,11 @@ def addOutletContact(request, id):
     context = {
                 
                 'contactform': contactform,
-                'dealer_id': outlet_id,
+                'dealer_id': dealer_id,
                 'messages':messages,
                 
             } 
-    return render(request, 'dealer/add_outlet_contact.html', { 'contactform':contactform, 'messages':messages, 'dealer_id':outlet_id } )
+    return render(request, 'dealer/add_outlet_contact.html', context )
 
 
 

@@ -203,7 +203,7 @@
       <button type="submit" class="save btn btn-danger filterform">
         Filter
       </button>
-      <a href="/"
+      <a href="{% url 'index'%}"
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
@@ -235,7 +235,7 @@
         <td>Future</td>
         <td>{{ d.status }}</td>
         <td align="center">
-          <a href="/dealer/{{d.id}}/dealer-view">
+          <a href="{% url 'dealer:dealer-view' d.id %}">
             <button class="btn btn-success">View</button>
           </a>
         </td>

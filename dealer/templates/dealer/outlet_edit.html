@@ -21,8 +21,8 @@
 
 {% block content %}
 <div class="container">
-  <h2>Edit dealer
-      <a href="/dealer/{{dealer_id}}/dealer-view"
+  <h2>Edit Outlet
+      <a href="{% url 'dealer:dealer-view' dealer_id %}"
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
@@ -95,7 +95,7 @@
     <!-- {{ contactform.name.auto_id}}
     {{ contactform.name}} -->
     {{ form | crispy }}
-    <button type="submit" class="btn btn-success">Edit</button><a href="/dealer/{{outlet_info.id}}/outlet-delete"><button type="button" class="btn btn-danger delete">Delete</button></a>
+    <button type="submit" class="btn btn-success">Edit</button><a href="{% url 'dealer:outlet-delete' outlet_info.id %}"><button type="button" class="btn btn-danger delete">Delete</button></a>
   </form>
   
 </div>
