@@ -1,0 +1,65 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}
+
+<!--
+  <h÷3>dealer edit</h3>
+  <input type="text" value="{{dealer_info.brand}}" name="brand" />
+  <input
+    type="checkbox"
+    value="True"
+    {%
+    if
+    dealer_info.sales_outlet
+    %}
+    checked="checked"
+    {%
+    endif
+    %}
+    name="outlet"
+  />
+  <button>edit</button>
+-->
+
+{% block content %}
+<div class="container">
+    <div class="message">
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == "success" %}
+
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> {{ message }}.
+          </div>
+        {% endif %}
+        {% if message.tags == "error" %}
+
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Oops!</strong> {{ message }}.
+          </div>
+        {% endif %}
+        
+      
+        {%  endfor %}
+      
+        {% endif %}
+      </div>
+  <h2>Edit Contact
+      <a href="{% url 'dealer:dealer-view' dealer_id %}"
+      ><button type="button" class="btn btn-primary back">Back</button></a
+    >
+  </h2>
+  <form action="/dealer/{{ contact.id }}/contact-edit/" method="POST">
+    {% csrf_token %}
+    <!--
+      {{ contactform.name.auto_id}}
+      {{ contactform.name}}
+    -->
+    {{ contactform | crispy }}
+    <button type="submit" class="btn btn-success">Edit</button
+    ><a href="{% url 'dealer:contact-delete' contact.id%}"
+      ><button type="button" class="btn btn-danger delete">Delete</button></a
+    >
+  </form>
+</div>
+{% endblock %}

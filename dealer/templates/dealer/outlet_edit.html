@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+<!--
+  <h÷3>dealer edit</h3>
+  <input type="text" value="{{dealer_info.brand}}" name="brand" />
+  <input
+    type="checkbox"
+    value="True"
+    {%
+    if
+    dealer_info.sales_outlet
+    %}
+    checked="checked"
+    {%
+    endif
+    %}
+    name="outlet"
+  />
+  <button>edit</button>
+-->
+
+{% block content %}
+<div class="container">
+  <h2>Edit Outlet
+      <a href="{% url 'dealer:dealer-view' dealer_id %}"
+      ><button type="button" class="btn btn-primary back">Back</button></a
+    >
+  </h2>
+  <form action="/dealer/{{ outlet_info.id }}/outlet-edit/" method="POST">
+    <!-- <div class="form-group">
+      <label for="email">Area:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="area"
+        name="address"
+        value="{{outlet_info.area}}"
+      />
+      <br />
+      <label for="email">Address:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="address"
+        name="address"
+        value="{{outlet_info.address}}"
+      />
+      <br />
+      <label for="email">City:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="city"
+        name="city"
+        value="{{outlet_info.city}}"
+      />
+      <br />
+      <label for="email">Pincode:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="pincode"
+        name="pincode"
+        value="{{outlet_info.pincode}}"
+      />
+      <br />
+      <label for="email">Status:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="status"
+        name="status"
+        value="{{outlet_info.status}}"
+      />
+      <br /> -->
+      <!--
+        <label for="email">Dealer:</label>
+        <input
+          type="text"
+          class="form-control"
+          id="dealer"
+          name="dealer"
+          value="{{outlet_info.dealer}}"
+        />
+        <br />
+      -->
+    <!-- </div> -->
+    <!--
+      <div class="form-group">
+        <label for="pwd">Status:</label>
+        <input type="text" class="form-control" id="status" name="status" />
+      </div>
+    -->
+    {% csrf_token %}
+    <!-- {{ contactform.name.auto_id}}
+    {{ contactform.name}} -->
+    {{ form | crispy }}
+    <button type="submit" class="btn btn-success">Edit</button><a href="{% url 'dealer:outlet-delete' outlet_info.id %}"><button type="button" class="btn btn-danger delete">Delete</button></a>
+  </form>
+  
+</div>
+{% endblock %}

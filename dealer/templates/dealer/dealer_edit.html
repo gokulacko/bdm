@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+<!--
+  <h÷3>dealer edit</h3>
+  <input type="text" value="{{dealer_info.brand}}" name="brand" />
+  <input
+    type="checkbox"
+    value="True"
+    {%
+    if
+    dealer_info.sales_outlet
+    %}
+    checked="checked"
+    {%
+    endif
+    %}
+    name="outlet"
+  />
+  <button>edit</button>
+-->
+
+{% block content %}
+<div class="container">
+  <h2>Edit dealer 
+      <a href="{% url 'dealer:dealer-view' dealer_info.id %}"
+      ><button type="button" class="btn btn-primary back">Back</button></a
+    >
+  </h2>
+  <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-edit/">
+    {% csrf_token %}
+    <div class="form-group">
+      <label for="email">Dealership Name:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="dealership_name"
+        name="dealership_name"
+        value="{{dealer_info.dealership_name}}"
+      />
+      <br />
+      <label for="email">Dealer Company:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="dealer_company"
+        name="dealer_company"
+        value="{{dealer_info.dealer_company}}"
+      />
+      <br />
+      <label for="email">Brand:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="brand"
+        name="brand"
+        value="{{dealer_info.brand}}"
+      />
+      <br />
+      <label for="email">Status:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="status"
+        name="status"
+        value="{{dealer_info.status}}"
+      />
+      <br />
+      <label for="email">Is this a sales outlet:</label>
+      <input
+        type="checkbox"
+        value="True"
+        {%
+        if
+        dealer_info.sales_outlet
+        %}
+        checked="checked"
+        {%
+        endif
+        %}
+        name="sales_outlet"
+      />
+      <br />
+      <br />
+      <label for="email">Address:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="address"
+        name="address"
+        value="{{dealer_info.address}}"
+      />
+      <br />
+      <label for="email">City:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="city"
+        name="city"
+        value="{{dealer_info.city}}"
+      />
+      <br />
+      <label for="email">Pincode:</label>
+      <input
+        type="text"
+        class="form-control"
+        id="pincode"
+        name="pincode"
+        value="{{dealer_info.pincode}}"
+      />
+    </div>
+    <!--
+      <div class="form-group">
+        <label for="pwd">Status:</label>
+        <input type="text" class="form-control" id="status" name="status" />
+      </div>
+    -->
+
+    <button type="submit" class="btn btn-success">Edit</button>
+    <a href="{% url 'dealer:dealer-delete' dealer_info.id %}"
+      ><button type="button" class="btn btn-danger dealerDelete">Delete</button></a
+    >
+  </form>
+</div>
+{% endblock %}
