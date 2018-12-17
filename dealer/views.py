@@ -2,11 +2,11 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
-from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet
-from .models import Dealer, Bdm, Outlet, Contact, Brand
+from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet, DealerPriceForm
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile
 # from geopy.geocoders import Nominatim
 import googlemaps
-from datetime import datetime
+import datetime
 
 # Create your views here.
 def index(request):
@@ -80,20 +80,50 @@ def index(request):
 
 
 def dealer(request, id):
+    searchfiles = ''
+    if request.method == "POST":
+        # if request.POST.get('month'):
+        #     print("month")
+        #     today = datetime.date.today()
+        #     searchfiles = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month, period__year=today.year)
+        #     if searchfiles:
+        #         print("file")
+        #         searchfiles = searchfiles[0]
+        #     else:
+        #         searchfiles = ''
+        # else:
+        form = DealerPriceForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request, ' Price upload successfully')
+            return redirect('index')
+            
     storage = messages.get_messages(request)
     dealer_info = Dealer.objects.get(id=id)
     dealer_contact = Contact.objects.filter(dealer_id = id)
     outlet_info = Outlet.objects.filter(dealer_id = id)
     outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
+    today = datetime.date.today()
+    files = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month)
+    if files:
+        priceform = DealerPriceForm(instance=files[0])
+    else:
+        priceform = DealerPriceForm()
     context = {
                 'dealer_info': dealer_info,
                 'dealer_contact': dealer_contact,
                 'outlet_info': outlet_info,
                 'outlet_contact': outlet_contact,
                 'messages':storage,
+                'priceform':priceform,
+                # 'searchfiles':searchfiles
             }
 
     return render(request, 'dealer/dealer.html', context)
+
+def dealerPrice(request, id):
+    return render(request, 'dealer/price.html')
 
 
 
@@ -113,7 +143,8 @@ def dealerEdit(request, id):
         # print((location.latitude, location.longitude))
         dealeredit.save()
         messages.success(request, 'Dealer edited successfully')
-
+        return redirect('dealer:dealer-view', id=dealeredit.id)
+        
 
 
     dealer_info = Dealer.objects.get(id=id)
@@ -131,6 +162,8 @@ def addOutlet(request, id):
     dealers = Dealer.objects.get(id=dealer_id)
     if request.method == "POST":
         form = OutletForm(request.POST)
+        
+        
         if form.is_valid():
             form.save()
             messages.success(request, 'Outlet added successfully')

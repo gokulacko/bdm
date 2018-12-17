@@ -1,4 +1,5 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
+
 
 
 <div class="container">
@@ -138,6 +139,23 @@
 
   <div id="price" class="tab-pane fade container">
     <h1 id="show">Price details</h1>
+    <div class="upload">
+      <form action="/dealer/{{ dealer_info.id }}/dealer-view/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ priceform | crispy }}
+        <button type="submit" class="btn btn-success">Save</button
+        >
+      </form>
+      <!-- <form action="/dealer/{{ dealer_info.id }}/dealer-view/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <input type="date" name="month"/>
+        <button type="submit" class="btn btn-success">Search</button
+        >
+      </form>
+      {{searchfiles.file}} -->
+  </div>
   </div>
 </div>
 {% endblock%}

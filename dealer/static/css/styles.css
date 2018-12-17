@@ -28,7 +28,10 @@
   margin-left: 1020px;
 }
 .outletButton{
-  margin-left: 600px;
+  margin-right: 20px;
+  margin-bottom: 20px !important;
+  float: right;
+
 }
 .paginator{
   text-align: center;
@@ -37,11 +40,15 @@
   margin-left: 1015px;
 }
 .back{
-  margin-left: 900px;
+  float: right;
+  margin-right: 10px;
 }
 .addback{
   margin-left: 6px;
 }
 .brand{
   margin-left: 50px;
+}
+.upload{
+  width: 300px;
 }

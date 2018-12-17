@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Dealer, Contact, Outlet, Bdm, Payment, Booking, VariantCorporateDiscount, AckodriveQuote, DealerKindOffer, Rto
+from .models import Dealer, Contact, Outlet, Bdm, Payment, Booking, VariantCorporateDiscount, AckodriveQuote, DealerKindOffer, Rto, DealerPriceFile
 from .models import PriceConfig, AckodriveKindOffers, DealerDiscount, InsuranceType, Variant, PriceType, Model, TransmissionType, Testdrive, AckodriveDiscount, Brand
 admin.site.register(Dealer)
 admin.site.register(Contact)
@@ -26,3 +26,4 @@ admin.site.register(Variant)
 admin.site.register(Model)
 admin.site.register(TransmissionType)
 admin.site.register(Brand)
+admin.site.register(DealerPriceFile)

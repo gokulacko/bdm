@@ -2,6 +2,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 import datetime
+from datetime import date
 
 
 # Create your models here.
@@ -17,9 +18,17 @@ class Bdm(models.Model):
     def __str__(self):
         return str(self.name)
 
+class Brand(models.Model):
+    name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return str(self.name)
+    def __str__(self):
+        return str(self.name)
+
 
 class Dealer(models.Model):
-    brand = models.CharField(max_length=30 )
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default="Hyundai")
     dealer_company = models.CharField(max_length=30)
     dealership_name = models.CharField(max_length=30)
     status = models.CharField(max_length=30, default="Active")
@@ -64,6 +73,18 @@ class Contact(models.Model):
     #image = models.ImageField(null=True, blank=True, upload_to="image/")
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE, blank=True, null=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, blank=True, null=True)
+
+#for price module
+class DealerPriceFile(models.Model):
+    period = models.DateField(auto_now_add=True)
+    file = models.FileField(upload_to="./dealerprice")
+    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+
+    def __unicode__(self):
+        return str(self.period)
+    def __str__(self):
+        return str(self.period)
+
 
 #new db model
 class TransmissionType(models.Model):
@@ -277,10 +298,3 @@ class Payment(models.Model):
     # form_data = 
 
     
-class Brand(models.Model):
-    name = models.CharField(max_length=30)
-    
-    def __unicode__(self):
-        return str(self.name)
-    def __str__(self):
-        return str(self.name)

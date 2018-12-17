@@ -1,5 +1,5 @@
 from django import forms
-from .models import Dealer, Bdm, Contact, Outlet    
+from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile    
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -113,4 +113,13 @@ class OutletForm(forms.ModelForm):
 			'dealer',
 			
 
+		]
+
+class DealerPriceForm(forms.ModelForm):
+	class Meta:
+		model = DealerPriceFile
+		fields = [
+			'file',
+			'dealer'
+            
 		]
