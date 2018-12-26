@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet, DealerPriceForm
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -26,16 +26,16 @@ def index(request):
             contactform.save()
             contactform = ContactForm()
         elif request.POST.get('filter'):
-            city = request.POST.get('city')
-            brand = request.POST.get('brand')
-            status = request.POST.get('status')
-            if not brand:
-                brand = ""
-            if not city:
-                city = ""
-            if not status:
-                status = ""
-            dealer = Dealer.objects.filter(city__icontains=city, brand__icontains = brand, status__icontains = status)
+            citypram = request.POST.get('city')
+            brandpram = request.POST.get('brand')
+            statuspram = request.POST.get('status')
+            if not brandpram:
+                brandpram = ""
+            if not citypram:
+                citypram = ""
+            if not statuspram:
+                statuspram = ""
+            dealer = Dealer.objects.filter(city__icontains=citypram, brand__name__icontains = brandpram, status__icontains = statuspram)
             brand = Brand.objects.all()
             form = BdmForm()
             dealerform = DealerForm()
@@ -43,12 +43,18 @@ def index(request):
             paginator = Paginator(dealer,10)
             page = request.GET.get('page')
             dealer = paginator.get_page(page)
+            city = City.objects.all()
             context = {
                 'form': form,
                 'dealerform': dealerform,
                 'contactform': contactform,
                 'dealer': dealer,
                 'brand':brand,
+                'city':city,
+                'brandpram':brandpram,
+                'citypram':citypram,
+                'statuspram':statuspram,
+
             }
             return render(request, 'dealer/index.html', context)
         
@@ -58,6 +64,7 @@ def index(request):
         dealerform = DealerForm()
         contactform = ContactForm()
         dealer = Dealer.objects.all()
+        city = City.objects.all()
         # gmaps = googlemaps.Client(key='')
         # geolocator = Nominatim(timeout= 10)
         # address = "okilipuram, bangalore"
@@ -75,6 +82,7 @@ def index(request):
                 'contactform': contactform,
                 'dealer': dealer,
                 'brand':brand,
+                'city':city,
             }
     return render(request, 'dealer/index.html', context)
 

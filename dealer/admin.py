@@ -1,29 +1,29 @@
 from django.contrib import admin
 
 # Register your models here.
+import dealer.models as m
 
-from .models import Dealer, Contact, Outlet, Bdm, Payment, Booking, VariantCorporateDiscount, AckodriveQuote, DealerKindOffer, Rto, DealerPriceFile
-from .models import PriceConfig, AckodriveKindOffers, DealerDiscount, InsuranceType, Variant, PriceType, Model, TransmissionType, Testdrive, AckodriveDiscount, Brand
-admin.site.register(Dealer)
-admin.site.register(Contact)
-admin.site.register(Outlet)
-admin.site.register(Bdm)
-admin.site.register(Payment)
+admin.site.register(m.Dealer)
+admin.site.register(m.Contact)
+admin.site.register(m.Outlet)
+admin.site.register(m.Bdm)
+admin.site.register(m.Payment)
 
-admin.site.register(Booking)
-admin.site.register(Testdrive)
-admin.site.register(VariantCorporateDiscount)
-admin.site.register(AckodriveQuote)
-admin.site.register(DealerKindOffer)
-admin.site.register(PriceConfig)
-admin.site.register(AckodriveDiscount)
+admin.site.register(m.Booking)
+admin.site.register(m.Testdrive)
+admin.site.register(m.VariantCorporateDiscount)
+admin.site.register(m.AckodriveQuote)
+admin.site.register(m.DealerKindOffer)
+admin.site.register(m.PriceConfig)
+admin.site.register(m.AckodriveDiscount)
 
-admin.site.register(AckodriveKindOffers)
-admin.site.register(DealerDiscount)
-admin.site.register(Rto)
-admin.site.register(PriceType)
-admin.site.register(Variant)
-admin.site.register(Model)
-admin.site.register(TransmissionType)
-admin.site.register(Brand)
-admin.site.register(DealerPriceFile)
+admin.site.register(m.AckodriveKindOffers)
+admin.site.register(m.DealerDiscount)
+admin.site.register(m.Rto)
+admin.site.register(m.PriceType)
+admin.site.register(m.Variant)
+admin.site.register(m.Model)
+admin.site.register(m.TransmissionType)
+admin.site.register(m.Brand)
+admin.site.register(m.DealerPriceFile)
+admin.site.register(m.City)

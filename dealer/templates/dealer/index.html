@@ -173,7 +173,14 @@
       {% csrf_token %}
       <div class="form-group filterform">
         <select class="form-control" id="Brand" name="brand">
-          <option disabled selected>Brand</option>
+          
+          {% if brandpram %}
+            <option selected value="{{brandpram}}">
+                {{brandpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Brand</option>
+          {% endif %}
           {% for bra in brand %}
             <option value="{{bra.name}}">
                 {{bra.name}}
@@ -184,19 +191,34 @@
       </div>
       <div class="form-group filterform">
         <select class="form-control" id="City" name="city">
-          <option disabled selected>City</option>
-          <option value="bangalore">Bangalore</option>
-          <option value="chennai">Chennai</option>
-          <option value="mumbai">Mumbai</option>
-          <option value="delhi">Delhi</option>
+          
+          {% if citypram %}
+            <option selected value="{{citypram}}">
+                {{citypram}}
+            </option>
+          {% else %}
+            <option disabled selected>City</option>
+          {% endif %}
+          {% for c in city %}
+            <option value="{{c.name}}">
+                {{c.name}}
+            </option>
+          {% endfor %}
         </select>
       </div>
       <div class="form-group filterform">
         <select class="form-control" id="Status" name="status">
+          
+          {% if statuspram %}
+          <option selected value="{{statuspram}}">
+              {{statuspram}}
+          </option>
+        {% else %}
           <option disabled selected>Status</option>
+        {% endif %}
           <option value="Active">Active</option>
-          <option value="inactive">In-Active</option>
-          <option value="expired">Expired</option>
+          <option value="In-Active">In-Active</option>
+          <option value="Expired">Expired</option>
         </select>
       </div>
       <input type="hidden" name="filter" value="filter" />

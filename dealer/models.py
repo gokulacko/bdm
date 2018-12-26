@@ -26,6 +26,14 @@ class Brand(models.Model):
     def __str__(self):
         return str(self.name)
 
+class City(models.Model):
+    name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return str(self.name)
+    def __str__(self):
+        return str(self.name)
+
 
 class Dealer(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default="Hyundai")
