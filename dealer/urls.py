@@ -16,5 +16,6 @@ urlpatterns = [
 	url(r'^(?P<id>\d+)/outlet-delete/$', views.deleteOutlet, name='outlet-delete' ),
 	url(r'^(?P<id>\d+)/dealer-delete/$', views.deleteDealer, name='dealer-delete' ),
 	url(r'^(?P<id>\d+)/contact-delete/$', views.deleteContact, name='contact-delete' ),
+	url(r'^(?P<id>\d+)/dealer-price-download/$', views.dealerPriceFileDownload, name='dealer-price-download'),
 	
 ]

@@ -7,6 +7,8 @@ from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
+import os
+from django.conf import settings
 
 # Create your views here.
 def index(request):
@@ -354,5 +356,8 @@ def addOutletContact(request, id):
             } 
     return render(request, 'dealer/add_outlet_contact.html', context )
 
-
+def dealerPriceFileDownload(request, id):
+    print(id)
+    context = {}
+    return render(request, 'dealer/dealer.html', context)
 

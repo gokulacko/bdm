@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'dealer',
-    'geopy',
+    # 'geopy',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',

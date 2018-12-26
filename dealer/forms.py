@@ -1,5 +1,6 @@
 from django import forms
-from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile    
+# from django_month_year_widget.widgets import MonthYearWidget  
+from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile  
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -120,6 +121,9 @@ class DealerPriceForm(forms.ModelForm):
 		model = DealerPriceFile
 		fields = [
 			'file',
-			'dealer'
-            
+			'dealer'   
 		]
+
+# class FilterDateForm(forms.Form):
+# 	# forms.CharField(widget=MonthYearWidget(attrs={"class": "select"}))
+# 	pricing_date = forms.CharField(widget=MonthYearWidget(attrs={"class": "select"}))
