@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
-from .forms import BdmForm, DealerForm, ContactForm, OutletForm, ContactFormOutlet, DealerPriceForm
+from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, DealerPriceForm, ContactFormOutletEdit
 from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City
 # from geopy.geocoders import Nominatim
 import googlemaps
@@ -39,34 +39,46 @@ def index(request):
                 statuspram = ""
             dealer = Dealer.objects.filter(city__icontains=citypram, brand__name__icontains = brandpram, status__icontains = statuspram)
             brand = Brand.objects.all()
+            city = City.objects.all()
             form = BdmForm()
             dealerform = DealerForm()
             contactform = ContactForm()
             paginator = Paginator(dealer,10)
             page = request.GET.get('page')
             dealer = paginator.get_page(page)
-            city = City.objects.all()
             context = {
-                'form': form,
-                'dealerform': dealerform,
-                'contactform': contactform,
-                'dealer': dealer,
-                'brand':brand,
-                'city':city,
-                'brandpram':brandpram,
-                'citypram':citypram,
-                'statuspram':statuspram,
+            'form': form,
+            'dealerform': dealerform,
+            'contactform': contactform,
+            'dealer': dealer,
+            'brand':brand,
+            'city':city,
+            'brandpram':brandpram,
+            'citypram':citypram,
+            'statuspram':statuspram,
 
             }
             return render(request, 'dealer/index.html', context)
+        brand = Brand.objects.all()
+        city = City.objects.all()
+        context = {
+            'form': form,
+            'dealerform': dealerform,
+            'contactform': contactform,
+            'dealer': dealer,
+            'brand':brand,
+            'city':city,
+
+        }
+        return render(request, 'dealer/index.html', context)
         
     else:
-        brand = Brand.objects.all()
+        
         form = BdmForm()
         dealerform = DealerForm()
         contactform = ContactForm()
         dealer = Dealer.objects.all()
-        city = City.objects.all()
+        
         # gmaps = googlemaps.Client(key='')
         # geolocator = Nominatim(timeout= 10)
         # address = "okilipuram, bangalore"
@@ -75,9 +87,12 @@ def index(request):
         # print((location.latitude, location.longitude))
         # geocode_result = gmaps.geocode('1600 Amphitheatre Parkway, Mountain View, CA')
         # print(geocode_result)
+    brand = Brand.objects.all()
+    city = City.objects.all()
     paginator = Paginator(dealer,10)
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
+    print(brand)
     context = {
                 'form': form,
                 'dealerform': dealerform,
@@ -178,7 +193,7 @@ def addOutlet(request, id):
             form.save()
             messages.success(request, 'Outlet added successfully')
             # dealer_id = outlet_info.dealer.id
-            return redirect('dealer-view', id=dealer_id)
+            return redirect('dealer:dealer-view', id=dealer_id)
         else:
             messages.error(request, 'Outlet not added successfully')
     else:
@@ -194,7 +209,7 @@ def outletEdit(request, id):
     outlet_info = Outlet.objects.get(id=id)
     dealer_id = outlet_info.dealer.id
     if request.method == "POST":
-        form = OutletForm(request.POST, instance=outlet_info)
+        form = OutletEditForm(request.POST, instance=outlet_info)
         if form.is_valid():
             form.save()
             messages.success(request, 'Outlet edited successfully')
@@ -203,7 +218,7 @@ def outletEdit(request, id):
         else:
             messages.error(request, 'Outlet not edited successfully')
 
-    form = OutletForm(instance=outlet_info) 
+    form = OutletEditForm(instance=outlet_info) 
     context = {
                 'outlet_info': outlet_info,
                 'form': form,
@@ -220,7 +235,7 @@ def contactEdit(request, id):
         dealer_id = contact.outlet.dealer.id
     if request.method == "POST":
         
-        contactform = ContactForm(request.POST, instance=contact)
+        contactform = ContactEditForm(request.POST, instance=contact)
         if contactform.is_valid():
             contactform.save()
             messages.success(request, 'Contact edited successfully')
@@ -236,7 +251,7 @@ def contactEdit(request, id):
         # contact.contact_no_2 = request.POST.get('contact_no_2')   
         # contact.active = form['active'].value()
         # contact.save()
-    contactform = ContactForm(instance=contact)
+    contactform = ContactEditForm(instance=contact)
     context = {
                 'contact': contact,
                 'contactform': contactform,
@@ -251,7 +266,7 @@ def outletContactEdit(request, id):
     dealer_id = contact.outlet.dealer.id
     if request.method == "POST":
         
-        contactform = ContactFormOutlet(request.POST, instance=contact)
+        contactform = ContactFormOutletEdit(request.POST, instance=contact)
         if contactform.is_valid():
             contactform.save()
             messages.success(request, 'Contact edited successfully')
@@ -267,7 +282,7 @@ def outletContactEdit(request, id):
         # contact.contact_no_2 = request.POST.get('contact_no_2')   
         # contact.active = form['active'].value()
         # contact.save()
-    contactform = ContactFormOutlet(instance=contact)
+    contactform = ContactFormOutletEdit(instance=contact)
     context = {
                 'contact': contact,
                 'contactform': contactform,
