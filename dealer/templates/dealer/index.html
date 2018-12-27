@@ -171,6 +171,11 @@
   <div class="filter">
     <form action="/" method="POST" class=" form-inline">
       {% csrf_token %}
+
+      <div class="form-group filterform">
+        <input type="text" name="namesearch" value="{{namesearch}}" placeholder="Dealer Name">
+      </div>
+
       <div class="form-group filterform">
         <select class="form-control" id="Brand" name="brand">
           

@@ -29,13 +29,16 @@ def index(request):
             citypram = request.POST.get('city')
             brandpram = request.POST.get('brand')
             statuspram = request.POST.get('status')
+            namesearch = request.POST.get('namesearch')
             if not brandpram:
                 brandpram = ""
             if not citypram:
                 citypram = ""
             if not statuspram:
                 statuspram = ""
-            dealer = Dealer.objects.filter(city__icontains=citypram, brand__name__icontains = brandpram, status__icontains = statuspram)
+            if not namesearch:
+                namesearch = ""
+            dealer = Dealer.objects.filter(city__icontains=citypram, brand__name__icontains = brandpram, status__icontains = statuspram, dealership_name__icontains = namesearch)
             brand = Brand.objects.all()
             city = City.objects.all()
             form = BdmForm()
@@ -54,6 +57,7 @@ def index(request):
             'brandpram':brandpram,
             'citypram':citypram,
             'statuspram':statuspram,
+            'namesearch':namesearch,
 
             }
             return render(request, 'dealer/index.html', context)

@@ -25,13 +25,14 @@ SECRET_KEY = 'tz+&b(gd&f-#qj7&wngibidhy*hco$up^$)j(%g!6at9rtnupq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'dealer',
+    'users',
     'geopy',
     'crispy_forms',
     'django.contrib.admin',
@@ -40,8 +41,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
 
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'import_export',
+    
+]
+SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -53,7 +62,21 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'bdm.urls'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+AUTHENTICATION_BACKENDS = (
+   
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+    
+)
 
 TEMPLATES = [
     {
@@ -134,4 +157,9 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, './dealer/static'),  # Here you tell django to look for a folder named 'assets'
     # 'static'
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, "./dealer/static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+
+
+LOGIN_REDIRECT_URL = '/'
+ACCOUNT_LOGOUT_ON_GET = True
