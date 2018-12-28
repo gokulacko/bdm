@@ -52,3 +52,9 @@
 .upload{
   width: 300px;
 }
+.bodydiv{
+  padding-left: 0 !important;
+}
+.invadd{
+  margin-top: 25px;
+}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+<div class="container">
+  <h2>Add Dealer</h2>
+  <form action="{% url 'dealer:add-dealer' %}" method="POST">
+    {% csrf_token %}
+   
+    {{ dealerform | crispy }}
+    <button type="submit" class="btn btn-success">Add</button>
+    <a href="{% url 'dealer:index'  %}"
+    ><button type="button" class="btn btn-primary addback">Back</button></a
+  >
+  </form>
+</div>
+{% endblock %}

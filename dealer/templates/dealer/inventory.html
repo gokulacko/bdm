@@ -1,0 +1,120 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+<div class="container">
+  <h2>Inventory</h2>
+
+  <div class="filter">
+    <form action="{% url 'dealer:inventory'%}" method="POST" class=" form-inline">
+      {% csrf_token %}
+
+      <div class="form-group filterform">
+        <input type="text" name="namesearch" value="{{namesearch}}" placeholder="Dealer Name">
+      </div>
+
+      <div class="form-group filterform">
+        <select class="form-control" id="Brand" name="brand">
+          
+          {% if brandpram %}
+            <option selected value="{{brandpram}}">
+                {{brandpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Brand</option>
+          {% endif %}
+          {% for bra in brand %}
+            <option value="{{bra.name}}">
+                {{bra.name}}
+            </option>
+          {% endfor %}
+          
+        </select>
+      </div>
+      <div class="form-group filterform">
+        <select class="form-control" id="model" name="model">
+          
+          {% if modelpram %}
+            <option selected value="{{modelpram}}">
+                {{modelpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Model</option>
+          {% endif %}
+          {% for m in model %}
+            <option value="{{m.name}}">
+                {{m.name}}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group filterform">
+        <select class="form-control" id="variant" name="variant">
+          
+          {% if variantpram %}
+            <option selected value="{{variantpram}}">
+                {{variantpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Variant</option>
+          {% endif %}
+          {% for v in variant %}
+            <option value="{{v.name}}">
+                {{v.name}}
+            </option>
+          {% endfor %}
+          
+        </select>
+      </div>
+      
+      <input type="hidden" name="filter" value="filter" />
+      <button type="submit" class="save btn btn-danger filterform">
+        Filter
+      </button>
+      <a href="{% url 'dealer:inventory'%}"
+        ><button type="button" class="save btn btn-info">Clear</button></a
+      >
+    </form>
+  </div>
+
+  <div>
+    <h3>Inventory Details </h3>
+
+      <table class="dashboard table table-striped table-bordered table-hover">
+          <thead>
+            <tr class="head info">
+              <th>Dealer</th>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Variant</th>
+              <th>Inventory</th>
+              <th>Booked</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in inventory %}
+            <tr>
+              <td>{{ i.dealer.dealership_name }}</td>
+              <td>{{ i.dealer.brand }}</td>
+              <td>{{ i.variant.model.name }}</td>
+              <td>{{ i.variant.name }}</td>
+              <td>{{ i.count }}</td>
+              <td>Future</td>
+              
+              <td align="center">
+                <a href="{% url 'dealer:inventory-edit' i.id %}">
+                  <button class="btn btn-success">Edit</button>
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+  </div>
+  
+
+</div>
+{% endblock %}

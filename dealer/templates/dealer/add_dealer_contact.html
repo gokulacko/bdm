@@ -32,7 +32,7 @@
     </ul>
     {% endif %}
   <h2>Add dealer Contact</h2>
-  <form action="/dealer/{{ dealer_id }}/add-dealer-contact/" method="POST">
+  <form action="{% url 'dealer:add-dealer-contact' dealer_id %}" method="POST">
     {% csrf_token %}
     <!-- {{ contactform.name.label_tag }} -->
     <!-- {{ contactform.name|as_crispy_field }} -->
