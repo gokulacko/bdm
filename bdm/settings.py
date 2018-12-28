@@ -78,6 +78,12 @@ AUTHENTICATION_BACKENDS = (
     
 )
 
+ACCOUNT_FORMS = {'signup': 'users.form.MyCustomSignupForm'}
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

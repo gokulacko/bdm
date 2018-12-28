@@ -28,5 +28,6 @@ class ExportCsvMixin:
 
 @admin.register(m.Profile)
 class ProfileAdmin(admin.ModelAdmin, ExportCsvMixin):
-    
+    # list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
+    # list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
     actions = ["export_as_csv"]

@@ -1,0 +1,2 @@
+user,first_name,Last_name,city,home_address,home_latitude,home_longitude,testdrive_address,test_latitude,test_longitude,phone,email,role,is_active,is_admin,is_staff
+kumar,,,,,,,,,,,,,True,False,False

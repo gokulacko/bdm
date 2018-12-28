@@ -67,6 +67,7 @@
           <td>
             <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
           </td>
+          <td>Address: {{ dealer_info.address }} {{ dealer_info.pincode }}</td>
         </tr>
 
        
