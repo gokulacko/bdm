@@ -45,7 +45,7 @@ class ExportCsvMixin:
         print(field_names)
         for col_num in range(len(field_names)):
             ws.write(row_num, col_num, field_names[col_num], font_style)
-        # writer = csv.writer(response)
+  
         
         for row in queryset:
             row_num += 1
@@ -65,11 +65,6 @@ class ExportCsvMixin:
             ws.write(row_num, 13, row.is_active, font_style)
             ws.write(row_num, 14, row.is_admin, font_style)
             ws.write(row_num, 15, row.is_staff, font_style)
-
-
-            # for col_num in range(len(field_names)):
-            #     field=field_names[col_num]
-            #     ws.write(row_num, col_num, row.field, font_style)
 
         wb.save(response)
         return response
