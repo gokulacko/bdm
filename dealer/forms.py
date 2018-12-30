@@ -1,6 +1,10 @@
 from django import forms
+<<<<<<< HEAD
 # from django_month_year_widget.widgets import MonthYearWidget  
 from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile  
+=======
+from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory   
+>>>>>>> 00e81be00d7802476480287d55581582c649893a
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -162,7 +166,7 @@ class OutletForm(forms.ModelForm):
 			'city',
 			'pincode',
 			'status',
-			# 'dealer',
+			'dealer',
 			
 
 		]
@@ -199,6 +203,11 @@ class DealerPriceForm(forms.ModelForm):
 			'dealer'   
 		]
 
-# class FilterDateForm(forms.Form):
-# 	# forms.CharField(widget=MonthYearWidget(attrs={"class": "select"}))
-# 	pricing_date = forms.CharField(widget=MonthYearWidget(attrs={"class": "select"}))
+class InventoryForm(forms.ModelForm):
+	class Meta:
+		model = Inventory
+		fields = [
+			'variant',
+			'count',
+			
+		]

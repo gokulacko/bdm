@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
+import dealer.forms as f
 from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, DealerPriceForm, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, DealerDiscountUpload
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -12,6 +13,8 @@ import codecs
 from django.conf import settings
 from tablib import Dataset
 from .resources import DealerDiscountUploadResource
+from django.db.models import Sum
+
 
 # Create your views here.
 def index(request):
@@ -34,13 +37,21 @@ def index(request):
             citypram = request.POST.get('city')
             brandpram = request.POST.get('brand')
             statuspram = request.POST.get('status')
+            namesearch = request.POST.get('namesearch')
             if not brandpram:
                 brandpram = ""
             if not citypram:
                 citypram = ""
             if not statuspram:
                 statuspram = ""
-            dealer = Dealer.objects.filter(city__icontains=citypram, brand__name__icontains = brandpram, status__icontains = statuspram)
+            if not namesearch:
+                namesearch = ""
+            dealer = Dealer.objects.filter(city__icontains=citypram,
+                brand__name__icontains = brandpram,
+                status__icontains = statuspram,
+                dealership_name__icontains = namesearch
+                )
+            
             brand = Brand.objects.all()
             city = City.objects.all()
             form = BdmForm()
@@ -59,6 +70,7 @@ def index(request):
             'brandpram':brandpram,
             'citypram':citypram,
             'statuspram':statuspram,
+            'namesearch':namesearch,
 
             }
             return render(request, 'dealer/index.html', context)
@@ -95,7 +107,8 @@ def index(request):
     paginator = Paginator(dealer,10)
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
-    print(brand)
+    inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
+    
     context = {
                 'form': form,
                 'dealerform': dealerform,
@@ -103,22 +116,29 @@ def index(request):
                 'dealer': dealer,
                 'brand':brand,
                 'city':city,
+                'inventorysum':inventorysum
             }
     return render(request, 'dealer/index.html', context)
 
-# def simple_upload(request):
-#     if request.method == 'POST':
-#         person_resource = PersonResource()
-#         dataset = Dataset()
-#         new_persons = request.FILES['myfile']
 
-#         imported_data = dataset.load(new_persons.read())
-#         result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
-
-#         if not result.has_errors():
-#             person_resource.import_data(dataset, dry_run=False)  # Actually import now
-
-#     return render(request, 'core/simple_upload.html')
+def addDealer(request):
+    
+    if request.method == "POST":
+        form = DealerForm(request.POST, request.FILES)
+        
+        if form.is_valid():
+            form.save()
+            messages.success(request, ' Dealer added successfully')
+        else:
+            messages.error(request, ' Dealer not added successfully')  
+        return redirect('index')
+    else:
+        dealerform = DealerForm()
+        context = {
+                    'dealerform': dealerform,
+            }
+    return render(request, 'dealer/add_dealer.html', context)
+    
 def dealer(request, id):
     searchfiles = ''
     if request.method == "POST":
@@ -157,11 +177,18 @@ def dealer(request, id):
         #         searchfiles = ''
         # else:
         form = DealerPriceForm(request.POST, request.FILES)
-        
+        inventoryform = f.InventoryForm(request.POST)
         if form.is_valid():
             form.save()
             messages.success(request, ' Price upload successfully')
             return redirect('index')
+        if inventoryform.is_valid():
+            inventoryform = inventoryform.save(commit=False)
+            dealer_info = Dealer.objects.get(id=id)
+            inventoryform.dealer = dealer_info
+            inventoryform.save()
+            messages.success(request, ' inventory added successfully')
+            return redirect('dealer:dealer-view', id=dealer_info.id)
             
     storage = messages.get_messages(request)
     dealer_info = Dealer.objects.get(id=id)
@@ -170,6 +197,8 @@ def dealer(request, id):
     outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
     today = datetime.date.today()
     files = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month)
+    inventory = Inventory.objects.filter(dealer_id = id)
+    inventoryform = f.InventoryForm()
     if files:
         priceform = DealerPriceForm(instance=files[0])
     else:
@@ -181,12 +210,15 @@ def dealer(request, id):
                 'outlet_contact': outlet_contact,
                 'messages':storage,
                 'priceform':priceform,
+                'inventoryform':inventoryform,
+                'inventory':inventory
                 # 'searchfiles':searchfiles
             }
 
     return render(request, 'dealer/dealer.html', context)
 
-def dealerPrice(request, id):
+
+def dealerPrice(request):
     return render(request, 'dealer/price.html')
 
 
@@ -466,3 +498,105 @@ def dealerPriceFileDownload(request, id):
     # }
     # return render(request, 'dealer/dealer.html', context)
 
+def inventory(request):
+    if request.method == "POST":
+        if request.POST.get('filter'):
+            modelpram = request.POST.get('model')
+            variantpram = request.POST.get('variant')
+            brandpram = request.POST.get('brand')
+            # statuspram = request.POST.get('status')
+            namesearch = request.POST.get('namesearch')
+            if not brandpram:
+                brandpram = ""
+            if not variantpram:
+                variantpram = ""
+            if not modelpram:
+                modelpram = ""
+            # if not statuspram:
+            #     statuspram = ""
+            if not namesearch:
+                namesearch = ""
+            inventory = Inventory.objects.filter(variant__name__icontains=variantpram,
+                dealer__brand__name__icontains = brandpram,
+                variant__model__name__icontains = modelpram,
+                dealer__dealership_name__icontains = namesearch
+
+                )
+            brand = Brand.objects.all()
+            # city = City.objects.all()
+            model = Model.objects.all()
+            variant = Variant.objects.all()
+            
+            paginator = Paginator(inventory,10)
+            page = request.GET.get('page')
+            inventory = paginator.get_page(page)
+            context = {
+                
+                'inventory': inventory,
+                'brand':brand,
+                'model':model,
+                'variant':variant,
+                # 'city':city,
+                'brandpram':brandpram,
+                'modelpram':modelpram,
+                'variantpram':variantpram,
+                # 'statuspram':statuspram,
+                'namesearch':namesearch,
+
+            }
+            return render(request, 'dealer/inventory.html', context)
+    inventory = Inventory.objects.all()
+    brand = Brand.objects.all()
+    # city = City.objects.all()
+    model = Model.objects.all()
+    variant = Variant.objects.all()
+    
+    paginator = Paginator(inventory,10)
+    page = request.GET.get('page')
+    inventory = paginator.get_page(page)
+    context = {
+        
+        'inventory': inventory,
+        'brand':brand,
+        'model':model,
+        'variant':variant,
+        # 'city':city,
+
+
+    }
+
+    return render(request, 'dealer/inventory.html', context)
+
+def inventoryEdit(request, id):
+    inventory = Inventory.objects.get(id=id)
+    
+    if request.method == "POST":
+        form = f.InventoryForm(request.POST, instance=inventory)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Outlet edited successfully')
+            
+            return redirect('dealer:inventory-edit', id=inventory.id)
+        else:
+            messages.error(request, 'Outlet not edited successfully')
+
+    form = f.InventoryForm(instance=inventory) 
+    context = {
+                'inventory': inventory,
+                'form': form,
+                
+            }   
+
+
+    return render(request, 'dealer/inventory_edit.html', context)
+
+
+def deleteInventory(request, id):
+    inventory=Inventory.objects.get(id=id)
+    # if contact.dealer:
+    #     dealer_id = contact.dealer.id
+    # else:
+    #     dealer_id = contact.outlet.dealer.id
+    inventory.delete()
+    messages.success(request, 'Inventory deleted successfully')
+    return redirect('dealer:inventory')

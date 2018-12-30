@@ -5,7 +5,7 @@
 {% block content %}
 <div class="container">
   <h2>Add outlet</h2>
-  <form action="/dealer/{{ dealer_id }}/add-outlet/" method="POST">
+  <form action="{% url 'dealer:add-outlet' dealer_id %}" method="POST">
     {% csrf_token %}
    
     {{ outletform | crispy }}

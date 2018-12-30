@@ -2,7 +2,7 @@
 <div class="container">
   
   <h2>Add Outlet Contact</h2>
-  <form action="/dealer/{{ dealer_id }}/add-outlet-contact/" method="POST">
+  <form action="{% url 'dealer:add-outlet-contact' dealer_id %}" method="POST">
     {% csrf_token %}
 
     {{ contactform | crispy }}

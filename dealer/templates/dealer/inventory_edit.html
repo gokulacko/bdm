@@ -44,20 +44,20 @@
       
         {% endif %}
       </div>
-  <h2>Edit Contact
-      <a href="{% url 'dealer:dealer-view' dealer_id %}"
+  <h2>Edit Inventory
+      <a href="{% url 'dealer:inventory'%}"
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
-  <form action="{% url 'dealer:contact-edit' contact.id %}" method="POST">
+  <form action="{% url 'dealer:inventory-edit' inventory.id %}" method="POST">
     {% csrf_token %}
     <!--
       {{ contactform.name.auto_id}}
       {{ contactform.name}}
     -->
-    {{ contactform | crispy }}
+    {{ form | crispy }}
     <button type="submit" class="btn btn-success">Edit</button
-    ><a href="{% url 'dealer:contact-delete' contact.id%}"
+    ><a href="{% url 'dealer:inventory-delete' inventory.id%}"
       ><button type="button" class="btn btn-danger delete">Delete</button></a
     >
   </form>

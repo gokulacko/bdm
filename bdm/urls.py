@@ -18,10 +18,13 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.urls import path
 from django.conf.urls import include, url
-from dealer.views import index
+from dealer.views import index, dealerPrice
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', index, name='index'),
-    url(r'^dealer/', include('dealer.urls')),
+    
+    
+    url(r'^workspace/dealer/', include('dealer.urls')),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^workspace', dealerPrice, name='dealer-price-view'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,148 +1,5 @@
 {% extends "base.html" %} {% load crispy_forms_tags %}{% block content %}
-<!--
-  <button
-    type="button"
-    class="btn btn-primary "
-    data-toggle="modal"
-    data-target="#myModal"
-  >
-    Add Manager
-  </button>
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-toggle="modal"
-    data-target="#Modal"
-  >
-    Add Dealer
-  </button>
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-toggle="modal"
-    data-target="#contact"
-  >
-    Add Contact
-  </button>
--->
 
-
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Manager</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="bdmform">
-          {% csrf_token %} {{ form | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="Modal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Dealer</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="dealerform">
-          {% csrf_token %} {{ dealerform | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="contact" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Contact</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="contactform">
-          {% csrf_token %} {{ contactform | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-<!--
-  <div class="container">
-    <h2>Add Dealer</h2>
-    <form method="Post" action="/dealer/index/">
-      {% csrf_token%}
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          class="form-control"
-          id="email"
-          placeholder="Enter email"
-          name="email"
-        />
-      </div>
-      <div class="form-group">
-        <label for="pwd">Password:</label>
-        <input
-          type="password"
-          class="form-control"
-          id="pwd"
-          placeholder="Enter password"
-          name="pwd"
-        />
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" name="remember" /> Remember me</label>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-  </div>
--->
-<br />
 <br />
 <div class="container">
     <div class="message">
@@ -169,8 +26,13 @@
         {% endif %}
       </div>
   <div class="filter">
-    <form action="/" method="POST" class=" form-inline">
+    <form action="{% url 'dealer:index'%}"" method="POST" class=" form-inline">
       {% csrf_token %}
+
+      <div class="form-group filterform">
+        <input type="text" name="namesearch" value="{{namesearch}}" placeholder="Dealer Name">
+      </div>
+
       <div class="form-group filterform">
         <select class="form-control" id="Brand" name="brand">
           
@@ -225,7 +87,7 @@
       <button type="submit" class="save btn btn-danger filterform">
         Filter
       </button>
-      <a href="{% url 'index'%}"
+      <a href="{% url 'dealer:index'%}"
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
@@ -253,7 +115,13 @@
         <td>{{ d.city }}</td>
         <td>{{ d.brand }}</td>
         <td>{{ d.outlet_set.count }}</td>
-        <td>Future</td>
+        {% for sum in inventorysum %}
+          {% if sum.dealer == d.id %}
+            <td>{{ sum.inventory_sum }}</td>
+          {% else %}
+            <td>0</td>
+          {% endif %}
+        {% endfor %}
         <td>Future</td>
         <td>{{ d.status }}</td>
         <td align="center">
@@ -293,25 +161,25 @@
 
 <div class="container">
   <ul class="nav nav-tabs">
-    <li><a data-toggle="tab" href="#dealer">Add Dealership</a></li>
+    <!-- <li><a data-toggle="tab" href="#dealer">Add Dealership</a></li> -->
     <!-- <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li> -->
     <li><a data-toggle="tab" href="#manager">Add Manager</a></li>
   </ul>
 </div>
-<div class="tab-content">
+<!-- <div class="tab-content">
   <div class=" tab-pane fade container" id="dealer">
     <form method="POST" class="dealerform">
       {% csrf_token %} 
       {{ dealerform | crispy }}
-      <!-- {{ dealerform.brand.label_tag }}
+      {{ dealerform.brand.label_tag }}
       {{dealerform.brand}}
       {{ dealerform.status.label_tag }}
-      {{dealerform.status}} -->
+      {{dealerform.status}}
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
     <br>
-  </div>
+  </div> -->
 
   <!-- <div class=" tab-pane fade container" id="addcontact">
     <form method="POST" class="contactform">

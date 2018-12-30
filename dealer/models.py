@@ -96,7 +96,12 @@ class DealerPriceFile(models.Model):
         return str(self.period)
 
 
+
+
+
+
 #new db model
+# automobile
 class TransmissionType(models.Model):
     type = models.CharField(max_length=30)
     
@@ -134,8 +139,22 @@ class Variant(models.Model):
     def __unicode__(self):
         return str(self.name)
     def __str__(self):
-        return str(self.name)
+        return str(self.model.name + "," + self.name)
 
+
+class Inventory(models.Model):
+    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    count = models.IntegerField()
+   
+    
+    def __unicode__(self):
+        return str(self.variant.name + self.variant.model.name )
+    def __str__(self):
+        return str(self.variant.model.name + "," + self.variant.name )
+
+
+# price
 class PriceType(models.Model):
     type = models.CharField(max_length=30)
     

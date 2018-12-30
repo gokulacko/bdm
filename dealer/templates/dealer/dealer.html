@@ -29,7 +29,8 @@
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
     <li><a data-toggle="tab" href="#price">Prices</a></li>
-      <li class="pull-right"><a href="{% url 'index' %}">Back</a></li>
+    <li><a data-toggle="tab" href="#inventory">Inventory</a></li>
+    <li class="pull-right"><a href="{% url 'dealer:index' %}">Back</a></li>
   </ul>
 </div>
 <div class="tab-content">
@@ -67,6 +68,7 @@
           <td>
             <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
           </td>
+          <td>Address: {{ dealer_info.address }} {{ dealer_info.pincode }}</td>
         </tr>
 
        
@@ -140,7 +142,7 @@
   <div id="price" class="tab-pane fade container">
     <h1 id="show">Price details</h1>
     <div class="upload">
-      <form action="/dealer/{{ dealer_info.id }}/dealer-view/" method="POST" enctype="multipart/form-data">
+      <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
         {{ priceform | crispy }}
@@ -173,6 +175,63 @@
       <!-- {{ FilterDateForm | crispy }} -->
   </div>
 
+  </div>
+  <div id="inventory" class="tab-pane fade container">
+    <h4>Add Inventory</h4>
+    <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST">
+      {% csrf_token %}
+      
+      <!-- {{ inventoryform | crispy }} -->
+      <div class="row">
+        <div class="col-sm-2">
+          {{ inventoryform.variant|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+          {{ inventoryform.count|as_crispy_field}}
+        </div>
+        <div class="col-sm-2 invadd">
+            <button type="submit" class="btn btn-success btn-small">Add</button
+              >
+        </div>
+      
+    </div>
+    </form>
+    <div>
+      <h3>Inventory Details </h3>
+
+        <table class="dashboard table table-striped table-bordered table-hover">
+            <thead>
+              <tr class="head info">
+                <th>Dealer</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Variant</th>
+                <th>Inventory</th>
+                <th>Booked</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in inventory %}
+              <tr>
+                <td>{{ i.dealer.dealership_name }}</td>
+                <td>{{ i.dealer.brand }}</td>
+                <td>{{ i.variant.model.name }}</td>
+                <td>{{ i.variant.name }}</td>
+                <td>{{ i.count }}</td>
+                <td>Future</td>
+                
+                <td align="center">
+                  <a href="{% url 'dealer:inventory-edit' i.id %}">
+                    <button class="btn btn-success">Edit</button>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    
   </div>
 </div>
 {% endblock%}
