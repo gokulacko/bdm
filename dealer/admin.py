@@ -71,6 +71,8 @@ admin.site.register(m.TransmissionType)
 admin.site.register(m.Brand)
 admin.site.register(m.DealerPriceFile)
 admin.site.register(m.City)
+
+admin.site.register(m.DealerDiscountUpload)
 admin.site.register(m.Inventory)
 
 class BdmAdmin(ImportExportActionModelAdmin):

@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 import datetime
 from datetime import date
-
+import os
 
 # Create your models here.
 class Bdm(models.Model):
@@ -88,6 +88,8 @@ class DealerPriceFile(models.Model):
     file = models.FileField(upload_to="./dealerprice")
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
 
+    # def filename(self):
+    #     return os.path.basename(self.file.name)
     def __unicode__(self):
         return str(self.period)
     def __str__(self):
@@ -325,4 +327,8 @@ class Payment(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     # form_data = 
 
-    
+class DealerDiscountUpload(models.Model):
+    model_name = models.CharField(max_length=50)
+    variant_name = models.CharField(max_length=50)
+    cash_discount = models.IntegerField()
+    non_cash_offer = models.IntegerField()  

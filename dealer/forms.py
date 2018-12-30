@@ -1,5 +1,10 @@
 from django import forms
+<<<<<<< HEAD
+# from django_month_year_widget.widgets import MonthYearWidget  
+from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile  
+=======
 from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory   
+>>>>>>> 00e81be00d7802476480287d55581582c649893a
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -195,8 +200,7 @@ class DealerPriceForm(forms.ModelForm):
 		model = DealerPriceFile
 		fields = [
 			'file',
-			'dealer'
-            
+			'dealer'   
 		]
 
 class InventoryForm(forms.ModelForm):
