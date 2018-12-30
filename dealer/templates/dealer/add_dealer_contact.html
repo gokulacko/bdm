@@ -37,8 +37,12 @@
     <!-- {{ contactform.name.label_tag }} -->
     <!-- {{ contactform.name|as_crispy_field }} -->
     {{ contactform | crispy }}
-    <button type="submit" class="btn btn-success">Add</button><a href="{% url 'dealer:dealer-view' dealer_id %}"
-    ><button type="button" class="btn btn-primary addback">Back</button></a
+    
+      <button type="submit" class="btn btn-success">Add</button><a href="{% url 'dealer:dealer-view' dealer_id %}"
+    
+    >
+    
+    <button type="button" class="btn btn-primary addback">Back</button></a
   >
   </form>
 </div>

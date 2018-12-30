@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
@@ -10,8 +11,11 @@ import googlemaps
 import datetime
 from django.db.models import Sum
 
+from .filters import InventoryFilter, DealerFilter
+
 
 # Create your views here.
+
 def index(request):
     
     if request.method == "POST":
@@ -55,6 +59,7 @@ def index(request):
             paginator = Paginator(dealer,10)
             page = request.GET.get('page')
             dealer = paginator.get_page(page)
+            inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
             context = {
             'form': form,
             'dealerform': dealerform,
@@ -66,6 +71,7 @@ def index(request):
             'citypram':citypram,
             'statuspram':statuspram,
             'namesearch':namesearch,
+            'inventorysum':inventorysum,
 
             }
             return render(request, 'dealer/index.html', context)
@@ -78,6 +84,7 @@ def index(request):
             'dealer': dealer,
             'brand':brand,
             'city':city,
+            
 
         }
         return render(request, 'dealer/index.html', context)
@@ -102,6 +109,8 @@ def index(request):
     paginator = Paginator(dealer,10)
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
+    dealer_list = Dealer.objects.all()
+    dealer_filter = DealerFilter(request.GET, queryset=dealer_list)
     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
     
     context = {
@@ -111,7 +120,8 @@ def index(request):
                 'dealer': dealer,
                 'brand':brand,
                 'city':city,
-                'inventorysum':inventorysum
+                'inventorysum':inventorysum,
+                'filter': dealer_filter,
             }
     return render(request, 'dealer/index.html', context)
 
@@ -190,7 +200,7 @@ def dealer(request, id):
 
     return render(request, 'dealer/dealer.html', context)
 
-
+@login_required(login_url='/accounts/login/')
 def dealerPrice(request):
     return render(request, 'dealer/price.html')
 
@@ -418,52 +428,52 @@ def addOutletContact(request, id):
 
 
 def inventory(request):
-    if request.method == "POST":
-        if request.POST.get('filter'):
-            modelpram = request.POST.get('model')
-            variantpram = request.POST.get('variant')
-            brandpram = request.POST.get('brand')
-            # statuspram = request.POST.get('status')
-            namesearch = request.POST.get('namesearch')
-            if not brandpram:
-                brandpram = ""
-            if not variantpram:
-                variantpram = ""
-            if not modelpram:
-                modelpram = ""
-            # if not statuspram:
-            #     statuspram = ""
-            if not namesearch:
-                namesearch = ""
-            inventory = Inventory.objects.filter(variant__name__icontains=variantpram,
-                dealer__brand__name__icontains = brandpram,
-                variant__model__name__icontains = modelpram,
-                dealer__dealership_name__icontains = namesearch
+    # if request.method == "POST":
+    #     if request.POST.get('filter'):
+    #         modelpram = request.POST.get('model')
+    #         variantpram = request.POST.get('variant')
+    #         brandpram = request.POST.get('brand')
+    #         # statuspram = request.POST.get('status')
+    #         namesearch = request.POST.get('namesearch')
+    #         if not brandpram:
+    #             brandpram = ""
+    #         if not variantpram:
+    #             variantpram = ""
+    #         if not modelpram:
+    #             modelpram = ""
+    #         # if not statuspram:
+    #         #     statuspram = ""
+    #         if not namesearch:
+    #             namesearch = ""
+    #         inventory = Inventory.objects.filter(variant__name__icontains=variantpram,
+    #             dealer__brand__name__icontains = brandpram,
+    #             variant__model__name__icontains = modelpram,
+    #             dealer__dealership_name__icontains = namesearch
 
-                )
-            brand = Brand.objects.all()
-            # city = City.objects.all()
-            model = Model.objects.all()
-            variant = Variant.objects.all()
+    #             )
+    #         brand = Brand.objects.all()
+    #         # city = City.objects.all()
+    #         model = Model.objects.all()
+    #         variant = Variant.objects.all()
             
-            paginator = Paginator(inventory,10)
-            page = request.GET.get('page')
-            inventory = paginator.get_page(page)
-            context = {
+    #         paginator = Paginator(inventory,10)
+    #         page = request.GET.get('page')
+    #         inventory = paginator.get_page(page)
+    #         context = {
                 
-                'inventory': inventory,
-                'brand':brand,
-                'model':model,
-                'variant':variant,
-                # 'city':city,
-                'brandpram':brandpram,
-                'modelpram':modelpram,
-                'variantpram':variantpram,
-                # 'statuspram':statuspram,
-                'namesearch':namesearch,
+    #             'inventory': inventory,
+    #             'brand':brand,
+    #             'model':model,
+    #             'variant':variant,
+    #             # 'city':city,
+    #             'brandpram':brandpram,
+    #             'modelpram':modelpram,
+    #             'variantpram':variantpram,
+    #             # 'statuspram':statuspram,
+    #             'namesearch':namesearch,
 
-            }
-            return render(request, 'dealer/inventory.html', context)
+    #         }
+    #         return render(request, 'dealer/inventory.html', context)
     inventory = Inventory.objects.all()
     brand = Brand.objects.all()
     # city = City.objects.all()
@@ -473,6 +483,9 @@ def inventory(request):
     paginator = Paginator(inventory,10)
     page = request.GET.get('page')
     inventory = paginator.get_page(page)
+    inventory_list = Inventory.objects.all()
+    inventory_filter = InventoryFilter(request.GET, queryset=inventory_list)
+    
     context = {
         
         'inventory': inventory,
@@ -480,7 +493,7 @@ def inventory(request):
         'model':model,
         'variant':variant,
         # 'city':city,
-
+        'filter': inventory_filter,
 
     }
 

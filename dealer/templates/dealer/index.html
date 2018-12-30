@@ -25,7 +25,36 @@
       
         {% endif %}
       </div>
-  <div class="filter">
+      <div class="filter">
+        <form method="get">
+        <div class="row">
+          <div class="col-sm-2">
+            {{ filter.form.dealership_name|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.brand__name|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.city|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.status|as_crispy_field}}
+          </div>
+          <div class="col-sm-1 invadd">
+              <button type="submit" class="btn btn-danger btn-small">Filter</button
+                >
+          </div>
+          <div class="col-sm-3 invadd">
+            <a href="{% url 'dealer:index'%}"
+              ><button type="button" class="save btn btn-info">Clear</button></a
+            >
+          </div>
+        
+      </div>
+    </form>
+
+    </div>
+  <!-- <div class="filter">
     <form action="{% url 'dealer:index'%}"" method="POST" class=" form-inline">
       {% csrf_token %}
 
@@ -91,7 +120,7 @@
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
-  </div>
+  </div> -->
 
   <br />
   <br />
@@ -109,7 +138,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for d in dealer %}
+      {% for d in filter.qs %}
       <tr>
         <td>{{ d.dealership_name }}</td>
         <td>{{ d.city }}</td>

@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'import_export',
+    'django_filters',
     
 ]
 SITE_ID = 1
@@ -167,5 +168,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/workspace'
+LOGOUT_REDIRECT_URL = '/workspace'
 ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"

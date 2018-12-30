@@ -44,7 +44,9 @@
           <td>Brand: {{ dealer_info.brand }}</td>
           <td>Acko Manager: {{ dealer_info.bdm.name }}</td>
           <td align="right">
-            <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>
+            {% if request.user.is_superuser %}
+              <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>
+            {% endif %}
           </td>
         </tr>
         <tr>
@@ -57,16 +59,22 @@
           <td align="right">Contact:</td>
           
           <td>
-              {% for dc in dealer_contact %}
-            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="{% url 'dealer:contact-edit' dc.id %}"><span class="glyphicon glyphicon-pencil"></span></a> <br />
-            {{ dc.contact_no_1 }} <br />
-            {{ dc.contact_no_2 }} <br>
-            <br>
+            {% for dc in dealer_contact %}
+              <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} 
+              {% if request.user.is_superuser %}
+                <a href="{% url 'dealer:contact-edit' dc.id %}"><span class="glyphicon glyphicon-pencil"></span></a> 
+              {% endif %}
+              <br />
+              {{ dc.contact_no_1 }} <br />
+              {{ dc.contact_no_2 }} <br>
+              <br>
             {% endfor%}
           </td>
           
           <td>
-            <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
+            {% if request.user.is_superuser %}
+              <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
+            {% endif %}
           </td>
           <td>Address: {{ dealer_info.address }} {{ dealer_info.pincode }}</td>
         </tr>
@@ -78,7 +86,9 @@
     <br />
     <div class="outlet">
       <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets  
-        <a href="{% url 'dealer:add-outlet' dealer_info.id %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+        {% if request.user.is_superuser %}
+          <a href="{% url 'dealer:add-outlet' dealer_info.id %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+        {% endif %}
       </h3>
     </div>
 
@@ -90,7 +100,9 @@
             <th>Area - Pincode</th>
             <th>contact</th>
             <th>Status</th>
-            <th>Action</th>
+            {% if request.user.is_superuser %}
+              <th>Action</th>
+            {% endif %}
           </tr>
         </thead>
 
@@ -105,19 +117,24 @@
                 {% if contact.outlet.id == outlet.id %}
                     <span class="glyphicon glyphicon-user"> </span>
                     {{ contact.name }} - {{ contact.contact_no_1 }}
-                    <a href="{% url 'dealer:edit-outlet-contact' contact.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
-
+                    {% if request.user.is_superuser %}
+                      <a href="{% url 'dealer:edit-outlet-contact' contact.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                    {% endif %}
                     <br>
                 {% endif %}
               {% endfor %}
-              <a href="{% url 'dealer:add-outlet-contact' outlet.id %}">+</a>
+              {% if request.user.is_superuser %}
+                <a href="{% url 'dealer:add-outlet-contact' outlet.id %}">+</a>
+              {% endif %}
             </td>
             <td>{{ outlet.status }}</td>
-            <td align="center">
-              <a href="{% url 'dealer:outlet-edit' outlet.id %}">
-                <button class="btn btn-success">Edit</button>
-              </a>
-            </td>
+            {% if request.user.is_superuser %}
+              <td align="center">
+                <a href="{% url 'dealer:outlet-edit' outlet.id %}">
+                  <button class="btn btn-success">Edit</button>
+                </a>
+              </td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -160,25 +177,27 @@
   </div>
   </div>
   <div id="inventory" class="tab-pane fade container">
-    <h4>Add Inventory</h4>
-    <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST">
-      {% csrf_token %}
-      
-      <!-- {{ inventoryform | crispy }} -->
-      <div class="row">
-        <div class="col-sm-2">
-          {{ inventoryform.variant|as_crispy_field}}
-        </div>
-        <div class="col-sm-2">
-          {{ inventoryform.count|as_crispy_field}}
-        </div>
-        <div class="col-sm-2 invadd">
-            <button type="submit" class="btn btn-success btn-small">Add</button
-              >
-        </div>
-      
-    </div>
-    </form>
+    {% if request.user.is_superuser %}
+      <h4>Add Inventory</h4>
+      <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST">
+        {% csrf_token %}
+        
+        <!-- {{ inventoryform | crispy }} -->
+        <div class="row">
+          <div class="col-sm-2">
+            {{ inventoryform.variant|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ inventoryform.count|as_crispy_field}}
+          </div>
+          <div class="col-sm-2 invadd">
+              <button type="submit" class="btn btn-success btn-small">Add</button
+                >
+          </div>
+        
+      </div>
+      </form>
+    {% endif %}
     <div>
       <h3>Inventory Details </h3>
 
@@ -191,25 +210,30 @@
                 <th>Variant</th>
                 <th>Inventory</th>
                 <th>Booked</th>
-                <th>Action</th>
+                {% if request.user.is_superuser %}
+                  <th>Action</th>
+                {% endif %}
               </tr>
             </thead>
             <tbody>
               {% for i in inventory %}
-              <tr>
-                <td>{{ i.dealer.dealership_name }}</td>
-                <td>{{ i.dealer.brand }}</td>
-                <td>{{ i.variant.model.name }}</td>
-                <td>{{ i.variant.name }}</td>
-                <td>{{ i.count }}</td>
-                <td>Future</td>
-                
-                <td align="center">
-                  <a href="{% url 'dealer:inventory-edit' i.id %}">
-                    <button class="btn btn-success">Edit</button>
-                  </a>
-                </td>
-              </tr>
+                <tr>
+                  <td>{{ i.dealer.dealership_name }}</td>
+                  <td>{{ i.dealer.brand }}</td>
+                  <td>{{ i.variant.model.name }}</td>
+                  <td>{{ i.variant.name }}</td>
+                  <td>{{ i.count }}</td>
+                  <td>Future</td>
+                  {% if request.user.is_superuser %}
+                    <td align="center">
+                      
+                        <a href="{% url 'dealer:inventory-edit' i.id %}">
+                          <button class="btn btn-success">Edit</button>
+                        </a>
+                      
+                    </td>
+                  {% endif %}
+                </tr>
               {% endfor %}
             </tbody>
           </table>

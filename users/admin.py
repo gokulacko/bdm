@@ -3,6 +3,10 @@ import xlwt
 import csv
 from django.http import HttpResponse
 from django.contrib.auth.models import User, Permission
+from import_export.admin import ImportExportActionModelAdmin
+from import_export import fields, resources
+from import_export.widgets import ForeignKeyWidget
+from .resources import ProfileResource
 
 # Register your models here.
 import users.models as m
@@ -71,9 +75,20 @@ class ExportCsvMixin:
 
     export_as_xls.short_description = "Export Selected as Excel"
 
-
+#admin.ModelAdmin, ExportCsvMixin,
 @admin.register(m.Profile)
-class ProfileAdmin(admin.ModelAdmin, ExportCsvMixin):
-    # list_display = ("name", "is_immortal", "category", "origin", "is_very_benevolent")
-    # list_filter = ("is_immortal", "category", "origin", IsVeryBenevolentFilter)
-    actions = ["export_as_csv", "export_as_xls"]
+
+class ProfileAdmin(ImportExportActionModelAdmin):
+    list_display = ("first_name", "phone", "email", "role","is_active","is_staff","is_admin")
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('first_name', 'phone', 'email', 'role' )
+    user = fields.Field(
+        column_name='user',
+        attribute='user',
+        widget=ForeignKeyWidget(m.User, 'username'))
+    
+    
+    
+    pass
+    # actions = ["export_as_csv", "export_as_xls"]
+# admin.site.register(m.Profile, ProfileAdmin)

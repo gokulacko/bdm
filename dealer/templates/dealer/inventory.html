@@ -7,6 +7,36 @@
   <h2>Inventory</h2>
 
   <div class="filter">
+    <form method="get">
+    <div class="row">
+      <div class="col-sm-2">
+        {{ filter.form.dealer|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.dealer__brand__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.variant__model__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.variant__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-1 invadd">
+          <button type="submit" class="btn btn-danger btn-small">Filter</button
+            >
+      </div>
+      <div class="col-sm-3 invadd">
+        <a href="{% url 'dealer:inventory'%}"
+          ><button type="button" class="save btn btn-info">Clear</button></a
+        >
+      </div>
+    
+  </div>
+</form>
+
+  </div>
+<!-- 
+  <div class="filter">
     <form action="{% url 'dealer:inventory'%}" method="POST" class=" form-inline">
       {% csrf_token %}
 
@@ -77,7 +107,7 @@
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
-  </div>
+  </div> -->
 
   <div>
     <h3>Inventory Details </h3>
@@ -91,11 +121,13 @@
               <th>Variant</th>
               <th>Inventory</th>
               <th>Booked</th>
-              <th>Action</th>
+              {% if request.user.is_superuser %}
+                <th>Action</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
-            {% for i in inventory %}
+            {% for i in filter.qs %}
             <tr>
               <td>{{ i.dealer.dealership_name }}</td>
               <td>{{ i.dealer.brand }}</td>
@@ -103,18 +135,28 @@
               <td>{{ i.variant.name }}</td>
               <td>{{ i.count }}</td>
               <td>Future</td>
-              
-              <td align="center">
-                <a href="{% url 'dealer:inventory-edit' i.id %}">
-                  <button class="btn btn-success">Edit</button>
-                </a>
-              </td>
+              {% if request.user.is_superuser %}
+                <td align="center">
+                  <a href="{% url 'dealer:inventory-edit' i.id %}">
+                    <button class="btn btn-success">Edit</button>
+                  </a>
+                </td>
+              {% endif %}
             </tr>
             {% endfor %}
           </tbody>
         </table>
   </div>
   
+  <!-- <form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Search</button>
+  </form>
+  <ul>
+    {% for user in filter.qs %}
+      <li>{{ user.count }} - {{ user.variant.name }}</li>
+    {% endfor %}
+    </ul> -->
 
 </div>
 {% endblock %}

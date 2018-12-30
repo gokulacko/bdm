@@ -2,6 +2,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User, Permission
+
+from import_export.admin import ImportExportActionModelAdmin
+from import_export import fields, resources
+from import_export.widgets import ForeignKeyWidget
+
 from django import forms
 import dealer.models as m
 from users.models import Profile
@@ -27,11 +32,25 @@ admin.site.register(User, CustomUserAdmin)
 
 # Register your models here.
 
-
-admin.site.register(m.Dealer)
+@admin.register(m.Dealer)
+class DealerAdmin(ImportExportActionModelAdmin):
+    bdm = fields.Field(
+        column_name='bdm',
+        attribute='bdm',
+        widget=ForeignKeyWidget(m.Bdm, 'id'))
+    brand = fields.Field(
+        column_name='brand',
+        attribute='brand',
+        widget=ForeignKeyWidget(m.Brand, 'id'))
+    pass
 admin.site.register(m.Contact)
 admin.site.register(m.Outlet)
-admin.site.register(m.Bdm)
+@admin.register(m.Bdm)
+class BdmAdmin(ImportExportActionModelAdmin):
+    
+    import_id_fields = ('name', 'city', 'contact_no', 'alt_contact_no', 'email')
+    pass
+
 admin.site.register(m.Payment)
 
 admin.site.register(m.Booking)
@@ -53,3 +72,6 @@ admin.site.register(m.Brand)
 admin.site.register(m.DealerPriceFile)
 admin.site.register(m.City)
 admin.site.register(m.Inventory)
+
+class BdmAdmin(ImportExportActionModelAdmin):
+    pass
