@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, DealerPriceForm, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, DealerDiscountUpload
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -127,11 +127,24 @@ def dealer(request, id):
         dataset = Dataset()
         new_pricing_discounts = request.FILES['file']
         imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
-        print("data is--------", imported_data)
-        result = discount_upload_resource.import_data(dataset, dry_run=True)
+        try:
+            for row in dataset:
+                discount = DealerDiscountUpload()
+                discount.model_name = row[1]
+                discount.variant_name = row[2]
+                discount.cash_discount = int(row[3])
+                discount.non_cash_offer = int(row[4])
+                
+                discount.save()
 
-        if not result.has_errors():
-            discount_upload_resource.import_data(dataset, dry_run=False)
+        except (ValueError, DealerDiscountUpload.DoesNotExist):
+            raise HttpResponse("There is a Problem with The CSV")
+        # print("data is--------", imported_data)
+        # result = discount_upload_resource.import_data(dataset, dry_run=True)
+        # print("result is-------", result.has_errors())
+        # if not result.has_errors():
+        #     print("*************no errors**********")
+        #     discount_upload_resource.import_data(dataset, dry_run=False)
 
         # if request.POST.get('month'):
         #     print("month")
