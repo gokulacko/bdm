@@ -3,6 +3,10 @@ from django.contrib import admin
 # Register your models here.
 import dealer.models as m
 
+# class DealerPriceFileAdmin(admin.ModelAdmin):
+#     list_display = ('file', 'dealer', 'period')
+#     model = m.DealerPriceFile
+
 admin.site.register(m.Dealer)
 admin.site.register(m.Contact)
 admin.site.register(m.Outlet)
@@ -27,3 +31,5 @@ admin.site.register(m.TransmissionType)
 admin.site.register(m.Brand)
 admin.site.register(m.DealerPriceFile)
 admin.site.register(m.City)
+
+admin.site.register(m.DealerDiscountUpload)

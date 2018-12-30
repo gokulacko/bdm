@@ -8,7 +8,10 @@ from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City
 import googlemaps
 import datetime
 import os
+import codecs
 from django.conf import settings
+from tablib import Dataset
+from .resources import DealerDiscountUploadResource
 
 # Create your views here.
 def index(request):
@@ -103,10 +106,33 @@ def index(request):
             }
     return render(request, 'dealer/index.html', context)
 
+# def simple_upload(request):
+#     if request.method == 'POST':
+#         person_resource = PersonResource()
+#         dataset = Dataset()
+#         new_persons = request.FILES['myfile']
 
+#         imported_data = dataset.load(new_persons.read())
+#         result = person_resource.import_data(dataset, dry_run=True)  # Test the data import
+
+#         if not result.has_errors():
+#             person_resource.import_data(dataset, dry_run=False)  # Actually import now
+
+#     return render(request, 'core/simple_upload.html')
 def dealer(request, id):
     searchfiles = ''
     if request.method == "POST":
+        print("files is",request.FILES['file'])
+        discount_upload_resource = DealerDiscountUploadResource()
+        dataset = Dataset()
+        new_pricing_discounts = request.FILES['file']
+        imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
+        print("data is--------", imported_data)
+        result = discount_upload_resource.import_data(dataset, dry_run=True)
+
+        if not result.has_errors():
+            discount_upload_resource.import_data(dataset, dry_run=False)
+
         # if request.POST.get('month'):
         #     print("month")
         #     today = datetime.date.today()
@@ -372,7 +398,58 @@ def addOutletContact(request, id):
     return render(request, 'dealer/add_outlet_contact.html', context )
 
 def dealerPriceFileDownload(request, id):
-    print(id)
-    context = {}
-    return render(request, 'dealer/dealer.html', context)
+    # storage = messages.get_messages(request)
+    # dealer_info = Dealer.objects.get(id=id)
+    # dealer_contact = Contact.objects.filter(dealer_id = id)
+    # outlet_info = Outlet.objects.filter(dealer_id = id)
+    # outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
+
+    price_file = DealerPriceFile.objects.get(id=id)
+
+    today = datetime.date.today()
+    searchfiles = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month, period__year=today.year)
+    print(searchfiles[0].file)
+
+    # file_name = os.path.basename(searchfiles[0].file)
+    file_name = searchfiles[0].file.name
+    print(file_name)
+    # file_path = os.path.join(settings.MEDIA_ROOT, './dealerprice', file_name)
+    # print(file_path)
+    if isinstance(file_name, str):
+        myStr = file_name.encode('utf-8') 
+    else:
+        myStr = file_name
+
+    with open(myStr,'r') as f:
+        response = HttpResponse(f.read(), content_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+        response['Content-Disposition'] = 'inline;filename=' + myStr
+    return response
+    # return HttpResponse("here we go!")
+
+    # if file_name:
+    #     with open(searchfiles[0].file, 'r') as fh:
+    #         # response = HttpResponse(fh.read(), content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+    #         # response['Content-Disposition'] = 'inline; filename=' + os.path.basename(searchfiles[0].file)
+    #         return HttpResponse("here we go!")
+    #     raise Http404
+    # else:
+    #     return HttpResponse("in else case")
+
+    # file_path = os.path.join(settings.MEDIA_ROOT, price_file.file)
+    # if os.path.exists(price_file.file):
+    #     with open(price_file.file, 'rb') as fh:
+    #         response = HttpResponse(fh.read(), content_type="application/vnd.ms-excel")
+    #         response['Content-Disposition'] = 'inline; filename=' + os.path.basename(file_path)
+    #         return response
+    # raise Http404
+
+    # DealerPriceFile
+    # context = {
+    #     'dealer_info': dealer_info,
+    #     'dealer_contact': dealer_contact,
+    #     'outlet_info': outlet_info,
+    #     'outlet_contact': outlet_contact,
+    #     'messages':storage,
+    # }
+    # return render(request, 'dealer/dealer.html', context)
 

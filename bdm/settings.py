@@ -33,6 +33,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'dealer',
     # 'geopy',
+    'import_export',
     'crispy_forms',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -54,6 +55,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'bdm.urls'
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+IMPORT_EXPORT_USE_TRANSACTIONS = True
 
 TEMPLATES = [
     {
@@ -84,7 +86,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'bdm',
-        'USER': 'dealer',
+        'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '',
