@@ -25,67 +25,67 @@ def index(request):
     
     if request.method == "POST":
         form = BdmForm(request.POST)
-        dealerform = DealerForm(request.POST)
-        contactform = ContactForm(request.POST)
+        # dealerform = DealerForm(request.POST)
+        # contactform = ContactForm(request.POST)
         dealer = Dealer.objects.all()
         if form.is_valid():
             form.save()
             form = BdmForm()
-        elif dealerform.is_valid():
-            dealerform.save()
-            dealerform = DealerForm()
-        elif contactform.is_valid():
-            contactform.save()
-            contactform = ContactForm()
-        elif request.POST.get('filter'):
-            citypram = request.POST.get('city')
-            brandpram = request.POST.get('brand')
-            statuspram = request.POST.get('status')
-            namesearch = request.POST.get('namesearch')
-            if not brandpram:
-                brandpram = ""
-            if not citypram:
-                citypram = ""
-            if not statuspram:
-                statuspram = ""
-            if not namesearch:
-                namesearch = ""
-            dealer = Dealer.objects.filter(city__icontains=citypram,
-                brand__name__icontains = brandpram,
-                status__icontains = statuspram,
-                dealership_name__icontains = namesearch
-                )
+        # elif dealerform.is_valid():
+        #     dealerform.save()
+        #     dealerform = DealerForm()
+        # elif contactform.is_valid():
+        #     contactform.save()
+        #     contactform = ContactForm()
+        # elif request.POST.get('filter'):
+        #     citypram = request.POST.get('city')
+        #     brandpram = request.POST.get('brand')
+        #     statuspram = request.POST.get('status')
+        #     namesearch = request.POST.get('namesearch')
+        #     if not brandpram:
+        #         brandpram = ""
+        #     if not citypram:
+        #         citypram = ""
+        #     if not statuspram:
+        #         statuspram = ""
+        #     if not namesearch:
+        #         namesearch = ""
+        #     dealer = Dealer.objects.filter(city__icontains=citypram,
+        #         brand__name__icontains = brandpram,
+        #         status__icontains = statuspram,
+        #         dealership_name__icontains = namesearch
+        #         )
             
-            brand = Brand.objects.all()
-            city = City.objects.all()
-            form = BdmForm()
-            dealerform = DealerForm()
-            contactform = ContactForm()
-            paginator = Paginator(dealer,10)
-            page = request.GET.get('page')
-            dealer = paginator.get_page(page)
-            inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-            context = {
-            'form': form,
-            'dealerform': dealerform,
-            'contactform': contactform,
-            'dealer': dealer,
-            'brand':brand,
-            'city':city,
-            'brandpram':brandpram,
-            'citypram':citypram,
-            'statuspram':statuspram,
-            'namesearch':namesearch,
-            'inventorysum':inventorysum,
+        #     brand = Brand.objects.all()
+        #     city = City.objects.all()
+        #     form = BdmForm()
+        #     dealerform = DealerForm()
+        #     contactform = ContactForm()
+        #     paginator = Paginator(dealer,10)
+        #     page = request.GET.get('page')
+        #     dealer = paginator.get_page(page)
+        #     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
+        #     context = {
+        #     'form': form,
+        #     'dealerform': dealerform,
+        #     'contactform': contactform,
+        #     'dealer': dealer,
+        #     'brand':brand,
+        #     'city':city,
+        #     'brandpram':brandpram,
+        #     'citypram':citypram,
+        #     'statuspram':statuspram,
+        #     'namesearch':namesearch,
+        #     'inventorysum':inventorysum,
 
-            }
-            return render(request, 'dealer/index.html', context)
+        #     }
+        #     return render(request, 'dealer/index.html', context)
         brand = Brand.objects.all()
         city = City.objects.all()
         context = {
             'form': form,
-            'dealerform': dealerform,
-            'contactform': contactform,
+            # 'dealerform': dealerform,
+            # 'contactform': contactform,
             'dealer': dealer,
             'brand':brand,
             'city':city,
@@ -97,9 +97,9 @@ def index(request):
     else:
         
         form = BdmForm()
-        dealerform = DealerForm()
-        contactform = ContactForm()
-        dealer = Dealer.objects.all()
+        # dealerform = DealerForm()
+        # contactform = ContactForm()
+        # dealer = Dealer.objects.all()
         
         # gmaps = googlemaps.Client(key='')
         # geolocator = Nominatim(timeout= 10)
@@ -111,17 +111,21 @@ def index(request):
         # print(geocode_result)
     brand = Brand.objects.all()
     city = City.objects.all()
-    paginator = Paginator(dealer,10)
-    page = request.GET.get('page')
-    dealer = paginator.get_page(page)
+    # paginator = Paginator(dealer,10)
+    # page = request.GET.get('page')
+    # dealer = paginator.get_page(page)
     dealer_list = Dealer.objects.all()
     dealer_filter = DealerFilter(request.GET, queryset=dealer_list)
+    dealer_list = dealer_filter.qs
+    paginator = Paginator(dealer_list,10)
+    page = request.GET.get('page')
+    dealer = paginator.get_page(page)
     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
     
     context = {
                 'form': form,
-                'dealerform': dealerform,
-                'contactform': contactform,
+                # 'dealerform': dealerform,
+                # 'contactform': contactform,
                 'dealer': dealer,
                 'brand':brand,
                 'city':city,
@@ -228,6 +232,9 @@ def dealer(request, id):
     return render(request, 'dealer/dealer.html', context)
 
 @login_required(login_url='/accounts/login/')
+def welcome(request):
+    return render(request, 'dealer/welcome.html')
+    
 def dealerPrice(request):
     return render(request, 'dealer/price.html')
 
@@ -561,11 +568,13 @@ def inventory(request):
     model = Model.objects.all()
     variant = Variant.objects.all()
     
-    paginator = Paginator(inventory,10)
+    
+    
+    inventory_filter = InventoryFilter(request.GET, queryset=inventory)
+    inventory_list = inventory_filter.qs
+    paginator = Paginator(inventory_list,10)
     page = request.GET.get('page')
     inventory = paginator.get_page(page)
-    inventory_list = Inventory.objects.all()
-    inventory_filter = InventoryFilter(request.GET, queryset=inventory_list)
     
     context = {
         
@@ -574,6 +583,7 @@ def inventory(request):
         'model':model,
         'variant':variant,
         # 'city':city,
+        'inventory':inventory,
         'filter': inventory_filter,
 
     }

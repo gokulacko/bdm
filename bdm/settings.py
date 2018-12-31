@@ -33,7 +33,7 @@ ALLOWED_HOSTS = ['*']
 INSTALLED_APPS = [
     'dealer',
     # 'geopy',
-    'import_export',
+    
     'users',
     'geopy',
     'crispy_forms',
