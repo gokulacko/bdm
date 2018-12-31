@@ -21,9 +21,7 @@ from .filters import InventoryFilter, DealerFilter
 import openpyxl
 from openpyxl import Workbook
 import xlwt
-# from openpyxl.writer.excel import save_virtual_workbook
-# import StringIO
-from io import StringIO
+import traceback
 
 
 # Create your views here.
@@ -266,12 +264,18 @@ def dealerPrice(request):
             try:
                 
                 dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
-            except:
-                
+            except Exception as e:
+                if len(excel_data)==0:
+                    row_data.append("error")
+                else:
+                    trace_back = traceback.format_exc()
+                    message = str(e)+ " " + str(trace_back)
+                    row_data.append(str(e))
+                    
                 excel_data.append(row_data)
                 pass
                 
-        if len(excel_data)>2:
+        if len(excel_data)>0:
             response = HttpResponse(content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename="users.xls"'
 
