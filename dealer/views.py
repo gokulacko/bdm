@@ -18,6 +18,8 @@ from django.db.models import Sum
 
 from .filters import InventoryFilter, DealerFilter
 
+import openpyxl
+
 
 # Create your views here.
 
@@ -234,8 +236,36 @@ def dealer(request, id):
 @login_required(login_url='/accounts/login/')
 def welcome(request):
     return render(request, 'dealer/welcome.html')
-    
+
 def dealerPrice(request):
+    if request.method == "POST":
+        excel_file = request.FILES["excel_file"]
+
+        # you may put validations here to check extension or file size
+
+        wb = openpyxl.load_workbook(excel_file)
+
+        # getting a particular sheet by name out of many sheets
+        sheets = wb.sheetnames
+        print(sheets)
+        worksheet = wb[sheets[0]]
+        print(worksheet)
+
+        excel_data = list()
+        # iterating over the rows and
+        # getting value from each cell in row
+        for row in worksheet.iter_rows():
+            row_data = list()
+            for cell in row:
+                row_data.append(str(cell.value))
+            try:
+                dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
+            except:
+                excel_data.append(row_data)
+                pass
+            
+
+        return render(request, 'dealer/price.html', {"excel_data":excel_data})
     return render(request, 'dealer/price.html')
 
 
