@@ -127,7 +127,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for i in filter.qs %}
+            {% for i in inventory %}
             <tr>
               <td>{{ i.dealer.dealership_name }}</td>
               <td>{{ i.dealer.brand }}</td>
@@ -147,6 +147,30 @@
           </tbody>
         </table>
   </div>
+  <div class="paginator">
+
+    {% if inventory.has_other_pages %}
+    <ul class="pagination">
+      {% if inventory.has_previous %}
+        <li><a href="?page={{ inventory.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+      {% endif %}
+      {% for i in inventory.paginator.page_range %}
+        {% if inventory.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if inventory.has_next %}
+        <li><a href="?page={{ inventory.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+      {% endif %}
+    </ul>
+  {% endif %}
+</div>
   
   <!-- <form method="get">
     {{ filter.form.as_p }}
