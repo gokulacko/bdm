@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 import dealer.forms as f
-from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, DealerPriceForm, ContactFormOutletEdit
+from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, DealerDiscountForm
 from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload
 # from geopy.geocoders import Nominatim
 import googlemaps
@@ -190,7 +190,7 @@ def dealer(request, id):
         #     else:
         #         searchfiles = ''
         # else:
-        form = DealerPriceForm(request.POST, request.FILES)
+        form = DealerDiscountForm(request.POST, request.FILES)
         inventoryform = f.InventoryForm(request.POST)
         if form.is_valid():
             form.save()
@@ -214,9 +214,9 @@ def dealer(request, id):
     inventory = Inventory.objects.filter(dealer_id = id)
     inventoryform = f.InventoryForm()
     if files:
-        priceform = DealerPriceForm(instance=files[0])
+        priceform = DealerDiscountForm(instance=files[0])
     else:
-        priceform = DealerPriceForm()
+        priceform = DealerDiscountForm()
     context = {
                 'dealer_info': dealer_info,
                 'dealer_contact': dealer_contact,
@@ -230,6 +230,33 @@ def dealer(request, id):
             }
 
     return render(request, 'dealer/dealer.html', context)
+
+def dealerDiscount(request):
+    print("here******************")
+    # dealer_id = request.POST['dealer']
+    discount_upload_resource = DealerDiscountUploadResource()
+    dataset = Dataset()
+    new_pricing_discounts = request.FILES['file']
+    imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
+    try:
+        for row in dataset:
+            discount = DealerDiscountUpload()
+            discount.model_name = row[1]
+            discount.variant_name = row[2]
+            discount.cash_discount = int(row[3])
+            discount.non_cash_offer = int(row[4])
+            
+            discount.save()
+
+    except (ValueError, DealerDiscountUpload.DoesNotExist):
+        raise HttpResponse("There is a Problem with The CSV")
+
+    dealerform = DealerDiscountForm()
+    context = {
+                'dealerdiscountform': dealerform
+    }
+    
+    return render(request, 'dealer/dealer_discount.html', context)
 
 @login_required(login_url='/accounts/login/')
 def welcome(request):

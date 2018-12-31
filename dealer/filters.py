@@ -31,3 +31,10 @@ class DealerFilter(django_filters.FilterSet):
     class Meta:
         model = m.Dealer
         fields = [ 'city', 'brand__name', 'dealership_name','status']
+
+class DealerDiscountFilter(django_filters.FilterSet):
+    dealer=django_filters.ModelMultipleChoiceFilter(queryset=m.Dealer.objects.all(), label='dealer')
+
+    class Meta:
+        model = m.DealerPriceFile
+        fields = [ 'dealer' ]

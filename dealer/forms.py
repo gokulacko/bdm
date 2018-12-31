@@ -65,9 +65,6 @@ class ContactForm(forms.ModelForm):
 			'type', 
 			#'image', 
 			'dealer'
-			
-			
-
 		]
 
 
@@ -91,9 +88,6 @@ class ContactEditForm(forms.ModelForm):
 			'type', 
 			#'image', 
 			# 'dealer'
-			
-			
-
 		]
 
 
@@ -117,7 +111,6 @@ class ContactFormOutlet(forms.ModelForm):
 			'type', 
 			#'image', 
 			'outlet'
-
 		]
 
 class ContactFormOutletEdit(forms.ModelForm):
@@ -140,14 +133,12 @@ class ContactFormOutletEdit(forms.ModelForm):
 			'type', 
 			#'image', 
 			# 'outlet'
-
 		]
 
 class OutletForm(forms.ModelForm):
 	CATEGORIES=(
         ('Active', 'Active'),
-        ('Inactive', 'In-Active'),
-        
+        ('Inactive', 'In-Active'), 
     )
 	status = forms.ChoiceField(choices=CATEGORIES)
 	# dealer = forms.CharField(
@@ -162,16 +153,13 @@ class OutletForm(forms.ModelForm):
 			'pincode',
 			'status',
 			'dealer',
-			
-
 		]
 
 
 class OutletEditForm(forms.ModelForm):
 	CATEGORIES=(
         ('Active', 'Active'),
-        ('Inactive', 'In-Active'),
-        
+        ('Inactive', 'In-Active'),   
     )
 	status = forms.ChoiceField(choices=CATEGORIES)
 	# dealer = forms.CharField(
@@ -186,11 +174,9 @@ class OutletEditForm(forms.ModelForm):
 			'pincode',
 			'status',
 			# 'dealer',
-			
-
 		]
 
-class DealerPriceForm(forms.ModelForm):
+class DealerDiscountForm(forms.ModelForm):
 	class Meta:
 		model = DealerPriceFile
 		fields = [
@@ -203,6 +189,5 @@ class InventoryForm(forms.ModelForm):
 		model = Inventory
 		fields = [
 			'variant',
-			'count',
-			
+			'count',	
 		]

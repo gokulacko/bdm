@@ -8,6 +8,7 @@ urlpatterns = [
 	url(r'^price/$', views.dealerPrice, name='price'),
 	url(r'^add-dealer/$', views.addDealer, name='add-dealer' ),
 	url(r'^inventory/$', views.inventory, name='inventory' ),
+	url(r'^dealer-discount/$', views.dealerDiscount, name='dealer-discount' ),
 	url(r'^(?P<id>\d+)/dealer-view/$', views.dealer, name='dealer-view' ),
 	url(r'^(?P<id>\d+)/dealer-price-view/$', views.dealerPrice, name='dealer-price-view' ),
 	url(r'^(?P<id>\d+)/add-outlet/$', views.addOutlet, name='add-outlet' ),
