@@ -190,13 +190,13 @@ class OutletEditForm(forms.ModelForm):
 
 		]
 
-class DealerPriceForm(forms.ModelForm):
-	class Meta:
-		model = DealerPriceFile
-		fields = [
-			'file',
-			'dealer'   
-		]
+# class DealerPriceForm(forms.ModelForm):
+# 	class Meta:
+# 		model = DealerPriceFile
+# 		fields = [
+# 			'file',
+# 			'dealer'   
+# 		]
 
 class InventoryForm(forms.ModelForm):
 	class Meta:
