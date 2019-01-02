@@ -4,8 +4,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 import dealer.forms as f
-from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, PriceConfig
+from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, DealerDiscountForm, ContactFormOutletEdit
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -16,15 +16,13 @@ from tablib import Dataset
 from .resources import DealerDiscountUploadResource
 from django.db.models import Sum
 
-from .filters import InventoryFilter, DealerFilter, PriceFilter
+from .filters import InventoryFilter, DealerFilter
 
 import openpyxl
 from openpyxl import Workbook
 import xlwt
 import traceback
-
-
-# Create your views here.
+# from itertools import islice
 
 def index(request):
     
@@ -126,7 +124,7 @@ def index(request):
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-    
+    print(inventorysum)
     context = {
                 'form': form,
                 # 'dealerform': dealerform,
@@ -139,7 +137,6 @@ def index(request):
             }
     return render(request, 'dealer/index.html', context)
 
-
 def addDealer(request):
     
     if request.method == "POST":
@@ -150,7 +147,7 @@ def addDealer(request):
             messages.success(request, ' Dealer added successfully')
         else:
             messages.error(request, ' Dealer not added successfully')  
-        return redirect('index')
+        return redirect('dealer:index')
     else:
         dealerform = DealerForm()
         context = {
@@ -195,7 +192,7 @@ def dealer(request, id):
         #     else:
         #         searchfiles = ''
         # else:
-        form = DealerPriceForm(request.POST, request.FILES)
+        form = DealerDiscountForm(request.POST, request.FILES)
         inventoryform = f.InventoryForm(request.POST)
         if form.is_valid():
             form.save()
@@ -219,9 +216,9 @@ def dealer(request, id):
     inventory = Inventory.objects.filter(dealer_id = id)
     inventoryform = f.InventoryForm()
     if files:
-        priceform = DealerPriceForm(instance=files[0])
+        priceform = DealerDiscountForm(instance=files[0])
     else:
-        priceform = DealerPriceForm()
+        priceform = DealerDiscountForm()
     context = {
                 'dealer_info': dealer_info,
                 'dealer_contact': dealer_contact,
@@ -235,6 +232,165 @@ def dealer(request, id):
             }
 
     return render(request, 'dealer/dealer.html', context)
+
+def dealerDiscount(request):
+    if request.method == "POST":
+        dataset = request.FILES['file_name']
+        dealer_name = request.POST['dealer_name']
+        city = request.POST['city_name']
+        wb = openpyxl.load_workbook(dataset)
+        sheets = wb.sheetnames
+        for sheet in sheets:
+            worksheet = wb[sheet]
+            excel_data = list()
+
+            for row in worksheet.iter_rows(row_offset=1):
+                row_data = list()
+                for cell in row:
+                    row_data.append(str(cell.value))
+                try:
+                    dealer = Dealer.objects.get(dealership_name=dealer_name)
+                    variant = Variant.objects.get(name = row_data[2], model__name = row_data[1])
+                    city = City.objects.get(name = city)
+                    dealerdiscount = DealerDiscount.objects.create(variant=variant, discount=row_data[3],dealer=dealer, city=city)
+                    dealeroffer = DealerOffer.objects.create(variant=variant, offers=row_data[4],dealer=dealer, city=city)
+                    print("Data inserted******")
+                except Exception as e:
+                    print(e)
+                    if len(excel_data)==0:
+                        row_data.append("error")
+                    else:
+                        trace_back = traceback.format_exc()
+                        message = str(e)+ " " + str(trace_back)
+                        row_data.append(str(e))
+
+                    excel_data.append(row_data)
+                    pass
+        
+        if len(excel_data)>1:
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="Dealer-Users.xls"'
+
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet('Dealer-Users')
+
+            row_num = 0
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            for data in excel_data:
+                for col_num in range(len(data)):
+                    ws.write(row_num, col_num, data[col_num], font_style)
+                row_num += 1
+
+            wb.save(response)
+            return response
+    dealerform = DealerDiscountForm()
+    context = {
+                'dealerdiscountform': dealerform,
+    }
+    
+    return render(request, 'dealer/dealer_discount.html', context)
+
+def ackodriveDiscount(request):
+    if request.method == "POST":
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        sheets = wb.sheetnames
+
+        for sheet in sheets:
+            worksheet = wb[sheet]
+            excel_data = list()
+            for row in worksheet.iter_rows():
+                row_data = list()
+                for cell in row:
+                    row_data.append(str(cell.value))
+                try:
+                    if row_data[1] != "None" or row_data[2] != "None" or row_data[3] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
+
+                        variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
+                        print(variant)
+
+                        discount = AckodriveDiscount.objects.create(discount = row_data[3], variant = variant)
+                        kindoffer = AckodriveKindOffers.objects.create(offers = row_data[4], variant = variant)
+                        print("Data inserted******")
+                except Exception as e:
+                    if len(excel_data)==0:
+                        row_data.append("error")
+                    else:
+                        trace_back = traceback.format_exc()
+                        message = str(e)+ " " + str(trace_back)
+                        row_data.append(str(e))
+                    excel_data.append(row_data)
+                    pass
+
+        if len(excel_data)>3:
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="Ackodrive-Users.xls"'
+
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet('Ackodrive-Users')
+            row_num = 0
+
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            for data in excel_data:
+
+                for col_num in range(len(data)):
+                    ws.write(row_num, col_num, data[col_num], font_style)
+                row_num += 1
+
+            wb.save(response)
+            return response
+        else:
+            messages.success(request, ' Ackodrive discount uploaded successfully')
+        # return redirect('dealer:ackodrive_discount')
+    return render(request, 'dealer/ackodrive_discount.html', {})
+
+def marketprice(request):
+    if request.method == "POST":
+        excel_file = request.FILES["excel_file"]
+        wb = openpyxl.load_workbook(excel_file)
+        city = request.POST['city']
+        sheets = wb.sheetnames
+        worksheet = wb[sheets[0]]
+
+        excel_data = list()
+        for row in worksheet.iter_rows():
+            row_data = list()
+            for cell in row:
+                row_data.append(str(cell.value))
+            try:
+                city = City.objects.get(name = city)
+                variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
+                marketprice = PriceConfig.objects.create(variant=variant, ex_showroom=row_data[3], registration_amount=row_data[4], insurance_premium=row_data[5], environment_compensation=row_data[6], octroi=row_data[7], depot_charges=row_data[8],rsa_amount=row_data[9],extended_warranty_amount=row_data[10], cash_discount=row_data[11], amc=row_data[12], basic_accessories=row_data[13], number_plate=row_data[14], smart_card=row_data[15], mcd_charges=row_data[16], tax_collected_at_source=row_data[17], road_tax=row_data[18], other_charges=row_data[19], city=city)
+                print("Data inserted******")
+            except Exception as e:
+                if len(excel_data)==0:
+                    row_data.append("error")
+                else:
+                    trace_back = traceback.format_exc()
+                    message = str(e)+ " " + str(trace_back)
+                    row_data.append(str(e))   
+                excel_data.append(row_data)
+                pass
+                
+        if len(excel_data)>0:
+            response = HttpResponse(content_type='application/ms-excel')
+            response['Content-Disposition'] = 'attachment; filename="MarketPrice-errors.xls"'
+
+            wb = xlwt.Workbook(encoding='utf-8')
+            ws = wb.add_sheet('MarketPrice-errors')
+            row_num = 0
+            font_style = xlwt.XFStyle()
+            font_style.font.bold = True
+            for data in excel_data: 
+                for col_num in range(len(data)):
+                    ws.write(row_num, col_num, data[col_num], font_style)
+                row_num += 1
+            wb.save(response)
+            return response
+
+    return render(request, 'dealer/marketprice.html')
 
 @login_required(login_url='/accounts/login/')
 def welcome(request):
@@ -315,21 +471,19 @@ def dealerPrice(request):
             
 
         return render(request, 'dealer/price.html', {"excel_data":excel_data})
-    price_list = PriceConfig.objects.all()
-    price_filter = PriceFilter(request.GET, queryset=price_list)
-    price_list = price_filter.qs
-    paginator = Paginator(price_list,10)
-    page = request.GET.get('page')
-    price = paginator.get_page(page)
-    context = {
-                'price':price,
-                'filter':price_filter
+    # price_list = PriceConfig.objects.all()
+    # price_filter = PriceFilter(request.GET, queryset=price_list)
+    # price_list = price_filter.qs
+    # paginator = Paginator(price_list,10)
+    # page = request.GET.get('page')
+    # price = paginator.get_page(page)
+    # context = {
+    #             'price':price,
+    #             'filter':price_filter
 
-                # 'searchfiles':searchfiles
-            }
-    return render(request, 'dealer/price.html', context)
-
-
+    #             # 'searchfiles':searchfiles
+    #         }
+    return render(request, 'dealer/price.html')
 
 def dealerEdit(request, id):
     if request.method == "POST":
@@ -348,17 +502,12 @@ def dealerEdit(request, id):
         dealeredit.save()
         messages.success(request, 'Dealer edited successfully')
         return redirect('dealer:dealer-view', id=dealeredit.id)
-        
-
 
     dealer_info = Dealer.objects.get(id=id)
     context = {
-                'dealer_info': dealer_info,
-                
+                'dealer_info': dealer_info,         
             } 
     return render(request, 'dealer/dealer_edit.html', context)
-
-
 
 def addOutlet(request, id):
     # outlet_info = Outlet.objects.get(id=id)

@@ -57,9 +57,9 @@
 					<div class="w3-dropdown-hover">
 						<button class="w3-button">Upload <i class="glyphicon glyphicon-chevron-down"></i></button>
 						<div class="w3-dropdown-content w3-bar-block">
-							<a href="#" class="w3-bar-item w3-button">Market Price</a>
-							<a href="#" class="w3-bar-item w3-button">Dealer Discount</a>
-							<a href="#" class="w3-bar-item w3-button">AckoDrive Discount</a>
+							<a href="{% url 'dealer:marketprice' %}" class="w3-bar-item w3-button">Market Price</a>
+							<a href="{% url 'dealer:dealer-discount' %}" class="w3-bar-item w3-button">Dealer Discount</a>
+							<a href="{% url 'dealer:ackodrive-discount' %}" class="w3-bar-item w3-button">AckoDrive Discount</a>
 						</div>
 					</div>
 					

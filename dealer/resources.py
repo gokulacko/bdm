@@ -8,4 +8,4 @@ class DealerDiscountUploadResource(resources.ModelResource):
         report_skipped = True
         # exclude = ('id')
         # import_id_fields = ('model_name',)
-        fields = ('model_name', 'variant_name', 'cash_discount', 'non_cash_offer')
+        fields = ('file', 'model_name', 'variant_name', 'cash_discount', 'non_cash_offer')

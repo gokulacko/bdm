@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
+
+<div class="container">
+    <h1 id="show">Price details</h1>
+    <div class="upload">
+      <form action="{% url 'dealer:dealer-discount' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ dealerdiscountform | crispy }}
+        <button type="submit" class="btn btn-success">Save</button
+        >
+      </form>
+    </div><hr />
+    <!-- <div>
+      <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-price-download/">
+        {% csrf_token %}
+        <h3>Download Price file for Dealer</h3><br />
+        <label for="price-download">Month & Year:</label>
+        <input
+          type="month"
+          class="upload"
+          id="dealership_name"
+          name="dealership_name"
+          
+        />
+        <button type="submit" class="btn btn-success">Download</button>
+      </form>
+       {{ FilterDateForm | crispy }} 
+    </div>   -->
+  </div>
+
+{% endblock %}
