@@ -7,8 +7,6 @@ class InventoryFilter(django_filters.FilterSet):
     dealer__brand__name=django_filters.ModelMultipleChoiceFilter(queryset=m.Brand.objects.all(), label='Brand')
     variant__model__name=django_filters.ModelMultipleChoiceFilter(queryset=m.Model.objects.all(), label='Model')
     variant__name =django_filters.ModelMultipleChoiceFilter(queryset=m.Variant.objects.all(), label='Variant')
-
-
    
     class Meta:
         model = m.Inventory
@@ -32,9 +30,10 @@ class DealerFilter(django_filters.FilterSet):
         model = m.Dealer
         fields = [ 'city', 'brand__name', 'dealership_name','status']
 
-class DealerDiscountFilter(django_filters.FilterSet):
-    dealer=django_filters.ModelMultipleChoiceFilter(queryset=m.Dealer.objects.all(), label='dealer')
-
-    class Meta:
-        model = m.DealerPriceFile
-        fields = [ 'dealer' ]
+# class DealerDiscountFilter(django_filters.FilterSet):
+#     dealer=django_filters.ModelMultipleChoiceFilter(queryset=m.Dealer.objects.all(), label='Dealer')
+#     city=django_filters.ModelMultipleChoiceFilter(queryset=m.City.objects.all(), label='City')
+    
+#     class Meta:
+#         model = m.DealerDiscountUpload
+#         fields = [ 'dealer_name', 'city_name' ]

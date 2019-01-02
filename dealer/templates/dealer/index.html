@@ -144,13 +144,17 @@
         <td>{{ d.city }}</td>
         <td>{{ d.brand }}</td>
         <td>{{ d.outlet_set.count }}</td>
-        {% for sum in inventorysum %}
-          {% if sum.dealer == d.id %}
-            <td>{{ sum.inventory_sum }}</td>
-          {% else %}
-            <td>0</td>
-          {% endif %}
-        {% endfor %}
+        {% if inventorysum  %}
+          {% for sum in inventorysum %}
+            {% if sum.dealer == d.id %}
+              <td>{{ sum.inventory_sum }}</td>
+            {% else %}
+              <td>0</td>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <td>0</td>
+        {% endif %}
         <td>Future</td>
         <td>{{ d.status }}</td>
         <td align="center">

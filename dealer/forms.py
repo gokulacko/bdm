@@ -1,5 +1,5 @@
 from django import forms
-from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory   
+from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory, DealerDiscountUpload 
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -178,10 +178,11 @@ class OutletEditForm(forms.ModelForm):
 
 class DealerDiscountForm(forms.ModelForm):
 	class Meta:
-		model = DealerPriceFile
+		model = DealerDiscountUpload
 		fields = [
-			'file',
-			'dealer'   
+			'file_name',
+			'dealer_name',
+			'city_name' 
 		]
 
 class InventoryForm(forms.ModelForm):

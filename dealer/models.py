@@ -95,11 +95,6 @@ class DealerPriceFile(models.Model):
     def __str__(self):
         return str(self.period)
 
-
-
-
-
-
 #new db model
 # automobile
 class TransmissionType(models.Model):
@@ -181,13 +176,24 @@ class Rto(models.Model):
         return str(self.rto_name)
 
 class DealerDiscount(models.Model):
-    discount = models.IntegerField()
+    discount =  models.DecimalField(max_digits=10, decimal_places=8)
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+
+class DealerOffer(models.Model):
+   offers = models.TextField()
+   dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+   city = models.ForeignKey(City, on_delete=models.CASCADE)
+   def __unicode__(self):
+       return str(self.dealer.dealership_name)
+   def __str__(self):
+       return str(self.dealer.dealership_name)
 
 
 class AckodriveKindOffers(models.Model):
-    type = models.CharField(max_length=30)
+    offers = models.TextField(blank=True, null=True)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     def __unicode__(self):
         return str(self.type)
@@ -196,53 +202,50 @@ class AckodriveKindOffers(models.Model):
 
 
 class AckodriveDiscount(models.Model):
-    discount = models.IntegerField()
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
 
 
 class PriceConfig(models.Model):
-    valid_till = models.DateField()
-    ex_showroom = models.DecimalField(max_digits=10, decimal_places=2)
-    registration_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    insurance_premium = models.DecimalField(max_digits=10, decimal_places=2)
-    environment_compensation = models.DecimalField(max_digits=10, decimal_places=2)
-    octroi = models.CharField(max_length=50)
-    depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    rsa_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    extended_warranty_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    govt_employee_scheme = models.CharField(max_length=50)
-    corporate_discount = models.DecimalField(max_digits=10, decimal_places=2)
-    cash_discount = models.DecimalField(max_digits=10, decimal_places=2)
-    amc = models.DecimalField(max_digits=10, decimal_places=2)
-    basic_accessories = models.DecimalField(max_digits=10, decimal_places=2)
-    number_plate = models.DecimalField(max_digits=10, decimal_places=2)
-    smart_card = models.CharField(max_length=50)
-    mcd_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    tax_collected_at_source = models.DecimalField(max_digits=10, decimal_places=2)
-    road_tax = models.DecimalField(max_digits=10, decimal_places=2)
-    other_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    logistic_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    nexa_card = models.CharField(max_length=50)
-    honda_connect = models.CharField(max_length=50)
-    honda_genius_access = models.CharField(max_length=50)
-    fast_tag = models.CharField(max_length=50)
-    #fk
-    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-    price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
-    insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE)
-    ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
-    rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
-
-
+   # valid_till = models.DateField()
+   ex_showroom = models.DecimalField(max_digits=10, decimal_places=2)
+   registration_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   insurance_premium = models.DecimalField(max_digits=10, decimal_places=2)
+   environment_compensation = models.DecimalField(max_digits=10, decimal_places=2)
+   octroi = models.DecimalField(max_digits=10, decimal_places=2)
+   depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   rsa_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   extended_warranty_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   # govt_employee_scheme = models.CharField(max_length=50)#
+   # corporate_discount = models.DecimalField(max_digits=10, decimal_places=2)#
+   cash_discount = models.DecimalField(max_digits=10, decimal_places=2)
+   amc = models.DecimalField(max_digits=10, decimal_places=2)
+   basic_accessories = models.DecimalField(max_digits=10, decimal_places=2)
+   number_plate = models.DecimalField(max_digits=10, decimal_places=2)
+   smart_card = models.DecimalField(max_digits=10, decimal_places=2)
+   mcd_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   tax_collected_at_source = models.DecimalField(max_digits=10, decimal_places=2)
+   road_tax = models.DecimalField(max_digits=10, decimal_places=2)
+   other_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # logistic_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # nexa_card = models.CharField(max_length=50)
+   # honda_connect = models.CharField(max_length=50)
+   # honda_genius_access = models.CharField(max_length=50)
+   # fast_tag = models.CharField(max_length=50)
+   #fk
+   # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+   city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+   # price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
+   # insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE)
+   # ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
+   # rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
 
 class DealerKindOffer(models.Model):
     BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
     MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
     price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
-
-
 
 #     class Visit(models.Model):
 #         ip = models.CharField(max_length=50 )
@@ -328,7 +331,13 @@ class Payment(models.Model):
     # form_data = 
 
 class DealerDiscountUpload(models.Model):
+    file_name = models.FileField(upload_to="./dealerprice", default="settings.MEDIA_ROOT/dealerprice/anonymous.png")
     model_name = models.CharField(max_length=50)
     variant_name = models.CharField(max_length=50)
-    cash_discount = models.IntegerField()
-    non_cash_offer = models.IntegerField()  
+    cash_discount = models.DecimalField(max_digits=10, decimal_places=8)
+    non_cash_offer = models.DecimalField(max_digits=10, decimal_places=8) 
+    dealer_name = models.CharField(max_length=50) 
+    # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+    # city = models.ForeignKey(City, on_delete=models.CASCADE)
+    city_name = models.CharField(max_length=30)
+

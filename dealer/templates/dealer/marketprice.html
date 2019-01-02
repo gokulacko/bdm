@@ -1,0 +1,21 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
+
+<div class="container">
+    <h1 id="show">Price details</h1>
+    <div class="upload">
+      <form action="{% url 'dealer:marketprice' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <input type="file"
+           title="Upload excel file"
+           name="excel_file"
+           style="border: 1px solid black; padding: 5px;"
+           required="required" />
+        <div><label>city</label>
+        <input type="text", title="city", name="city", required="required" /></div>
+        <button type="submit" class="btn btn-success">Save</button>
+      </form>
+    </div><hr />
+</div>
+
+{% endblock %}
