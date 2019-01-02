@@ -24,7 +24,42 @@
 </form>
 
 <p></p>
-<hr>
+<br>
+<div class="filter">
+    {{fitler.form}}
+   
+
+  </div>
+
+  <table class="dashboard table table-striped table-bordered table-hover">
+        <thead>
+          <tr class="head info">
+            <th>Model</th>
+            <th>Variant</th>
+            <th>Market Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+         
+          <tr>
+            <td>Future</td>
+            <td>Future</td>
+            <td>Future</td>
+            <td align="center">
+              <a href="{% url 'dealer:' d.id %}">
+                <button class="btn btn-success">View</button>
+              </a>
+            </td>
+          </tr>
+          
+        </tbody>
+      </table>
+
+  <br>
+  <br>
+  <br>
+
 
 {% for row in excel_data %}
     {% for cell in row %}

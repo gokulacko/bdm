@@ -23,7 +23,7 @@ class InventoryFilter(django_filters.FilterSet):
 class DealerFilter(django_filters.FilterSet):
     city=django_filters.ModelMultipleChoiceFilter(queryset=m.City.objects.all(), label='City')
     brand__name=django_filters.ModelMultipleChoiceFilter(queryset=m.Brand.objects.all(), label='Brand')
-    dealership_name = django_filters.CharFilter(lookup_expr='icontains', label='Dealer')
+    dealership_name = django_filters.ModelMultipleChoiceFilter(queryset=m.Dealer.objects.all(), label='Dealer')
     status = django_filters.CharFilter(lookup_expr='icontains', label='Status')
 
     class Meta:
