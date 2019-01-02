@@ -65,10 +65,33 @@ admin.site.register(m.AckodriveKindOffers)
 admin.site.register(m.DealerDiscount)
 admin.site.register(m.Rto)
 admin.site.register(m.PriceType)
-admin.site.register(m.Variant)
-admin.site.register(m.Model)
+# admin.site.register(m.Variant)
+@admin.register(m.Variant)
+
+class VariantAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+@admin.register(m.Model)
+
+class ModelAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+
 admin.site.register(m.TransmissionType)
-admin.site.register(m.Brand)
+# admin.site.register(m.Brand)
+@admin.register(m.Brand)
+
+class BrandAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+
+
 admin.site.register(m.DealerPriceFile)
 admin.site.register(m.City)
 

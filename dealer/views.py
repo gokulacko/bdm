@@ -5,7 +5,7 @@ from django.core.paginator import Paginator
 from django.contrib import messages
 import dealer.forms as f
 from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, DealerPriceForm, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, PriceConfig
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -16,7 +16,7 @@ from tablib import Dataset
 from .resources import DealerDiscountUploadResource
 from django.db.models import Sum
 
-from .filters import InventoryFilter, DealerFilter
+from .filters import InventoryFilter, DealerFilter, PriceFilter
 
 import openpyxl
 from openpyxl import Workbook
@@ -250,34 +250,46 @@ def dealerPrice(request):
 
         # getting a particular sheet by name out of many sheets
         sheets = wb.sheetnames
-        print(sheets)
-        worksheet = wb[sheets[0]]
-        # print(worksheet)
+        
+        for sheet in sheets:
+        
+            worksheet = wb[sheet]
+            # print(worksheet)
+            
+            excel_data = list()
+            # iterating over the rows and
+            # getting value from each cell in row
+            for row in worksheet.iter_rows():
+                row_data = list()
+                for cell in row:
+                    row_data.append(str(cell.value))
+            
+                try:
+                    if row_data[2] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
+                           
+                        # modelobject = Model.objects.get(name = row_data[1])
+                        # print(modelobject)
+                        variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
+                        print(variant)
 
-        excel_data = list()
-        # iterating over the rows and
-        # getting value from each cell in row
-        for row in worksheet.iter_rows():
-            row_data = list()
-            for cell in row:
-                row_data.append(str(cell.value))
-            try:
-                
-                dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
-            except Exception as e:
-                if len(excel_data)==0:
-                    row_data.append("error")
-                else:
-                    trace_back = traceback.format_exc()
-                    message = str(e)+ " " + str(trace_back)
-                    row_data.append(str(e))
+                        discount = AckodriveDiscount.objects.create(type = row_data[3], variant = variant)
+                        kindoffer = AckodriveKindOffers.objects.create(discount = row_data[4], variant = variant)
+
+                    # dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
+                except Exception as e:
+                    if len(excel_data)==0:
+                        row_data.append("error")
+                    else:
+                        trace_back = traceback.format_exc()
+                        message = str(e)+ " " + str(trace_back)
+                        row_data.append(str(e))
+                        
+                    excel_data.append(row_data)
+                    pass
                     
-                excel_data.append(row_data)
-                pass
-                
-        if len(excel_data)>0:
+        if len(excel_data)>2:
             response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="users.xls"'
+            response['Content-Disposition'] = 'attachment; filename="varianterror.xls"'
 
             wb = xlwt.Workbook(encoding='utf-8')
             ws = wb.add_sheet('Users')
@@ -296,10 +308,26 @@ def dealerPrice(request):
             
             wb.save(response)
             return response
+        else:
+            messages.success(request, ' Ackodrive discount uploaded successfully')
+            return redirect('dealer:discount')
+
             
 
         return render(request, 'dealer/price.html', {"excel_data":excel_data})
-    return render(request, 'dealer/price.html')
+    price_list = PriceConfig.objects.all()
+    price_filter = PriceFilter(request.GET, queryset=price_list)
+    price_list = price_filter.qs
+    paginator = Paginator(price_list,10)
+    page = request.GET.get('page')
+    price = paginator.get_page(page)
+    context = {
+                'price':price,
+                'filter':price_filter
+
+                # 'searchfiles':searchfiles
+            }
+    return render(request, 'dealer/price.html', context)
 
 
 
@@ -686,3 +714,8 @@ def deleteInventory(request, id):
     inventory.delete()
     messages.success(request, 'Inventory deleted successfully')
     return redirect('dealer:inventory')
+
+
+def discount(request):
+
+    return render(request, 'dealer/discount.html')

@@ -123,18 +123,18 @@ class Model(models.Model):
 
 
 class Variant(models.Model):
-    name = models.CharField(max_length=30)
-    cc = models.IntegerField()
-    seating_capacity = models.IntegerField()
-    fuel_type = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
+    cc = models.IntegerField(blank=True, null=True)
+    seating_capacity = models.IntegerField(blank=True, null=True)
+    fuel_type = models.CharField(max_length=50, blank=True, null=True)
     #transmission_type = models.CharField(max_length=30)
-    body = models.CharField(max_length=50)#for dealer or outlet
-    category = models.CharField(max_length=30)
+    body = models.CharField(max_length=50, blank=True, null=True)#for dealer or outlet
+    category = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     iscorporatediscount = models.BooleanField(default=True)
     #image = models.ImageField(null=True, blank=True, upload_to="image/")
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    transmission_type_id = models.ForeignKey(TransmissionType, on_delete=models.CASCADE)
+    transmission_type_id = models.ForeignKey(TransmissionType, on_delete=models.CASCADE, blank=True, null=True)
     
     def __unicode__(self):
         return str(self.name)
@@ -184,10 +184,21 @@ class DealerDiscount(models.Model):
     discount = models.IntegerField()
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+
+class DealerOffer(models.Model):
+    offers = models.TextField()
+    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    def __unicode__(self):
+        return str(self.dealer.dealership_name)
+    def __str__(self):
+        return str(self.dealer.dealership_name)
 
 
 class AckodriveKindOffers(models.Model):
-    type = models.CharField(max_length=30)
+    offers = models.TextField()
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     def __unicode__(self):
         return str(self.type)
