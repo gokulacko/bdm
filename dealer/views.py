@@ -4,7 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 import dealer.forms as f
-from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, DealerDiscountForm, DealerPriceForm, ContactFormOutletEdit
+from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, PriceUploadDealerForm, PriceUploadForm, ContactFormOutletEdit
 from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig
 # from geopy.geocoders import Nominatim
 import googlemaps
@@ -13,10 +13,10 @@ import os
 import codecs
 from django.conf import settings
 from tablib import Dataset
-from .resources import DealerDiscountUploadResource
+# from .resources import DealerDiscountUploadResource
 from django.db.models import Sum
 
-from .filters import InventoryFilter, DealerFilter, PriceFilter
+from .filters import InventoryFilter, DealerFilter
 
 import openpyxl
 from openpyxl import Workbook
@@ -156,32 +156,8 @@ def addDealer(request):
     return render(request, 'dealer/add_dealer.html', context)
     
 def dealer(request, id):
-    searchfiles = ''
+    # searchfiles = ''
     if request.method == "POST":
-        print("files is",request.FILES['file'])
-        discount_upload_resource = DealerDiscountUploadResource()
-        dataset = Dataset()
-        new_pricing_discounts = request.FILES['file']
-        imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
-        try:
-            for row in dataset:
-                discount = DealerDiscountUpload()
-                discount.model_name = row[1]
-                discount.variant_name = row[2]
-                discount.cash_discount = int(row[3])
-                discount.non_cash_offer = int(row[4])
-                
-                discount.save()
-
-        except (ValueError, DealerDiscountUpload.DoesNotExist):
-            raise HttpResponse("There is a Problem with The CSV")
-        # print("data is--------", imported_data)
-        # result = discount_upload_resource.import_data(dataset, dry_run=True)
-        # print("result is-------", result.has_errors())
-        # if not result.has_errors():
-        #     print("*************no errors**********")
-        #     discount_upload_resource.import_data(dataset, dry_run=False)
-
         # if request.POST.get('month'):
         #     print("month")
         #     today = datetime.date.today()
@@ -192,12 +168,12 @@ def dealer(request, id):
         #     else:
         #         searchfiles = ''
         # else:
-        form = DealerDiscountForm(request.POST, request.FILES)
+        # form = DealerDiscountForm(request.POST, request.FILES)
         inventoryform = f.InventoryForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, ' Price upload successfully')
-            return redirect('index')
+        # if form.is_valid():
+        #     form.save()
+        #     messages.success(request, ' Price upload successfully')
+        #     return redirect('index')
         if inventoryform.is_valid():
             inventoryform = inventoryform.save(commit=False)
             dealer_info = Dealer.objects.get(id=id)
@@ -212,20 +188,20 @@ def dealer(request, id):
     outlet_info = Outlet.objects.filter(dealer_id = id)
     outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
     today = datetime.date.today()
-    files = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month)
+    # files = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month)
     inventory = Inventory.objects.filter(dealer_id = id)
     inventoryform = f.InventoryForm()
-    if files:
-        priceform = DealerDiscountForm(instance=files[0])
-    else:
-        priceform = DealerDiscountForm()
+    # if files:
+    #     priceform = DealerDiscountForm(instance=files[0])
+    # else:
+    #     priceform = DealerDiscountForm()
     context = {
                 'dealer_info': dealer_info,
                 'dealer_contact': dealer_contact,
                 'outlet_info': outlet_info,
                 'outlet_contact': outlet_contact,
                 'messages':storage,
-                'priceform':priceform,
+                # 'priceform':priceform,
                 'inventoryform':inventoryform,
                 'inventory':inventory
                 # 'searchfiles':searchfiles
@@ -284,19 +260,21 @@ def dealerDiscount(request):
 
             wb.save(response)
             return response
-    dealerform = DealerDiscountForm()
+    dealerform = PriceUploadDealerForm()
     context = {
-                'dealerdiscountform': dealerform,
+        'dealerdiscountform': dealerform,
     }
     
     return render(request, 'dealer/dealer_discount.html', context)
 
 def ackodriveDiscount(request):
     if request.method == "POST":
+        city = request.POST['city']
         excel_file = request.FILES["excel_file"]
         wb = openpyxl.load_workbook(excel_file)
         sheets = wb.sheetnames
 
+        city = City.objects.get(name = city)
         for sheet in sheets:
             worksheet = wb[sheet]
             excel_data = list()
@@ -308,9 +286,7 @@ def ackodriveDiscount(request):
                     if row_data[1] != "None" or row_data[2] != "None" or row_data[3] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
 
                         variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
-                        print(variant)
-
-                        discount = AckodriveDiscount.objects.create(discount = row_data[3], variant = variant)
+                        discount = AckodriveDiscount.objects.create(discount = row_data[3], variant = variant, city=city)
                         kindoffer = AckodriveKindOffers.objects.create(offers = row_data[4], variant = variant)
                         print("Data inserted******")
                 except Exception as e:
@@ -344,7 +320,11 @@ def ackodriveDiscount(request):
         else:
             messages.success(request, ' Ackodrive discount uploaded successfully')
         # return redirect('dealer:ackodrive_discount')
-    return render(request, 'dealer/ackodrive_discount.html', {})
+    uploadForm = PriceUploadForm()
+    context = {
+        'uploadform': uploadForm
+    }
+    return render(request, 'dealer/ackodrive_discount.html', context)
 
 def marketprice(request):
     if request.method == "POST":
@@ -354,13 +334,13 @@ def marketprice(request):
         sheets = wb.sheetnames
         worksheet = wb[sheets[0]]
 
+        city = City.objects.get(name = city)
         excel_data = list()
         for row in worksheet.iter_rows():
             row_data = list()
             for cell in row:
                 row_data.append(str(cell.value))
             try:
-                city = City.objects.get(name = city)
                 variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
                 marketprice = PriceConfig.objects.create(variant=variant, ex_showroom=row_data[3], registration_amount=row_data[4], insurance_premium=row_data[5], environment_compensation=row_data[6], octroi=row_data[7], depot_charges=row_data[8],rsa_amount=row_data[9],extended_warranty_amount=row_data[10], cash_discount=row_data[11], amc=row_data[12], basic_accessories=row_data[13], number_plate=row_data[14], smart_card=row_data[15], mcd_charges=row_data[16], tax_collected_at_source=row_data[17], road_tax=row_data[18], other_charges=row_data[19], city=city)
                 print("Data inserted******")
@@ -389,6 +369,69 @@ def marketprice(request):
                 row_num += 1
             wb.save(response)
             return response
+
+    uploadForm = PriceUploadForm()
+    context = {
+        'uploadform': uploadForm
+    }
+    return render(request, 'dealer/marketprice.html', context)
+
+def download(request, value):
+    response = HttpResponse(content_type='application/ms-excel')
+    if value.lower()=="marketprice":
+        meta = PriceConfig._meta
+        field_names = [field.name for field in meta.fields]
+        field_values = ['1612 IL', '4800/CAB', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+        # data = PriceConfig.objects.filter(testfield=12).order_by('-id')[0]
+
+        response['Content-Disposition'] = 'attachment; filename="MarketPrice-sampleFormat.xls"'
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Ashok Leyland')
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+        field_names[0] = 'Model'
+        del field_names[-3:]
+        print(field_names)
+        for col_num in range(len(field_names)):
+            ws.write(0, col_num, field_names[col_num].title(), font_style)
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = False 
+
+        for value in range(len(field_values)):
+            ws.write(1, value, field_values[value], font_style)
+
+        wb.save(response)
+        return response
+
+    elif value.lower()=="ackodrive" or value.lower()=="dealer":
+        field_names = ['Model_Name', 'Variant_Name', 'Cash_Discount', 'Non_Cash_Offer']
+        field_values = ['1612 IL', '4800/CAB', '0', '0']
+
+        if value.lower()=="ackodrive":
+            response['Content-Disposition'] = 'attachment; filename="Ackodrive-sampleFormat.xls"'
+        else:
+            response['Content-Disposition'] = 'attachment; filename="DealerDiscount-sampleFormat.xls"'
+
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Ashok Leyland')
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        for col_num in range(len(field_names)):
+            ws.write(0, col_num, field_names[col_num].title(), font_style)
+            
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = False 
+
+        for value in range(len(field_values)):
+            ws.write(1, value, field_values[value], font_style)
+
+        wb.save(response)
+        return response
 
     return render(request, 'dealer/marketprice.html')
 
@@ -471,19 +514,19 @@ def dealerPrice(request):
             
 
         return render(request, 'dealer/price.html', {"excel_data":excel_data})
-    price_list = PriceConfig.objects.all()
-    price_filter = PriceFilter(request.GET, queryset=price_list)
-    price_list = price_filter.qs
-    paginator = Paginator(price_list,10)
-    page = request.GET.get('page')
-    price = paginator.get_page(page)
-    context = {
-                'price':price,
-                'filter':price_filter
+    # price_list = PriceConfig.objects.all()
+    # price_filter = PriceFilter(request.GET, queryset=price_list)
+    # price_list = price_filter.qs
+    # paginator = Paginator(price_list,10)
+    # page = request.GET.get('page')
+    # price = paginator.get_page(page)
+    # context = {
+    #             'price':price,
+    #             'filter':price_filter
 
-                # 'searchfiles':searchfiles
-            }
-    return render(request, 'dealer/price.html', context)
+    #             # 'searchfiles':searchfiles
+    #         }
+    return render(request, 'dealer/price.html')
 
 def dealerEdit(request, id):
     if request.method == "POST":
@@ -531,7 +574,6 @@ def addOutlet(request, id):
                 'outletform': form,
             } 
     return render(request, 'dealer/add_outlet.html', context)
-
 
 def outletEdit(request, id):
     outlet_info = Outlet.objects.get(id=id)
@@ -663,8 +705,6 @@ def deleteDealer(request,id):
     messages.success(request, 'Dealer deleted successfully')
     return HttpResponseRedirect('/')
     
-    
-
 def deleteContact(request,id):
     contact=Contact.objects.get(id=id)
     if contact.dealer:
@@ -853,7 +893,6 @@ def inventoryEdit(request, id):
 
     return render(request, 'dealer/inventory_edit.html', context)
 
-
 def deleteInventory(request, id):
     inventory=Inventory.objects.get(id=id)
     # if contact.dealer:
@@ -863,7 +902,6 @@ def deleteInventory(request, id):
     inventory.delete()
     messages.success(request, 'Inventory deleted successfully')
     return redirect('dealer:inventory')
-
 
 def discount(request):
 

@@ -29,11 +29,3 @@ class DealerFilter(django_filters.FilterSet):
     class Meta:
         model = m.Dealer
         fields = [ 'city', 'brand__name', 'dealership_name','status']
-
-# class DealerDiscountFilter(django_filters.FilterSet):
-#     dealer=django_filters.ModelMultipleChoiceFilter(queryset=m.Dealer.objects.all(), label='Dealer')
-#     city=django_filters.ModelMultipleChoiceFilter(queryset=m.City.objects.all(), label='City')
-    
-#     class Meta:
-#         model = m.DealerDiscountUpload
-#         fields = [ 'dealer_name', 'city_name' ]

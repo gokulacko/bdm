@@ -187,27 +187,28 @@ class DealerOffer(models.Model):
    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
    city = models.ForeignKey(City, on_delete=models.CASCADE)
    def __unicode__(self):
-       return str(self.dealer.dealership_name)
+       return str(self.dealer)
    def __str__(self):
-       return str(self.dealer.dealership_name)
+       return str(self.dealer)
 
 
 class AckodriveKindOffers(models.Model):
     offers = models.TextField(blank=True, null=True)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     def __unicode__(self):
-        return str(self.type)
+        return str(self.offers)
     def __str__(self):
-        return str(self.type)
+        return str(self.offers)
 
 
 class AckodriveDiscount(models.Model):
     discount = models.DecimalField(max_digits=10, decimal_places=2)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-
+    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
 
 class PriceConfig(models.Model):
    # valid_till = models.DateField()
+   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
    ex_showroom = models.DecimalField(max_digits=10, decimal_places=2)
    registration_amount = models.DecimalField(max_digits=10, decimal_places=2)
    insurance_premium = models.DecimalField(max_digits=10, decimal_places=2)
@@ -235,8 +236,9 @@ class PriceConfig(models.Model):
    # fast_tag = models.CharField(max_length=50)
    #fk
    # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
-   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
    # price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
    # insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE)
    # ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)

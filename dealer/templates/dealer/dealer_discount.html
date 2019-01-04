@@ -1,16 +1,15 @@
 {% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
 
 <div class="container">
-    <h1 id="show">Price details</h1>
+    <center><h3>Dealer Discount Upload</h3><hr /></center>
     <div class="upload">
-      <form action="{% url 'dealer:dealer-discount' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        
-        {{ dealerdiscountform | crispy }}
-        <button type="submit" class="btn btn-success">Save</button
-        >
-      </form>
-    </div><hr />
+        <form action="{% url 'dealer:dealer-discount' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ dealerdiscountform | crispy }}
+            <button type="submit" class="btn btn-success upload-button">Upload</button>
+        </form>
+        <button type="button" class="btn btn-success download-button" onClick="location.href='{% url 'dealer:download-file' value='dealer' %}';">Download Format</button>
+    </div>
     <!-- <div>
       <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-price-download/">
         {% csrf_token %}
@@ -28,5 +27,25 @@
        {{ FilterDateForm | crispy }} 
     </div>   -->
   </div>
-
+  <script>
+    $(document).ready(function() {
+        $('.upload-button').prop('disabled', true);
+        $('.download-button').prop('disabled', true);
+        $('.select-city').change(function(){
+            if($(this).val() != ''  && $('.select-dealer').val() != ''){
+                $('.download-button').removeAttr('disabled');
+            }
+        })
+        $('.select-dealer').change(function(){
+            if($(this).val() != '' && $('.select-city').val() != ''){
+                $('.download-button').removeAttr('disabled');
+            }
+        })
+        $('.file-upload-button').change(function() {
+            if($(this).val() != '') {
+                $('.upload-button').removeAttr('disabled');
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -1,71 +1,43 @@
-
-
 {% extends "base.html" %}{% load crispy_forms_tags %}
-
-
 
 {% block content %}
 <div class="container">
-  <h2>price </h2>
-
-
-
-  <form action="{% url "dealer:price" %}" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <input type="file"
-           title="Upload excel file"
-           name="excel_file"
-           style="border: 1px solid black; padding: 5px;"
-           required="required">
-    <p>
-    <input type="submit"
-           value="Upload"
-           style="border: 1px solid green; padding:5px; border-radius: 2px; cursor: pointer;">
-</form>
-
-<p></p>
-<br>
-<div class="filter">
+  
+  <div class="filter">
     {{fitler.form}}
-   
-
   </div>
 
   <table class="dashboard table table-striped table-bordered table-hover">
-        <thead>
-          <tr class="head info">
-            <th>Model</th>
-            <th>Variant</th>
-            <th>Market Price</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-         
-          <tr>
-            <td>Future</td>
-            <td>Future</td>
-            <td>Future</td>
-            <td align="center">
-              <a href="{% url 'dealer:' d.id %}">
-                <button class="btn btn-success">View</button>
-              </a>
-            </td>
-          </tr>
-          
-        </tbody>
-      </table>
-
+    <thead>
+      <tr class="head info">
+        <th>Model</th>
+        <th>Variant</th>
+        <th>Market Price</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Future</td>
+        <td>Future</td>
+        <td>Future</td>
+        <td align="center">
+          <a href="{% url 'welcome'  %}">
+            <button class="btn btn-success">View</button>
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
   <br>
   <br>
   <br>
 
-
-{% for row in excel_data %}
-    {% for cell in row %}
-        {{ cell }}&nbsp;&nbsp;
-    {% endfor %}
-    <br>
-{% endfor %}
+  {% for row in excel_data %}
+      {% for cell in row %}
+          {{ cell }}&nbsp;&nbsp;
+      {% endfor %}
+      <br>
+  {% endfor %}
 </div>
 {% endblock %}

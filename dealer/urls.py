@@ -12,6 +12,7 @@ urlpatterns = [
 	url(r'^ackodrive-discount/$', views.ackodriveDiscount, name='ackodrive-discount' ),
 	url(r'^marketprice/$', views.marketprice, name='marketprice' ),
 	url(r'^discount/$', views.discount, name='discount' ),
+	url(r'^download/(?P<value>[\w\-]+)/$', views.download, name="download-file" ),
 	url(r'^(?P<id>\d+)/dealer-view/$', views.dealer, name='dealer-view' ),
 	url(r'^(?P<id>\d+)/dealer-price-view/$', views.dealerPrice, name='dealer-price-view' ),
 	url(r'^(?P<id>\d+)/add-outlet/$', views.addOutlet, name='add-outlet' ),

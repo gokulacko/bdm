@@ -1,6 +1,3 @@
-/* #show {
-  background-color: red;
-} */
 .dashboard tr th {
   text-align: center;
 }
@@ -31,7 +28,6 @@
   margin-right: 20px;
   margin-bottom: 20px !important;
   float: right;
-
 }
 .paginator{
   text-align: center;
@@ -50,7 +46,16 @@
   margin-left: 50px;
 }
 .upload{
-  width: 300px;
+  width: 540px;
+  height: 324px;
+  margin-left: 26%;
+  padding: 23px;
+  padding-left: 108px;
+  border-radius: 16px;
+  border: 1px solid #ccc!important;
+}
+label{
+  font-size: 16px;
 }
 .bodydiv{
   padding-left: 0 !important;
@@ -58,3 +63,28 @@
 .invadd{
   margin-top: 25px;
 }
+.file-upload-button{
+  font-size: 16px;
+  margin: 4px 2px;
+}
+.upload-button, .download-button{
+  height: 40px;
+  width: 90px;
+  font-size: 18px !important;
+  margin-top: 20px;
+}
+.upload-button{
+  /* margin-left: 35%; */
+  float: right;
+  margin-right: 95px;
+  display: none;
+}
+.download-button{
+  /* float: left; */
+  /* margin-left: -6px;
+  margin-top: -13px; */
+  width: 179px;
+}
+/* .form-control{
+  width: 55% !important;
+} */
