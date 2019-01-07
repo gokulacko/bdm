@@ -24,7 +24,10 @@ urlpatterns = [
     
     
     url(r'^workspace/dealer/', include('dealer.urls')),
+    url(r'^api/', include('api.urls')),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^workspace', welcome, name='welcome'),
+    url(r'^select2/', include('django_select2.urls')),
+    url(r'^api-auth/', include('rest_framework.urls'))
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

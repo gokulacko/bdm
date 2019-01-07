@@ -36,7 +36,7 @@ class City(models.Model):
 
 
 class Dealer(models.Model):
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default="Hyundai")
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True)
     dealer_company = models.CharField(max_length=30)
     dealership_name = models.CharField(max_length=30)
     status = models.CharField(max_length=30, default="Active")

@@ -25,7 +25,8 @@
       
         {% endif %}
       </div>
-      <div class="filter">
+
+     <div class="filter">
         <form method="get">
         <div class="row">
           <div class="col-sm-2">
@@ -41,7 +42,7 @@
             {{ filter.form.status|as_crispy_field}}
           </div>
           <div class="col-sm-1 invadd">
-              <button type="submit" class="btn btn-danger btn-small">Filter</button
+              <button type="submit" class="btn btn-danger btn-small">Search</button
                 >
           </div>
           <div class="col-sm-3 invadd">
@@ -54,23 +55,41 @@
     </form>
 
     </div>
-  <!-- <div class="filter">
-    <form action="{% url 'dealer:index'%}"" method="POST" class=" form-inline">
-      {% csrf_token %}
+
+<!--       
+  <div class="filter">
+    <form action="{% url 'dealer:index'%}" method="POST" class=" form-inline">
+        {% csrf_token %}
 
       <div class="form-group filterform">
-        <input type="text" name="namesearch" value="{{namesearch}}" placeholder="Dealer Name">
+        <input type="text" name="namesearch" value="" placeholder="Dealer Name" >
       </div>
+      
+      <div class="form-group filterform">
+       
+          <select class="form-control dealerselect" id="dealer" name="dealer[]" multiple="multiple" >
+            
+            {% if dealerpram %}
+              <option selected value="{{dealerpram}}">
+                  {{dealerpram}}
+              </option>
+            {% endif %}
+            {% for d in dealermaster %}
+              <option value="{{d.dealership_name}}">
+                  {{d.dealership_name}}
+              </option>
+            {% endfor %}
+            
+          </select>
 
       <div class="form-group filterform">
-        <select class="form-control" id="Brand" name="brand">
+        <select class="form-control brandselect" id="Brand" name="brand[]" multiple="multiple" placeholder="Dealer Name">
           
           {% if brandpram %}
             <option selected value="{{brandpram}}">
                 {{brandpram}}
             </option>
-          {% else %}
-            <option disabled selected>Brand</option>
+          
           {% endif %}
           {% for bra in brand %}
             <option value="{{bra.name}}">
@@ -81,14 +100,13 @@
         </select>
       </div>
       <div class="form-group filterform">
-        <select class="form-control" id="City" name="city">
+        <select class="form-control cityselect" id="City" name="city[]" multiple="multiple">
           
           {% if citypram %}
             <option selected value="{{citypram}}">
                 {{citypram}}
             </option>
-          {% else %}
-            <option disabled selected>City</option>
+          
           {% endif %}
           {% for c in city %}
             <option value="{{c.name}}">
@@ -104,9 +122,9 @@
           <option selected value="{{statuspram}}">
               {{statuspram}}
           </option>
-        {% else %}
-          <option disabled selected>Status</option>
-        {% endif %}
+       
+          {% endif %}
+          <option value=""></option>
           <option value="Active">Active</option>
           <option value="In-Active">In-Active</option>
           <option value="Expired">Expired</option>
@@ -120,7 +138,7 @@
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
-  </div> -->
+  </div>  -->
 
   <br />
   <br />
@@ -230,5 +248,20 @@
     </form>
   </div>
 </div>
+
+
+<script>
+    $(document).ready(function() {
+      $('.brandselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.cityselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.dealerselect').select2();
+  });
+</script>
 
 {% endblock %}

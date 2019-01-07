@@ -1,5 +1,7 @@
 from django import forms
+from django.forms import widgets
 from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory, DealerDiscountUpload 
+# from easy_select2 import select2
 
 class BdmForm(forms.ModelForm):
 	class Meta:
@@ -43,6 +45,30 @@ class DealerForm(forms.ModelForm):
             # 'latitude',
             # 'longitude',
             'bdm'
+		]
+
+class DealerEditForm(forms.ModelForm):
+	CATEGORIES=(
+        ('Active', 'Active'),
+        ('Inactive', 'In-Active'),
+        ('Expired', 'Expired'),
+    )
+	status = forms.ChoiceField(choices=CATEGORIES)
+	
+	class Meta:
+		model = Dealer
+		fields = [
+			'brand',
+            'dealer_company',
+            'dealership_name',
+            'status',
+            'address',
+            'city',
+			'sales_outlet',
+            'pincode',
+            # 'latitude',
+            # 'longitude',
+            # 'bdm'
 		]
 
 class ContactForm(forms.ModelForm):
@@ -199,3 +225,5 @@ class InventoryForm(forms.ModelForm):
 			'variant',
 			'count',	
 		]
+
+

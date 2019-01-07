@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
 from django.contrib import messages
 import dealer.forms as f
+import dealer.models as m
 from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, DealerDiscountForm, ContactFormOutletEdit
 from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig
 # from geopy.geocoders import Nominatim
@@ -16,7 +17,8 @@ from tablib import Dataset
 from .resources import DealerDiscountUploadResource
 from django.db.models import Sum
 
-from .filters import InventoryFilter, DealerFilter
+from .filters import InventoryFilter, DealerFilter, PriceFilter
+from django.db.models import Q
 
 import openpyxl
 from openpyxl import Workbook
@@ -41,26 +43,37 @@ def index(request):
         #     contactform.save()
         #     contactform = ContactForm()
         # elif request.POST.get('filter'):
-        #     citypram = request.POST.get('city')
-        #     brandpram = request.POST.get('brand')
+        #     citypram = request.POST.getlist('city[]')
+        #     brandpram = request.POST.getlist('brand[]')
         #     statuspram = request.POST.get('status')
-        #     namesearch = request.POST.get('namesearch')
-        #     if not brandpram:
-        #         brandpram = ""
-        #     if not citypram:
-        #         citypram = ""
-        #     if not statuspram:
+        #     dealerpram = request.POST.getlist('dealer[]')
+        #     print(dealerpram)
+        #     if brandpram and citypram and dealerpram:
+        #         dealer = Dealer.objects.filter(city__in=citypram,
+        #         brand__name__in = brandpram,
+        #         status__icontains = statuspram,
+        #         dealership_name__in = dealerpram
+        #         )
+        #     elif citypram and dealerpram:
+        #         dealer = Dealer.objects.filter(city__in=citypram,
+        #         status__icontains = statuspram,
+        #         dealership_name__in = dealerpram
+        #         )
+        #     elif not statuspram:
         #         statuspram = ""
-        #     if not namesearch:
-        #         namesearch = ""
-        #     dealer = Dealer.objects.filter(city__icontains=citypram,
+        #     if not dealerpram:
+        #         dealerpram = []
+        #     dealer = Dealer.objects.filter(city__in=citypram,
         #         brand__name__icontains = brandpram,
         #         status__icontains = statuspram,
-        #         dealership_name__icontains = namesearch
+        #         dealership_name__in = dealerpram
         #         )
-            
+        #     dealer1 = Dealer.objects.filter(Q(city__in=citypram) | Q(dealership_name__in = dealerpram))
+        
+        #     print(dealer1)
         #     brand = Brand.objects.all()
         #     city = City.objects.all()
+        #     dealermaster = Dealer.objects.all()
         #     form = BdmForm()
         #     dealerform = DealerForm()
         #     contactform = ContactForm()
@@ -70,15 +83,15 @@ def index(request):
         #     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
         #     context = {
         #     'form': form,
-        #     'dealerform': dealerform,
-        #     'contactform': contactform,
+            
         #     'dealer': dealer,
         #     'brand':brand,
         #     'city':city,
-        #     'brandpram':brandpram,
-        #     'citypram':citypram,
-        #     'statuspram':statuspram,
-        #     'namesearch':namesearch,
+        #     'dealermaster':dealermaster,
+        #     # 'dealerpram': dealerpram,
+        #     # 'brandpram':brandpram,
+        #     # 'citypram':citypram,
+        #     # 'statuspram':statuspram,
         #     'inventorysum':inventorysum,
 
         #     }
@@ -92,13 +105,18 @@ def index(request):
             'dealer': dealer,
             'brand':brand,
             'city':city,
+            'dealermaster':dealer,
             
 
         }
         return render(request, 'dealer/index.html', context)
         
     else:
-        
+        if request.POST.get('filter'):
+            brandpram = request.GET.getlist('brand[]')
+            citypram = request.GET.getlist('city[]')
+            print("brand",brandpram)
+            
         form = BdmForm()
         # dealerform = DealerForm()
         # contactform = ContactForm()
@@ -124,7 +142,7 @@ def index(request):
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-    print(inventorysum)
+    
     context = {
                 'form': form,
                 # 'dealerform': dealerform,
@@ -134,6 +152,7 @@ def index(request):
                 'city':city,
                 'inventorysum':inventorysum,
                 'filter': dealer_filter,
+                'dealermaster':dealer,
             }
     return render(request, 'dealer/index.html', context)
 
@@ -158,23 +177,23 @@ def addDealer(request):
 def dealer(request, id):
     searchfiles = ''
     if request.method == "POST":
-        print("files is",request.FILES['file'])
-        discount_upload_resource = DealerDiscountUploadResource()
-        dataset = Dataset()
-        new_pricing_discounts = request.FILES['file']
-        imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
-        try:
-            for row in dataset:
-                discount = DealerDiscountUpload()
-                discount.model_name = row[1]
-                discount.variant_name = row[2]
-                discount.cash_discount = int(row[3])
-                discount.non_cash_offer = int(row[4])
+        # print("files is",request.FILES['file'])
+        # discount_upload_resource = DealerDiscountUploadResource()
+        # dataset = Dataset()
+        # new_pricing_discounts = request.FILES['file']
+        # imported_data = dataset.load(new_pricing_discounts.read().decode('utf-8'))
+        # try:
+        #     for row in dataset:
+        #         discount = DealerDiscountUpload()
+        #         discount.model_name = row[1]
+        #         discount.variant_name = row[2]
+        #         discount.cash_discount = int(row[3])
+        #         discount.non_cash_offer = int(row[4])
                 
-                discount.save()
+        #         discount.save()
 
-        except (ValueError, DealerDiscountUpload.DoesNotExist):
-            raise HttpResponse("There is a Problem with The CSV")
+        # except (ValueError, DealerDiscountUpload.DoesNotExist):
+        #     raise HttpResponse("There is a Problem with The CSV")
         # print("data is--------", imported_data)
         # result = discount_upload_resource.import_data(dataset, dry_run=True)
         # print("result is-------", result.has_errors())
@@ -397,6 +416,7 @@ def welcome(request):
     return render(request, 'dealer/welcome.html')
 
 def dealerPrice(request):
+    
     if request.method == "POST":
         excel_file = request.FILES["excel_file"]
 
@@ -471,41 +491,67 @@ def dealerPrice(request):
             
 
         return render(request, 'dealer/price.html', {"excel_data":excel_data})
-    # price_list = PriceConfig.objects.all()
-    # price_filter = PriceFilter(request.GET, queryset=price_list)
-    # price_list = price_filter.qs
-    # paginator = Paginator(price_list,10)
-    # page = request.GET.get('page')
-    # price = paginator.get_page(page)
-    # context = {
-    #             'price':price,
-    #             'filter':price_filter
+    price_list = PriceConfig.objects.all()
+    price_filter = PriceFilter(request.GET, queryset=price_list)
+    price_list = price_filter.qs
+    paginator = Paginator(price_list,10)
+    page = request.GET.get('page')
+    price = paginator.get_page(page)
 
-    #             # 'searchfiles':searchfiles
-    #         }
-    return render(request, 'dealer/price.html')
+    ackodiscount = AckodriveDiscount.objects.all()
+    ackooffer = AckodriveKindOffers.objects.all()
+    dealerdiscount = DealerDiscount.objects.all()
+    dealeroffer = m.DealerOffer.objects.all()
+    inventory = m.Inventory.objects.all
+    context = {
+                'price':price,
+                'filter':price_filter,
+                'ackodiscount':ackodiscount,
+                'ackooffer':ackooffer,
+                'dealerdiscount':dealerdiscount,
+                'dealeroffer':dealeroffer,
+                'inventory':inventory,
+
+
+                # 'searchfiles':searchfiles
+            }
+    return render(request, 'dealer/price.html', context)
 
 def dealerEdit(request, id):
-    if request.method == "POST":
-        dealeredit = Dealer.objects.get(id=id)
-        dealeredit.brand = request.POST.get('brand')
-        dealeredit.dealer_company = request.POST.get('dealer_company')
-        dealeredit.dealership_name = request.POST.get('dealership_name')
-        dealeredit.status = request.POST.get('status')
-        dealeredit.address = request.POST.get('address')
-        dealeredit.city = request.POST.get('city')
-        dealeredit.pincode = request.POST.get('pincode')
-        dealeredit.sales_outlet = request.POST.get('sales_outlet')
-        # geolocator = Nominatim(user_agent="ackodrive", timeout= 3)
-        # location = geolocator.geocode(request.POST.get('address'))
-        # print((location.latitude, location.longitude))
-        dealeredit.save()
-        messages.success(request, 'Dealer edited successfully')
-        return redirect('dealer:dealer-view', id=dealeredit.id)
-
     dealer_info = Dealer.objects.get(id=id)
+    if request.method == "POST":
+        form = f.DealerEditForm(request.POST, instance=dealer_info)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Dealer edited successfully')
+            
+            return redirect('dealer:dealer-view', id=dealer_info.id)
+        else:
+            messages.error(request, 'Dealer not edited successfully')
+            return redirect('dealer:dealer-view', id=dealer_info.id)
+
+        
+        # dealeredit = Dealer.objects.get(id=id)
+        # # dealeredit.brand = request.POST.get('brand')
+        # dealeredit.dealer_company = request.POST.get('dealer_company')
+        # dealeredit.dealership_name = request.POST.get('dealership_name')
+        # dealeredit.status = request.POST.get('status')
+        # dealeredit.address = request.POST.get('address')
+        # dealeredit.city = request.POST.get('city')
+        # dealeredit.pincode = request.POST.get('pincode')
+        # dealeredit.sales_outlet = request.POST.get('sales_outlet')
+        # # geolocator = Nominatim(user_agent="ackodrive", timeout= 3)
+        # # location = geolocator.geocode(request.POST.get('address'))
+        # # print((location.latitude, location.longitude))
+        # dealeredit.save()
+        # messages.success(request, 'Dealer edited successfully')
+        # return redirect('dealer:dealer-view', id=dealeredit.id)
+
+   
+    form = f.DealerEditForm(instance=dealer_info)
     context = {
-                'dealer_info': dealer_info,         
+                'dealer_info': dealer_info, 
+                'form':form,
             } 
     return render(request, 'dealer/dealer_edit.html', context)
 
@@ -823,7 +869,6 @@ def inventory(request):
         'model':model,
         'variant':variant,
         # 'city':city,
-        'inventory':inventory,
         'filter': inventory_filter,
 
     }
@@ -868,3 +913,25 @@ def deleteInventory(request, id):
 def discount(request):
 
     return render(request, 'dealer/discount.html')
+
+
+def priceDetails(request, id):
+
+    price = PriceConfig.objects.get(id = id)
+    variantid = price.variant.id
+    ackodiscount = AckodriveDiscount.objects.filter(variant_id = variantid)
+    ackooffer = AckodriveKindOffers.objects.filter(variant_id = variantid)
+    dealerdiscount = DealerDiscount.objects.filter(variant_id = variantid)
+    dealeroffer = m.DealerOffer.objects.filter(variant_id = variantid)
+    print(ackodiscount)
+    context = {
+        'price':price,
+        'ackodiscount':ackodiscount,
+        'ackooffer':ackooffer,
+        'dealerdiscount':dealerdiscount,
+        'dealeroffer':dealeroffer
+
+    }
+
+
+    return render(request, 'dealer/pricedetails.html', context)

@@ -32,11 +32,16 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'dealer',
+    'users',
+    'api',
     # 'geopy',
     
-    'users',
     'geopy',
     'crispy_forms',
+    'django_select2',
+    'rest_framework',
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -62,6 +67,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# REST_FRAMEWORK = {
+#     # Use Django's standard `django.contrib.auth` permissions,
+#     # or allow read-only access for unauthenticated users.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
 
 ROOT_URLCONF = 'bdm.urls'
 
@@ -167,7 +180,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, './dealer/static'),  # Here you tell django to look for a folder named 'assets'
     # 'static'
 ]
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
 
