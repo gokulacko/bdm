@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_filters',
+    'storages'
     
 ]
 SITE_ID = 1
@@ -198,3 +199,19 @@ LOGIN_REDIRECT_URL = '/workspace'
 LOGOUT_REDIRECT_URL = '/workspace'
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"
+
+
+AWS_ACCESS_KEY_ID = 'DGYMRXB4QJSRMLHET5JA'
+AWS_SECRET_ACCESS_KEY = 'bsX2nXTuaGfNhkdOVdU+Ikt2o35expK0c30webSkB00'
+AWS_STORAGE_BUCKET_NAME = 'ackodrive'
+AWS_S3_ENDPOINT_URL = 'https://sgp1.digitaloceanspaces.com'
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_LOCATION = 'static'
+
+STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+AWS_S3_CUSTOM_DOMAIN = '%s.sgp1.digitaloceanspaces.com' %AWS_STORAGE_BUCKET_NAME
+
+DEFAULT_FILE_STORAGE = 'bdm.utils.MediaRootS3BotoStorage'
+STATICFILES_STORAGE = 'bdm.utils.StaticRootS3BotoStorage'

@@ -36,66 +36,6 @@ def index(request):
         if form.is_valid():
             form.save()
             form = BdmForm()
-        # elif dealerform.is_valid():
-        #     dealerform.save()
-        #     dealerform = DealerForm()
-        # elif contactform.is_valid():
-        #     contactform.save()
-        #     contactform = ContactForm()
-        # elif request.POST.get('filter'):
-        #     citypram = request.POST.getlist('city[]')
-        #     brandpram = request.POST.getlist('brand[]')
-        #     statuspram = request.POST.get('status')
-        #     dealerpram = request.POST.getlist('dealer[]')
-        #     print(dealerpram)
-        #     if brandpram and citypram and dealerpram:
-        #         dealer = Dealer.objects.filter(city__in=citypram,
-        #         brand__name__in = brandpram,
-        #         status__icontains = statuspram,
-        #         dealership_name__in = dealerpram
-        #         )
-        #     elif citypram and dealerpram:
-        #         dealer = Dealer.objects.filter(city__in=citypram,
-        #         status__icontains = statuspram,
-        #         dealership_name__in = dealerpram
-        #         )
-        #     elif not statuspram:
-        #         statuspram = ""
-        #     if not dealerpram:
-        #         dealerpram = []
-        #     dealer = Dealer.objects.filter(city__in=citypram,
-        #         brand__name__icontains = brandpram,
-        #         status__icontains = statuspram,
-        #         dealership_name__in = dealerpram
-        #         )
-        #     dealer1 = Dealer.objects.filter(Q(city__in=citypram) | Q(dealership_name__in = dealerpram))
-        
-        #     print(dealer1)
-        #     brand = Brand.objects.all()
-        #     city = City.objects.all()
-        #     dealermaster = Dealer.objects.all()
-        #     form = BdmForm()
-        #     dealerform = DealerForm()
-        #     contactform = ContactForm()
-        #     paginator = Paginator(dealer,10)
-        #     page = request.GET.get('page')
-        #     dealer = paginator.get_page(page)
-        #     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-        #     context = {
-        #     'form': form,
-            
-        #     'dealer': dealer,
-        #     'brand':brand,
-        #     'city':city,
-        #     'dealermaster':dealermaster,
-        #     # 'dealerpram': dealerpram,
-        #     # 'brandpram':brandpram,
-        #     # 'citypram':citypram,
-        #     # 'statuspram':statuspram,
-        #     'inventorysum':inventorysum,
-
-        #     }
-        #     return render(request, 'dealer/index.html', context)
         brand = Brand.objects.all()
         city = City.objects.all()
         context = {
@@ -112,10 +52,10 @@ def index(request):
         return render(request, 'dealer/index.html', context)
         
     else:
-        if request.POST.get('filter'):
-            brandpram = request.GET.getlist('brand[]')
-            citypram = request.GET.getlist('city[]')
-            print("brand",brandpram)
+        # if request.POST.get('filter'):
+        #     brandpram = request.GET.getlist('brand[]')
+        #     citypram = request.GET.getlist('city[]')
+        #     print("brand",brandpram)
             
         form = BdmForm()
         # dealerform = DealerForm()
