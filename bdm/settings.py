@@ -143,7 +143,7 @@ MEDIA_URL = '/dealerprice/'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'acko',
+        'NAME': 'acko1',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',
