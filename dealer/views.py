@@ -102,7 +102,9 @@ def addDealer(request):
         form = DealerForm(request.POST, request.FILES)
         
         if form.is_valid():
-            form.save()
+            data = form.save()
+            if data.sales_outlet:
+                Outlet.objects.create(address = data.address, city = data.city, pincode= data.pincode, status=data.status, dealer = data)
             messages.success(request, ' Dealer added successfully')
         else:
             messages.error(request, ' Dealer not added successfully')  
@@ -647,7 +649,7 @@ def deleteDealer(request,id):
     outlet.delete()
     dealer.delete()
     messages.success(request, 'Dealer deleted successfully')
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/workspace')
     
     
 
@@ -679,7 +681,8 @@ def addOutletContact(request, id):
     context = {
                 
                 'contactform': contactform,
-                'dealer_id': dealer_id,
+                'outlet_id': outlet_id,
+                'dealer_id':dealer_id,
                 'messages':messages,
                 
             } 

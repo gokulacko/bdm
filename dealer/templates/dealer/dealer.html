@@ -28,7 +28,7 @@
   </div> 
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
-    <li><a data-toggle="tab" href="#price">Prices</a></li>
+    <!-- <li><a data-toggle="tab" href="#price">Prices</a></li> -->
     <li><a data-toggle="tab" href="#inventory">Inventory</a></li>
     <li class="pull-right"><a href="{% url 'dealer:index' %}">Back</a></li>
   </ul>
@@ -42,7 +42,7 @@
           <td align="right">Company Name:</td>
           <td>{{ dealer_info.dealer_company }}</td>
           <td>Brand: {{ dealer_info.brand }}</td>
-          <td>Acko Manager: {{ dealer_info.bdm.name }}</td>
+          <td>Acko Manager: {{ dealer_info.manager.first_name }}</td>
           <td align="right">
             {% if request.user.is_superuser %}
               <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>

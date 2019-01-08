@@ -46,8 +46,8 @@ class PriceFilter(django_filters.FilterSet):
         fields = ['city__name', 'variant__model__name', 'variant__model__brand__name' ]
     
 
-    def __init__(self, *args, **kwargs):
-        super(PriceFilter, self).__init__(*args, **kwargs)
-        # at sturtup user doen't push Submit button, and QueryDict (in data) is empty
-        if self.data == {}:
-            self.queryset = self.queryset.none()
+    # def __init__(self, *args, **kwargs):
+    #     super(PriceFilter, self).__init__(*args, **kwargs)
+    #     # at sturtup user doen't push Submit button, and QueryDict (in data) is empty
+    #     if self.data == {}:
+    #         self.queryset = self.queryset.none()

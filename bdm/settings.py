@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_select2',
     'rest_framework',
+    'import_export',
+    'mathfilters',
 
 
     'django.contrib.admin',
@@ -127,27 +129,27 @@ MEDIA_URL = '/dealerprice/'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'bdm',
-#         'USER': 'root',
-#         'PASSWORD': 'root',
-#         'HOST': 'localhost',
-#         'PORT': '',
-#     }
-# }
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'acko',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bdm',
         'USER': 'root',
         'PASSWORD': 'root',
         'HOST': 'localhost',
         'PORT': '',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'acko',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 
 
 # Password validation
@@ -201,17 +203,17 @@ ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"
 
 
-AWS_ACCESS_KEY_ID = 'DGYMRXB4QJSRMLHET5JA'
-AWS_SECRET_ACCESS_KEY = 'bsX2nXTuaGfNhkdOVdU+Ikt2o35expK0c30webSkB00'
-AWS_STORAGE_BUCKET_NAME = 'ackodrive'
-AWS_S3_ENDPOINT_URL = 'https://sgp1.digitaloceanspaces.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-}
-AWS_LOCATION = 'static'
+# AWS_ACCESS_KEY_ID = 'DGYMRXB4QJSRMLHET5JA'
+# AWS_SECRET_ACCESS_KEY = 'bsX2nXTuaGfNhkdOVdU+Ikt2o35expK0c30webSkB00'
+# AWS_STORAGE_BUCKET_NAME = 'ackodrive'
+# AWS_S3_ENDPOINT_URL = 'https://sgp1.digitaloceanspaces.com'
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',
+# }
+# AWS_LOCATION = 'static'
 
-STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
-AWS_S3_CUSTOM_DOMAIN = '%s.sgp1.digitaloceanspaces.com' %AWS_STORAGE_BUCKET_NAME
+# STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+# AWS_S3_CUSTOM_DOMAIN = '%s.sgp1.digitaloceanspaces.com' %AWS_STORAGE_BUCKET_NAME
 
-DEFAULT_FILE_STORAGE = 'bdm.utils.MediaRootS3BotoStorage'
-STATICFILES_STORAGE = 'bdm.utils.StaticRootS3BotoStorage'
+# DEFAULT_FILE_STORAGE = 'bdm.utils.MediaRootS3BotoStorage'
+# STATICFILES_STORAGE = 'bdm.utils.StaticRootS3BotoStorage'

@@ -59,10 +59,24 @@ admin.site.register(m.VariantCorporateDiscount)
 admin.site.register(m.AckodriveQuote)
 admin.site.register(m.DealerKindOffer)
 admin.site.register(m.PriceConfig)
-admin.site.register(m.AckodriveDiscount)
+@admin.register(m.AckodriveDiscount)
+class AckodriveDiscountAdmin(ImportExportActionModelAdmin):
+    list_display = ("variant",  "city", "discount" )
 
-admin.site.register(m.AckodriveKindOffers)
-admin.site.register(m.DealerDiscount)
+@admin.register(m.AckodriveKindOffers)
+class AckodriveKindOffersAdmin(ImportExportActionModelAdmin):
+    list_display = ("variant",  "city", "offers" )
+
+@admin.register(m.DealerDiscount)
+class DealerDiscountAdmin(ImportExportActionModelAdmin):
+    list_display = ("dealer","variant",  "city","discount" )
+
+@admin.register(m.DealerOffer)
+class DealerOfferAdmin(ImportExportActionModelAdmin):
+    list_display = ("dealer","variant",  "city", "offers" )
+
+
+
 admin.site.register(m.Rto)
 admin.site.register(m.PriceType)
 # admin.site.register(m.Variant)

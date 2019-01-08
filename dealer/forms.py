@@ -44,7 +44,8 @@ class DealerForm(forms.ModelForm):
             'pincode',
             # 'latitude',
             # 'longitude',
-            'bdm'
+            # 'bdm'
+			'manager'
 		]
 
 class DealerEditForm(forms.ModelForm):
