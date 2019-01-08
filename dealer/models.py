@@ -36,7 +36,7 @@ class City(models.Model):
 
 
 class Dealer(models.Model):
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default="Hyundai")
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default='')
     dealer_company = models.CharField(max_length=30)
     dealership_name = models.CharField(max_length=30)
     status = models.CharField(max_length=30, default="Active")
@@ -73,7 +73,7 @@ class Contact(models.Model):
     name = models.CharField(max_length=30)
     designation = models.CharField(max_length=30)
     email = models.CharField(max_length=50)
-    contact_no_1 = models.CharField(null=True, max_length=10)
+    contact_no_1 = models.CharField(max_length=10)
     contact_no_2 = models.CharField(null=True, max_length=10)
     is_primary_contact = models.BooleanField(default=False)
     type = models.CharField(max_length=20)#for dealer or outlet
@@ -83,17 +83,17 @@ class Contact(models.Model):
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, blank=True, null=True)
 
 #for price module
-class DealerPriceFile(models.Model):
-    period = models.DateField(auto_now_add=True)
-    file = models.FileField(upload_to="./dealerprice")
-    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+# class DealerPriceFile(models.Model):
+#     period = models.DateField(auto_now_add=True)
+#     file = models.FileField(upload_to="./dealerprice")
+#     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
 
-    # def filename(self):
-    #     return os.path.basename(self.file.name)
-    def __unicode__(self):
-        return str(self.period)
-    def __str__(self):
-        return str(self.period)
+#     # def filename(self):
+#     #     return os.path.basename(self.file.name)
+#     def __unicode__(self):
+#         return str(self.period)
+#     def __str__(self):
+#         return str(self.period)
 
 #new db model
 # automobile
@@ -179,13 +179,20 @@ class DealerDiscount(models.Model):
     discount =  models.DecimalField(max_digits=10, decimal_places=8)
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class DealerOffer(models.Model):
-   offers = models.TextField()
+   offers = models.DecimalField(max_digits=10, decimal_places=8)
    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
    city = models.ForeignKey(City, on_delete=models.CASCADE)
+   is_latest = models.BooleanField(default=False)
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
+
    def __unicode__(self):
        return str(self.dealer)
    def __str__(self):
@@ -195,6 +202,10 @@ class DealerOffer(models.Model):
 class AckodriveKindOffers(models.Model):
     offers = models.TextField(blank=True, null=True)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def __unicode__(self):
         return str(self.offers)
     def __str__(self):
@@ -204,7 +215,10 @@ class AckodriveKindOffers(models.Model):
 class AckodriveDiscount(models.Model):
     discount = models.DecimalField(max_digits=10, decimal_places=2)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class PriceConfig(models.Model):
    # valid_till = models.DateField()
@@ -237,6 +251,7 @@ class PriceConfig(models.Model):
    #fk
    # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
    city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+   is_latest = models.BooleanField(default=False)
    created_at = models.DateTimeField(auto_now_add=True)
    updated_at = models.DateTimeField(auto_now=True)
    # price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
@@ -244,10 +259,15 @@ class PriceConfig(models.Model):
    # ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
    # rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
 
-class DealerKindOffer(models.Model):
-    BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
+#    def __unicode__(self):
+#     return self.city
+#    def __str__(self):
+#     return self.city.name
+    
+# class DealerKindOffer(models.Model):
+#     BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
 
 #     class Visit(models.Model):
 #         ip = models.CharField(max_length=50 )
@@ -332,14 +352,14 @@ class Payment(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     # form_data = 
 
-class DealerDiscountUpload(models.Model):
-    file_name = models.FileField(upload_to="./dealerprice", default="settings.MEDIA_ROOT/dealerprice/anonymous.png")
-    model_name = models.CharField(max_length=50)
-    variant_name = models.CharField(max_length=50)
-    cash_discount = models.DecimalField(max_digits=10, decimal_places=8)
-    non_cash_offer = models.DecimalField(max_digits=10, decimal_places=8) 
-    dealer_name = models.CharField(max_length=50) 
-    # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
-    # city = models.ForeignKey(City, on_delete=models.CASCADE)
-    city_name = models.CharField(max_length=30)
+# class DealerDiscountUpload(models.Model):
+#     file_name = models.FileField(upload_to="./dealerprice", default="settings.MEDIA_ROOT/dealerprice/anonymous.png")
+#     model_name = models.CharField(max_length=50)
+#     variant_name = models.CharField(max_length=50)
+#     cash_discount = models.DecimalField(max_digits=10, decimal_places=8)
+#     non_cash_offer = models.DecimalField(max_digits=10, decimal_places=8) 
+#     dealer_name = models.CharField(max_length=50) 
+#     # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+#     # city = models.ForeignKey(City, on_delete=models.CASCADE)
+#     city_name = models.CharField(max_length=30)
 

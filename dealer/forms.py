@@ -1,5 +1,5 @@
 from django import forms
-from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory, DealerDiscountUpload, City
+from .models import Dealer, Bdm, Contact, Outlet, Inventory, City
 
 class BdmForm(forms.ModelForm):
 	class Meta:

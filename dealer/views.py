@@ -2,10 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.paginator import Paginator
+from django.core import serializers
 from django.contrib import messages
 import dealer.forms as f
 from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, PriceUploadDealerForm, PriceUploadForm, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig
+from .models import Dealer, Bdm, Outlet, Contact, Brand, City, Inventory, Model, Variant, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig, AckodriveQuote
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -212,8 +213,8 @@ def dealer(request, id):
 def dealerDiscount(request):
     if request.method == "POST":
         dataset = request.FILES['file_name']
-        dealer_name = request.POST['dealer_name']
-        city = request.POST['city_name']
+        dealer_id = request.POST['dealer_name']
+        city_id = request.POST['city_name']
         wb = openpyxl.load_workbook(dataset)
         sheets = wb.sheetnames
         for sheet in sheets:
@@ -225,13 +226,31 @@ def dealerDiscount(request):
                 for cell in row:
                     row_data.append(str(cell.value))
                 try:
-                    dealer = Dealer.objects.get(dealership_name=dealer_name)
-                    variant = Variant.objects.get(name = row_data[2], model__name = row_data[1])
-                    city = City.objects.get(name = city)
-                    dealerdiscount = DealerDiscount.objects.create(variant=variant, discount=row_data[3],dealer=dealer, city=city)
-                    dealeroffer = DealerOffer.objects.create(variant=variant, offers=row_data[4],dealer=dealer, city=city)
-                    print("Data inserted******")
+                    try:
+                        dealer = Dealer.objects.get(id=dealer_id)
+                        variant = Variant.objects.get(name = row_data[2], model__name = row_data[1])
+                        city = City.objects.get(id = city_id)
+                        
+                        discount_record = DealerDiscount.objects.filter(variant__pk=variant.id, dealer__pk=dealer.id, city__pk=city.id, is_latest=True)
+                        # print("******discount***********", discount_record)
+
+                        offer_record = DealerOffer.objects.filter(variant__pk=variant.id, dealer__pk=dealer.id, city__pk=city.id, is_latest=True)
+                        # print("******offer************", offer_record)
+
+                        if discount_record.exists() and offer_record.exists():
+                            print("trying to update******", discount_record['is_latest'])
+                            discount_record[0]['is_latest'] = False
+                            discount_record[0].save()
+                            offer_record[0]['is_latest'] = False
+                            offer_record[0].save()
+                        if row_data[3] != None and row_data[4] != None:
+                            dealerdiscount = DealerDiscount.objects.create(variant=variant, discount=row_data[3],dealer=dealer, city=city, is_latest=True)
+                            dealeroffer = DealerOffer.objects.create(variant=variant, offers=row_data[4],dealer=dealer, city=city, is_latest=True)
+                            print("Data inserted******")
+                    except(Dealer.DoesNotExist, Variant.DoesNotExist, City.DoesNotExist):
+                        pass
                 except Exception as e:
+                    print(sheet)
                     print(e)
                     if len(excel_data)==0:
                         row_data.append("error")
@@ -243,7 +262,7 @@ def dealerDiscount(request):
                     excel_data.append(row_data)
                     pass
         
-        if len(excel_data)>1:
+        if len(excel_data)>0:
             response = HttpResponse(content_type='application/ms-excel')
             response['Content-Disposition'] = 'attachment; filename="Dealer-Users.xls"'
 
@@ -269,12 +288,12 @@ def dealerDiscount(request):
 
 def ackodriveDiscount(request):
     if request.method == "POST":
-        city = request.POST['city']
-        excel_file = request.FILES["excel_file"]
+        city_id = request.POST['city_name']
+        excel_file = request.FILES["file_name"]
         wb = openpyxl.load_workbook(excel_file)
         sheets = wb.sheetnames
 
-        city = City.objects.get(name = city)
+        city = City.objects.get(id = city_id)
         for sheet in sheets:
             worksheet = wb[sheet]
             excel_data = list()
@@ -284,12 +303,26 @@ def ackodriveDiscount(request):
                     row_data.append(str(cell.value))
                 try:
                     if row_data[1] != "None" or row_data[2] != "None" or row_data[3] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
-
+                        # try:
                         variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
-                        discount = AckodriveDiscount.objects.create(discount = row_data[3], variant = variant, city=city)
-                        kindoffer = AckodriveKindOffers.objects.create(offers = row_data[4], variant = variant)
+                        discount_record = AckodriveDiscount.objects.filter(variant__pk = variant.id, city__pk=city.id, is_latest=True)
+
+                        kindoffer_record = AckodriveKindOffers.objects.filter(variant__pk = variant.id, city__pk=city.id, is_latest=True)
+
+                        if discount_record.exists() and kindoffer_record.exists():
+                            discount_record.is_latest = False
+                            discount_record.save()
+                            kindoffer_record.is_latest = False
+                            kindoffer_record.save()
+                        discount = AckodriveDiscount.objects.create(discount = row_data[3], variant = variant, city=city, is_latest=True)
+                        kindoffer = AckodriveKindOffers.objects.create(offers = row_data[4], variant = variant, city=city, is_latest=True)
+
                         print("Data inserted******")
+                        # except Variant.DoesNotExist:
+                        #     pass
                 except Exception as e:
+                    print(sheet)
+                    print(e)
                     if len(excel_data)==0:
                         row_data.append("error")
                     else:
@@ -328,31 +361,45 @@ def ackodriveDiscount(request):
 
 def marketprice(request):
     if request.method == "POST":
-        excel_file = request.FILES["excel_file"]
+        excel_file = request.FILES["file_name"]
         wb = openpyxl.load_workbook(excel_file)
-        city = request.POST['city']
+        city_id = request.POST['city_name']
         sheets = wb.sheetnames
-        worksheet = wb[sheets[0]]
 
-        city = City.objects.get(name = city)
-        excel_data = list()
-        for row in worksheet.iter_rows():
-            row_data = list()
-            for cell in row:
-                row_data.append(str(cell.value))
-            try:
-                variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
-                marketprice = PriceConfig.objects.create(variant=variant, ex_showroom=row_data[3], registration_amount=row_data[4], insurance_premium=row_data[5], environment_compensation=row_data[6], octroi=row_data[7], depot_charges=row_data[8],rsa_amount=row_data[9],extended_warranty_amount=row_data[10], cash_discount=row_data[11], amc=row_data[12], basic_accessories=row_data[13], number_plate=row_data[14], smart_card=row_data[15], mcd_charges=row_data[16], tax_collected_at_source=row_data[17], road_tax=row_data[18], other_charges=row_data[19], city=city)
-                print("Data inserted******")
-            except Exception as e:
-                if len(excel_data)==0:
-                    row_data.append("error")
-                else:
-                    trace_back = traceback.format_exc()
-                    message = str(e)+ " " + str(trace_back)
-                    row_data.append(str(e))   
-                excel_data.append(row_data)
-                pass
+        city = City.objects.get(id = city_id)
+        for sheet in sheets:
+            worksheet = wb[sheet]
+            excel_data = list()
+            for row in worksheet.iter_rows():
+                row_data = list()
+                for cell in row:
+                    row_data.append(str(cell.value))
+                try:
+                    # try:
+                    variant = Variant.objects.filter(name=row_data[2], model__name = row_data[1])
+                    if variant.exists():
+                        # try:
+                        pc_record = PriceConfig.objects.filter(variant=variant, is_latest=True)
+                        if pc_record.exists():
+                            pc_record['is_latest'] = False
+                            pc_record.save()
+                            
+                        # except (PriceConfig.DoesNotExist):
+                        #     pass
+                        marketprice = PriceConfig.objects.create(variant=variant, ex_showroom=row_data[3], registration_amount=row_data[4], insurance_premium=row_data[5], environment_compensation=row_data[6], octroi=row_data[7], depot_charges=row_data[8],rsa_amount=row_data[9],extended_warranty_amount=row_data[10], cash_discount=row_data[11], amc=row_data[12], basic_accessories=row_data[13], number_plate=row_data[14], smart_card=row_data[15], mcd_charges=row_data[16], tax_collected_at_source=row_data[17], road_tax=row_data[18], other_charges=row_data[19], city=city, is_latest=True)
+                        print("Data inserted******")
+                    # except Variant.DoesNotExist:
+                    #     pass
+
+                except Exception as e:
+                    if len(excel_data)==0:
+                        row_data.append("error")
+                    else:
+                        trace_back = traceback.format_exc()
+                        message = str(e)+ " " + str(trace_back)
+                        row_data.append(str(e))   
+                    excel_data.append(row_data)
+                    pass
                 
         if len(excel_data)>0:
             response = HttpResponse(content_type='application/ms-excel')
@@ -381,9 +428,9 @@ def download(request, value):
     if value.lower()=="marketprice":
         meta = PriceConfig._meta
         field_names = [field.name for field in meta.fields]
-        field_values = ['1612 IL', '4800/CAB', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0']
+        row_num = 0
         # data = PriceConfig.objects.filter(testfield=12).order_by('-id')[0]
-
+        
         response['Content-Disposition'] = 'attachment; filename="MarketPrice-sampleFormat.xls"'
 
         wb = xlwt.Workbook(encoding='utf-8')
@@ -391,29 +438,55 @@ def download(request, value):
 
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
+
         field_names[0] = 'Model'
         del field_names[-3:]
         print(field_names)
+
         for col_num in range(len(field_names)):
             ws.write(0, col_num, field_names[col_num].title(), font_style)
 
         font_style = xlwt.XFStyle()
         font_style.font.bold = False 
 
-        for value in range(len(field_values)):
-            ws.write(1, value, field_values[value], font_style)
+        # try:
+            # b = PriceConfig.objects.filter(updated_at = PriceConfig.objects.filter().order_by('-created_at')[0].updated_at)
+            # data = PriceConfig.objects.latest('created_at')
+            # data = PriceConfig.objects.all().values().annotate(max_createdat=Max('created_at'))
+        data = PriceConfig.objects.filter(is_latest=True)
+        if data.exists():
+            for d in data:
+                row_num += 1
+                ws.write(row_num, 0, d.variant.model.name, font_style)
+                ws.write(row_num, 1, d.variant.name, font_style)
+                ws.write(row_num, 2, d.ex_showroom, font_style)
+                ws.write(row_num, 3, d.registration_amount, font_style)
+                ws.write(row_num, 4, d.insurance_premium, font_style)
+                ws.write(row_num, 5, d.environment_compensation, font_style)
+                ws.write(row_num, 6, d.octroi, font_style)
+                ws.write(row_num, 7, d.depot_charges, font_style)
+                ws.write(row_num, 8, d.rsa_amount, font_style)
+                ws.write(row_num, 9, d.extended_warranty_amount, font_style)
+                ws.write(row_num, 10, d.cash_discount, font_style)
+                ws.write(row_num, 11, d.amc, font_style)
+                ws.write(row_num, 12, d.basic_accessories, font_style)
+                ws.write(row_num, 13, d.number_plate, font_style)
+                ws.write(row_num, 14, d.smart_card, font_style)
+                ws.write(row_num, 15, d.mcd_charges, font_style)
+                ws.write(row_num, 16, d.tax_collected_at_source, font_style)
+                ws.write(row_num, 17, d.road_tax, font_style)
+                ws.write(row_num, 18, d.other_charges, font_style)
+                ws.write(row_num, 19, d.city.name, font_style)
+
+        # except (PriceConfig.DoesNotExist):
+        #     pass
 
         wb.save(response)
         return response
 
     elif value.lower()=="ackodrive" or value.lower()=="dealer":
         field_names = ['Model_Name', 'Variant_Name', 'Cash_Discount', 'Non_Cash_Offer']
-        field_values = ['1612 IL', '4800/CAB', '0', '0']
-
-        if value.lower()=="ackodrive":
-            response['Content-Disposition'] = 'attachment; filename="Ackodrive-sampleFormat.xls"'
-        else:
-            response['Content-Disposition'] = 'attachment; filename="DealerDiscount-sampleFormat.xls"'
+        row_num = 0
 
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Ashok Leyland')
@@ -423,12 +496,36 @@ def download(request, value):
 
         for col_num in range(len(field_names)):
             ws.write(0, col_num, field_names[col_num].title(), font_style)
-            
+
         font_style = xlwt.XFStyle()
         font_style.font.bold = False 
 
-        for value in range(len(field_values)):
-            ws.write(1, value, field_values[value], font_style)
+        if value.lower()=="ackodrive":
+            response['Content-Disposition'] = 'attachment; filename="Ackodrive-sampleFormat.xls"'
+            akdiscount = AckodriveDiscount.objects.filter(is_latest=True)
+            for dis in akdiscount:
+                offer = AckodriveKindOffers.objects.filter(variant=dis.variant, is_latest=True)
+                if offer.exists():
+                    row_num += 1
+                    ws.write(row_num, 0, dis.variant.model.name, font_style)
+                    ws.write(row_num, 1, dis.variant.name, font_style)
+                    ws.write(row_num, 2, dis.discount, font_style)
+                    ws.write(row_num, 3, offer[0].offers, font_style)
+        else:
+            response['Content-Disposition'] = 'attachment; filename="DealerDiscount-sampleFormat.xls"'
+            ddrecords = DealerDiscount.objects.filter(is_latest=True)
+            for record in ddrecords:
+                # print("variant id", record.variant.id)
+                dealeroffers = DealerOffer.objects.filter(variant__pk=record.variant.id, is_latest=True)
+                # print("*******offes*******", dealeroffers)
+                if dealeroffers.exists():
+                    dealeroffer = dealeroffers.first()
+                    # print("offer data******", dealeroffer.id)
+                    row_num += 1
+                    ws.write(row_num, 0, record.variant.model.name, font_style)
+                    ws.write(row_num, 1, record.variant.name, font_style)
+                    ws.write(row_num, 2, record.discount, font_style)
+                    ws.write(row_num, 3, dealeroffer.offers, font_style)
 
         wb.save(response)
         return response
@@ -746,14 +843,14 @@ def dealerPriceFileDownload(request, id):
     # outlet_info = Outlet.objects.filter(dealer_id = id)
     # outlet_contact = Contact.objects.filter(outlet__dealer__id = id)
 
-    price_file = DealerPriceFile.objects.get(id=id)
+    # price_file = DealerPriceFile.objects.get(id=id)
 
     today = datetime.date.today()
-    searchfiles = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month, period__year=today.year)
-    print(searchfiles[0].file)
+    # searchfiles = DealerPriceFile.objects.filter(dealer_id=id, period__month=today.month, period__year=today.year)
+    # print(searchfiles[0].file)
 
     # file_name = os.path.basename(searchfiles[0].file)
-    file_name = searchfiles[0].file.name
+    # file_name = searchfiles[0].file.name
     print(file_name)
     # file_path = os.path.join(settings.MEDIA_ROOT, './dealerprice', file_name)
     # print(file_path)
