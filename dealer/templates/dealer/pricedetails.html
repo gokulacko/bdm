@@ -1,0 +1,235 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}{% load mathfilters %}
+
+
+
+{% block content %}
+<div class="container">
+ 
+
+  <ul class="nav nav-tabs">
+      <li class="active"><a data-toggle="tab" href="#home">Price Details</a></li>
+      <!-- <li><a data-toggle="tab" href="#price">Prices</a></li> -->
+      <li class="pull-right"><a href="{% url 'dealer:price' %}">Back</a></li>
+    </ul>
+</div>
+
+<div class="tab-content">
+    <div id="home" class="tab-pane fade in active container">
+      <br />
+      
+      <table class="table table-responsive borderless">
+        
+          <tbody>
+            <tr>
+              <td align="right">Brand:</td>
+              <td>{{ price.variant.model.brand.name }}</td>
+              <td>Model: {{ price.variant.model.name }}</td>
+              <td>Variant: {{ price.variant.name }}</td>
+              <!-- <td align="right">
+                {% if request.user.is_superuser %}
+                  <a href="{% url 'dealer:index' %}"><button class="btn btn-success">Edit</button></a>
+                {% endif %}
+              </td> -->
+            </tr>
+            <tr>
+              <td align="right">Color:</td>
+              <td>{{price.variant.body}}</td>
+              <td>Fuel Type: {{price.variant.fuel_type}}</td>
+              <!-- <td> Status: {{ dealer_info.status }}</td> -->
+            </tr>
+            
+            <tr>
+              <td align="right">Market Price:</td>
+              
+              <td>
+                <!-- {% for dc in dealer_contact %}
+                  <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} 
+                  {% if request.user.is_superuser %}
+                    <a href="{% url 'dealer:index' %}"><span class="glyphicon glyphicon-pencil"></span></a> 
+                  {% endif %}
+                  <br />
+                  {{ dc.contact_no_1 }} <br />
+                  {{ dc.contact_no_2 }} <br>
+                  <br>
+                {% endfor%} -->
+                {{price.ex_showroom}}
+              </td>
+              <td align="left">Insurance Price: {{price.insurance_premium}}</td>
+              <!-- <td>{{price.insurance_premium}}</td> -->
+              
+              <!-- <td>
+                {% if request.user.is_superuser %}
+                  <a href="{% url 'dealer:index'  %}"><button class="btn btn-info">Add Contact</button></a>
+                {% endif %}
+              </td>
+              <td>Address: {{ dealer_info.address }} {{ dealer_info.pincode }}</td> -->
+            </tr>
+
+    
+          
+          </tbody>
+        </table>
+
+        <div class="ackoprice">
+
+
+
+         <!-- {% if ackodiscount  %}
+          {% for ddis in ackodiscount %}
+              {% if ddis.variant.id == price.variant.id %}
+              <td>{{price.ex_showroom|sub:ddis.discount }}</td>
+              {% endif %}
+            {% endfor %}
+          {% else %}
+          <td>{{price.ex_showroom}}</td>
+          {% endif %} -->
+
+        </div>
+        <div class="ackodiscount">
+            <div class="container">
+                <table class="outlettable table table-striped table-bordered table-hover">
+                  <thead>
+                    <tr class="head info">
+                      <th>AckoDrive Price</th>
+                      <th>AckoDrive offers</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% if ackodiscount  %}
+                      {% for ddis in ackodiscount %}
+                        {% if ddis.city.name == price.city.name  %}
+                          {% if ddis.variant.id == price.variant.id %}
+                            <td>Ackodrive Exclusive Price: {{price.ex_showroom|sub:ddis.discount }}</td>
+                          {% endif %}
+                        {% endif %}
+                        {% endfor %}
+                      {% else %}
+                      <td>{{price.ex_showroom}}</td>
+                      {% endif %}
+                      {% if ackooffer  %}
+                      {% for ddis in ackooffer %}
+                        {% if ddis.city.name == price.city.name  %}
+                          {% if ddis.variant.id == price.variant.id %}
+                          <td> {{ddis.offers }}</td>
+                          {% endif %}
+                          {% endif %}
+                        {% endfor %}
+                      {% else %}
+                      <td>-----</td>
+                      {% endif %}
+                  </tbody>
+
+                </table>
+            </div>
+            <br>
+            <div class="dealerdiscount">
+                <div class="container">
+                    <table class="outlettable table table-striped table-bordered table-hover">
+                      <thead>
+                        <tr class="head info">
+                          <th>Dealer Name</th>
+                          <th>Dealer discount</th>
+                          <th>Dealer offers</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          {% if dealerdiscount  %}
+                            {% for ddis in dealerdiscount %}
+                              {% if ddis.city.name == price.city.name  %}
+                                {% if ddis.variant.id == price.variant.id %}
+                                  <td>{{ ddis.dealer.dealership_name}}</td>
+                                  <td>{{ ddis.discount}}</td>
+                                  {% for dis in dealeroffer %}
+                                    {% if dis.city.name == price.city.name  %}
+                                      {% if dis.variant.id == price.variant.id %}
+                                        {% if dis.dealer.id == ddis.dealer.id %}
+                                        <td>{{ dis.offers}}</td>
+                                        {% else %}
+                                          <td>none</td>
+                                        {% endif %}
+                                      {% else %}
+                                        <td>none</td>
+                                      {% endif %}
+                                    {% else %}
+                                      <td>none</td>
+                                    {% endif %}
+                                  {% endfor %}
+                                  <td>
+                                    <a href="{% url 'dealer:dealer-view' ddis.dealer.id %}">
+                                        <button class="btn btn-success">View</button>
+                                      </a>
+                                  </td>
+                                
+                                {% endif %}
+                             
+                              {% endif %}
+                            {% endfor %}
+                          
+                          {% endif %}
+                          
+                      </tbody>
+    
+                    </table>
+                </div>
+    
+        <br />
+        <!-- <div class="outlet">
+          <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets  
+            {% if request.user.is_superuser %}
+              <a href="{% url 'dealer:index'  %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+            {% endif %}
+          </h3>
+        </div>
+    
+        <div class="container">
+          <table class="outlettable table table-striped table-bordered table-hover">
+            <thead>
+              <tr class="head info">
+                <th>Name</th>
+                <th>Area - Pincode</th>
+                <th>contact</th>
+                <th>Status</th>
+                {% if request.user.is_superuser %}
+                  <th>Action</th>
+                {% endif %}
+              </tr>
+            </thead>
+    
+            <tbody>
+              {% for outlet in outlet_info %}
+    
+              <tr>
+                <td>{{ outlet.dealer.dealership_name }}</td>
+                <td>{{ outlet.area }} - {{ outlet.pincode }}</td>
+                <td>
+                  {% for contact in outlet_contact %} 
+                    {% if contact.outlet.id == outlet.id %}
+                        <span class="glyphicon glyphicon-user"> </span>
+                        {{ contact.name }} - {{ contact.contact_no_1 }}
+                        {% if request.user.is_superuser %}
+                          <a href="{% url 'dealer:index' %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                        {% endif %}
+                        <br>
+                    {% endif %}
+                  {% endfor %}
+                  {% if request.user.is_superuser %}
+                    <a href="{% url 'dealer:index'%}">+</a>
+                  {% endif %}
+                </td>
+                <td>{{ outlet.status }}</td>
+                {% if request.user.is_superuser %}
+                  <td align="center">
+                    <a href="{% url 'dealer:index' %}">
+                      <button class="btn btn-success">Edit</button>
+                    </a>
+                  </td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+            </tbody>
+          
+        </table> -->
+        
+      </div>
+{% endblock %}

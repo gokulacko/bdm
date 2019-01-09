@@ -5,8 +5,9 @@ from django.core.paginator import Paginator
 from django.core import serializers
 from django.contrib import messages
 import dealer.forms as f
-from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, PriceUploadDealerForm, PriceUploadForm, ContactFormOutletEdit
-from .models import Dealer, Bdm, Outlet, Contact, Brand, City, Inventory, Model, Variant, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig, AckodriveQuote
+from .forms import BdmForm, DealerForm, ContactForm, ContactEditForm, OutletForm, OutletEditForm, ContactFormOutlet, ContactFormOutletEdit, PriceUploadDealerForm, DealerDiscountForm, PriceUploadForm, ContactFormOutletEdit
+from .models import Dealer, Bdm, Outlet, Contact, Brand, DealerPriceFile, City, Inventory, Model, Variant, DealerDiscountUpload, DealerOffer, DealerDiscount, AckodriveDiscount, AckodriveKindOffers, PriceConfig, AckodriveQuote
+import dealer.models as m
 # from geopy.geocoders import Nominatim
 import googlemaps
 import datetime
@@ -17,7 +18,8 @@ from tablib import Dataset
 # from .resources import DealerDiscountUploadResource
 from django.db.models import Sum
 
-from .filters import InventoryFilter, DealerFilter
+from .filters import InventoryFilter, DealerFilter, PriceFilter
+from django.db.models import Q
 
 import openpyxl
 from openpyxl import Workbook
@@ -35,55 +37,6 @@ def index(request):
         if form.is_valid():
             form.save()
             form = BdmForm()
-        # elif dealerform.is_valid():
-        #     dealerform.save()
-        #     dealerform = DealerForm()
-        # elif contactform.is_valid():
-        #     contactform.save()
-        #     contactform = ContactForm()
-        # elif request.POST.get('filter'):
-        #     citypram = request.POST.get('city')
-        #     brandpram = request.POST.get('brand')
-        #     statuspram = request.POST.get('status')
-        #     namesearch = request.POST.get('namesearch')
-        #     if not brandpram:
-        #         brandpram = ""
-        #     if not citypram:
-        #         citypram = ""
-        #     if not statuspram:
-        #         statuspram = ""
-        #     if not namesearch:
-        #         namesearch = ""
-        #     dealer = Dealer.objects.filter(city__icontains=citypram,
-        #         brand__name__icontains = brandpram,
-        #         status__icontains = statuspram,
-        #         dealership_name__icontains = namesearch
-        #         )
-            
-        #     brand = Brand.objects.all()
-        #     city = City.objects.all()
-        #     form = BdmForm()
-        #     dealerform = DealerForm()
-        #     contactform = ContactForm()
-        #     paginator = Paginator(dealer,10)
-        #     page = request.GET.get('page')
-        #     dealer = paginator.get_page(page)
-        #     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-        #     context = {
-        #     'form': form,
-        #     'dealerform': dealerform,
-        #     'contactform': contactform,
-        #     'dealer': dealer,
-        #     'brand':brand,
-        #     'city':city,
-        #     'brandpram':brandpram,
-        #     'citypram':citypram,
-        #     'statuspram':statuspram,
-        #     'namesearch':namesearch,
-        #     'inventorysum':inventorysum,
-
-        #     }
-        #     return render(request, 'dealer/index.html', context)
         brand = Brand.objects.all()
         city = City.objects.all()
         context = {
@@ -93,13 +46,18 @@ def index(request):
             'dealer': dealer,
             'brand':brand,
             'city':city,
+            'dealermaster':dealer,
             
 
         }
         return render(request, 'dealer/index.html', context)
         
     else:
-        
+        # if request.POST.get('filter'):
+        #     brandpram = request.GET.getlist('brand[]')
+        #     citypram = request.GET.getlist('city[]')
+        #     print("brand",brandpram)
+            
         form = BdmForm()
         # dealerform = DealerForm()
         # contactform = ContactForm()
@@ -125,7 +83,7 @@ def index(request):
     page = request.GET.get('page')
     dealer = paginator.get_page(page)
     inventorysum = Inventory.objects.values('dealer').annotate(inventory_sum=Sum('count'))
-    print(inventorysum)
+    
     context = {
                 'form': form,
                 # 'dealerform': dealerform,
@@ -135,6 +93,7 @@ def index(request):
                 'city':city,
                 'inventorysum':inventorysum,
                 'filter': dealer_filter,
+                'dealermaster':dealer,
             }
     return render(request, 'dealer/index.html', context)
 
@@ -144,7 +103,9 @@ def addDealer(request):
         form = DealerForm(request.POST, request.FILES)
         
         if form.is_valid():
-            form.save()
+            data = form.save()
+            if data.sales_outlet:
+                Outlet.objects.create(address = data.address, city = data.city, pincode= data.pincode, status=data.status, dealer = data)
             messages.success(request, ' Dealer added successfully')
         else:
             messages.error(request, ' Dealer not added successfully')  
@@ -537,6 +498,7 @@ def welcome(request):
     return render(request, 'dealer/welcome.html')
 
 def dealerPrice(request):
+    
     if request.method == "POST":
         excel_file = request.FILES["excel_file"]
 
@@ -611,41 +573,67 @@ def dealerPrice(request):
             
 
         return render(request, 'dealer/price.html', {"excel_data":excel_data})
-    # price_list = PriceConfig.objects.all()
-    # price_filter = PriceFilter(request.GET, queryset=price_list)
-    # price_list = price_filter.qs
-    # paginator = Paginator(price_list,10)
-    # page = request.GET.get('page')
-    # price = paginator.get_page(page)
-    # context = {
-    #             'price':price,
-    #             'filter':price_filter
+    price_list = PriceConfig.objects.all()
+    price_filter = PriceFilter(request.GET, queryset=price_list)
+    price_list = price_filter.qs
+    paginator = Paginator(price_list,10)
+    page = request.GET.get('page')
+    price = paginator.get_page(page)
+
+    ackodiscount = AckodriveDiscount.objects.all()
+    ackooffer = AckodriveKindOffers.objects.all()
+    dealerdiscount = DealerDiscount.objects.all()
+    dealeroffer = m.DealerOffer.objects.all()
+    inventory = m.Inventory.objects.all
+    context = {
+                'price':price,
+                'filter':price_filter,
+                'ackodiscount':ackodiscount,
+                'ackooffer':ackooffer,
+                'dealerdiscount':dealerdiscount,
+                'dealeroffer':dealeroffer,
+                'inventory':inventory,
+
 
     #             # 'searchfiles':searchfiles
     #         }
     return render(request, 'dealer/price.html')
 
 def dealerEdit(request, id):
-    if request.method == "POST":
-        dealeredit = Dealer.objects.get(id=id)
-        dealeredit.brand = request.POST.get('brand')
-        dealeredit.dealer_company = request.POST.get('dealer_company')
-        dealeredit.dealership_name = request.POST.get('dealership_name')
-        dealeredit.status = request.POST.get('status')
-        dealeredit.address = request.POST.get('address')
-        dealeredit.city = request.POST.get('city')
-        dealeredit.pincode = request.POST.get('pincode')
-        dealeredit.sales_outlet = request.POST.get('sales_outlet')
-        # geolocator = Nominatim(user_agent="ackodrive", timeout= 3)
-        # location = geolocator.geocode(request.POST.get('address'))
-        # print((location.latitude, location.longitude))
-        dealeredit.save()
-        messages.success(request, 'Dealer edited successfully')
-        return redirect('dealer:dealer-view', id=dealeredit.id)
-
     dealer_info = Dealer.objects.get(id=id)
+    if request.method == "POST":
+        form = f.DealerEditForm(request.POST, instance=dealer_info)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Dealer edited successfully')
+            
+            return redirect('dealer:dealer-view', id=dealer_info.id)
+        else:
+            messages.error(request, 'Dealer not edited successfully')
+            return redirect('dealer:dealer-view', id=dealer_info.id)
+
+        
+        # dealeredit = Dealer.objects.get(id=id)
+        # # dealeredit.brand = request.POST.get('brand')
+        # dealeredit.dealer_company = request.POST.get('dealer_company')
+        # dealeredit.dealership_name = request.POST.get('dealership_name')
+        # dealeredit.status = request.POST.get('status')
+        # dealeredit.address = request.POST.get('address')
+        # dealeredit.city = request.POST.get('city')
+        # dealeredit.pincode = request.POST.get('pincode')
+        # dealeredit.sales_outlet = request.POST.get('sales_outlet')
+        # # geolocator = Nominatim(user_agent="ackodrive", timeout= 3)
+        # # location = geolocator.geocode(request.POST.get('address'))
+        # # print((location.latitude, location.longitude))
+        # dealeredit.save()
+        # messages.success(request, 'Dealer edited successfully')
+        # return redirect('dealer:dealer-view', id=dealeredit.id)
+
+   
+    form = f.DealerEditForm(instance=dealer_info)
     context = {
-                'dealer_info': dealer_info,         
+                'dealer_info': dealer_info, 
+                'form':form,
             } 
     return render(request, 'dealer/dealer_edit.html', context)
 
@@ -800,7 +788,7 @@ def deleteDealer(request,id):
     outlet.delete()
     dealer.delete()
     messages.success(request, 'Dealer deleted successfully')
-    return HttpResponseRedirect('/')
+    return HttpResponseRedirect('/workspace')
     
 def deleteContact(request,id):
     contact=Contact.objects.get(id=id)
@@ -830,7 +818,8 @@ def addOutletContact(request, id):
     context = {
                 
                 'contactform': contactform,
-                'dealer_id': dealer_id,
+                'outlet_id': outlet_id,
+                'dealer_id':dealer_id,
                 'messages':messages,
                 
             } 
@@ -960,7 +949,6 @@ def inventory(request):
         'model':model,
         'variant':variant,
         # 'city':city,
-        'inventory':inventory,
         'filter': inventory_filter,
 
     }
@@ -1003,3 +991,25 @@ def deleteInventory(request, id):
 def discount(request):
 
     return render(request, 'dealer/discount.html')
+
+
+def priceDetails(request, id):
+
+    price = PriceConfig.objects.get(id = id)
+    variantid = price.variant.id
+    ackodiscount = AckodriveDiscount.objects.filter(variant_id = variantid)
+    ackooffer = AckodriveKindOffers.objects.filter(variant_id = variantid)
+    dealerdiscount = DealerDiscount.objects.filter(variant_id = variantid)
+    dealeroffer = m.DealerOffer.objects.filter(variant_id = variantid)
+    print(ackodiscount)
+    context = {
+        'price':price,
+        'ackodiscount':ackodiscount,
+        'ackooffer':ackooffer,
+        'dealerdiscount':dealerdiscount,
+        'dealeroffer':dealeroffer
+
+    }
+
+
+    return render(request, 'dealer/pricedetails.html', context)

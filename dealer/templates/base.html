@@ -10,7 +10,9 @@
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
   
   <script src="//platform-api.sharethis.com/js/sharethis.js#property=5bcffb96e0bd050011105875&product=inline-share-buttons"></script>
   <script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5bcffb96e0bd050011105875&product=custom-share-buttons"></script>
@@ -52,8 +54,8 @@
 				{% if request.user.id %}
 					<a href="/workspace/dealer/dashboard" class="w3-bar-item w3-button">Dealer</a>
 					<a href="{% url 'dealer:add-dealer' %}" class="w3-bar-item w3-button ">Add Dealer</a>
-					<a href="{% url 'dealer:inventory' %}" class="w3-bar-item w3-button ">Inventory</a>
-					<a href="{% url 'dealer:price' %}" class="w3-bar-item w3-button ">Price</a>
+					<a href="{% url 'dealer:inventory' %}" class="w3-bar-item w3-button ">Inventory Search</a>
+					<a href="{% url 'dealer:price' %}" class="w3-bar-item w3-button ">Price Search</a>
 					<div class="w3-dropdown-hover">
 						<button class="w3-button">Upload <i class="glyphicon glyphicon-chevron-down"></i></button>
 						<div class="w3-dropdown-content w3-bar-block">

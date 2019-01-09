@@ -6,6 +6,7 @@ app_name = "dealer"
 urlpatterns = [
 	url(r'^dashboard$', views.index, name='index' ),
 	url(r'^price/$', views.dealerPrice, name='price'),
+	url(r'^(?P<id>\d+)/price-details/$', views.priceDetails, name='price-details' ),
 	url(r'^add-dealer/$', views.addDealer, name='add-dealer' ),
 	url(r'^inventory/$', views.inventory, name='inventory' ),
 	url(r'^dealer-discount/$', views.dealerDiscount, name='dealer-discount' ),

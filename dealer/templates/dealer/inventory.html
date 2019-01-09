@@ -22,7 +22,7 @@
         {{ filter.form.variant__name|as_crispy_field}}
       </div>
       <div class="col-sm-1 invadd">
-          <button type="submit" class="btn btn-danger btn-small">Filter</button
+          <button type="submit" class="btn btn-danger btn-small">Search</button
             >
       </div>
       <div class="col-sm-3 invadd">
@@ -183,4 +183,21 @@
     </ul> -->
 
 </div>
+
+<script>
+    $(document).ready(function() {
+      $('.brandselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.modelselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.variantselect').select2();
+  });
+  $(document).ready(function() {
+      $('.dealerselect').select2();
+  });
+</script>
 {% endblock %}

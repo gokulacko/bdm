@@ -4,6 +4,7 @@ from django.db import models
 import datetime
 from datetime import date
 import os
+from users.models import Profile
 
 # Create your models here.
 class Bdm(models.Model):
@@ -36,7 +37,7 @@ class City(models.Model):
 
 
 class Dealer(models.Model):
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, default='')
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True)
     dealer_company = models.CharField(max_length=30)
     dealership_name = models.CharField(max_length=30)
     status = models.CharField(max_length=30, default="Active")
@@ -46,7 +47,8 @@ class Dealer(models.Model):
     sales_outlet = models.BooleanField(default=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
-    bdm = models.ForeignKey(Bdm, on_delete=models.CASCADE)
+    bdm = models.ForeignKey(Bdm, on_delete=models.CASCADE, blank=True, null=True)
+    manager = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
 
     def __unicode__(self):
         return str(self.dealership_name)
@@ -176,7 +178,7 @@ class Rto(models.Model):
         return str(self.rto_name)
 
 class DealerDiscount(models.Model):
-    discount =  models.DecimalField(max_digits=10, decimal_places=8)
+    discount =  models.DecimalField(max_digits=10, decimal_places=2)
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
@@ -259,15 +261,13 @@ class PriceConfig(models.Model):
    # ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
    # rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
 
-#    def __unicode__(self):
-#     return self.city
-#    def __str__(self):
-#     return self.city.name
-    
-# class DealerKindOffer(models.Model):
-#     BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
-#     MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
-#     price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
+   def __str__(self):
+        return str(self.variant.name)
+
+class DealerKindOffer(models.Model):
+    BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
+    MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
+    price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
 
 #     class Visit(models.Model):
 #         ip = models.CharField(max_length=50 )
