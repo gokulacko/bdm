@@ -359,87 +359,87 @@ def welcome(request):
 
 def dealerPrice(request):
     
-    if request.method == "POST":
-        excel_file = request.FILES["excel_file"]
+    # if request.method == "POST":
+    #     excel_file = request.FILES["excel_file"]
 
-        # you may put validations here to check extension or file size
+    #     # you may put validations here to check extension or file size
 
-        wb = openpyxl.load_workbook(excel_file)
+    #     wb = openpyxl.load_workbook(excel_file)
 
-        # getting a particular sheet by name out of many sheets
-        sheets = wb.sheetnames
+    #     # getting a particular sheet by name out of many sheets
+    #     sheets = wb.sheetnames
         
-        for sheet in sheets:
+    #     for sheet in sheets:
         
-            worksheet = wb[sheet]
-            # print(worksheet)
+    #         worksheet = wb[sheet]
+    #         # print(worksheet)
             
-            excel_data = list()
-            # iterating over the rows and
-            # getting value from each cell in row
-            for row in worksheet.iter_rows():
-                row_data = list()
-                for cell in row:
-                    row_data.append(str(cell.value))
+    #         excel_data = list()
+    #         # iterating over the rows and
+    #         # getting value from each cell in row
+    #         for row in worksheet.iter_rows():
+    #             row_data = list()
+    #             for cell in row:
+    #                 row_data.append(str(cell.value))
             
-                try:
-                    if row_data[2] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
+    #             try:
+    #                 if row_data[2] != "None" or row_data[2] != "Variant_Name" or row_data[2] != "Bangalore":
                            
-                        # modelobject = Model.objects.get(name = row_data[1])
-                        # print(modelobject)
-                        variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
-                        print(variant)
+    #                     # modelobject = Model.objects.get(name = row_data[1])
+    #                     # print(modelobject)
+    #                     variant = Variant.objects.get(name=row_data[2], model__name = row_data[1])
+    #                     print(variant)
 
-                        discount = AckodriveDiscount.objects.create(type = row_data[3], variant = variant)
-                        kindoffer = AckodriveKindOffers.objects.create(discount = row_data[4], variant = variant)
+    #                     discount = AckodriveDiscount.objects.create(type = row_data[3], variant = variant)
+    #                     kindoffer = AckodriveKindOffers.objects.create(discount = row_data[4], variant = variant)
 
-                    # dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
-                except Exception as e:
-                    if len(excel_data)==0:
-                        row_data.append("error")
-                    else:
-                        trace_back = traceback.format_exc()
-                        message = str(e)+ " " + str(trace_back)
-                        row_data.append(str(e))
+    #                 # dealer = DealerDiscountUpload.objects.create(model_name=row_data[0],variant_name=row_data[1], cash_discount=row_data[2],non_cash_offer=row_data[3])
+    #             except Exception as e:
+    #                 if len(excel_data)==0:
+    #                     row_data.append("error")
+    #                 else:
+    #                     trace_back = traceback.format_exc()
+    #                     message = str(e)+ " " + str(trace_back)
+    #                     row_data.append(str(e))
                         
-                    excel_data.append(row_data)
-                    pass
+    #                 excel_data.append(row_data)
+    #                 pass
                     
-        if len(excel_data)>2:
-            response = HttpResponse(content_type='application/ms-excel')
-            response['Content-Disposition'] = 'attachment; filename="varianterror.xls"'
+    #     if len(excel_data)>2:
+    #         response = HttpResponse(content_type='application/ms-excel')
+    #         response['Content-Disposition'] = 'attachment; filename="varianterror.xls"'
 
-            wb = xlwt.Workbook(encoding='utf-8')
-            ws = wb.add_sheet('Users')
+    #         wb = xlwt.Workbook(encoding='utf-8')
+    #         ws = wb.add_sheet('Users')
 
             
-            row_num = 0
+    #         row_num = 0
 
-            font_style = xlwt.XFStyle()
-            font_style.font.bold = True
-            for data in excel_data:
+    #         font_style = xlwt.XFStyle()
+    #         font_style.font.bold = True
+    #         for data in excel_data:
                 
-                for col_num in range(len(data)):
-                    ws.write(row_num, col_num, data[col_num], font_style)
-                row_num += 1
+    #             for col_num in range(len(data)):
+    #                 ws.write(row_num, col_num, data[col_num], font_style)
+    #             row_num += 1
             
             
-            wb.save(response)
-            return response
-        else:
-            messages.success(request, ' Ackodrive discount uploaded successfully')
-            return redirect('dealer:discount')
+    #         wb.save(response)
+    #         return response
+    #     else:
+    #         messages.success(request, ' Ackodrive discount uploaded successfully')
+    #         return redirect('dealer:discount')
 
             
 
-        return render(request, 'dealer/price.html', {"excel_data":excel_data})
+    #     return render(request, 'dealer/price.html', {"excel_data":excel_data})
     price_list = PriceConfig.objects.all()
     price_filter = PriceFilter(request.GET, queryset=price_list)
     price_list = price_filter.qs
     paginator = Paginator(price_list,10)
     page = request.GET.get('page')
     price = paginator.get_page(page)
-
+    print(price)
     ackodiscount = AckodriveDiscount.objects.all()
     ackooffer = AckodriveKindOffers.objects.all()
     dealerdiscount = DealerDiscount.objects.all()
