@@ -1,15 +1,7 @@
-
-
 {% extends "base.html" %}{% load crispy_forms_tags %}{% load mathfilters %}
-
-
-
 {% block content %}
 <div class="container">
   <h2>Price details </h2>
-
-
-
   <!-- <form action="{% url "dealer:price" %}" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <input type="file"
@@ -22,16 +14,14 @@
            value="Upload"
            style="border: 1px solid green; padding:5px; border-radius: 2px; cursor: pointer;">
 </form> -->
-
 <p></p>
 <br>
 <!-- <div class="filter">
     {{fitler.form}}
    
-
-  </div> -->
+  </div> --> 
   <div class="filter">
-      <form method="get">
+    <form method="get">
       <div class="row">
         <div class="col-sm-2">
           {{ filter.form.city__name|as_crispy_field}}
@@ -53,11 +43,11 @@
           >
         </div>
       
-    </div>
-  </form>
+      </div>
+    </form>
   
     </div>
-
+  
   <table class="dashboard table table-striped table-bordered table-hover">
         <thead>
           <tr class="head info">
@@ -113,10 +103,8 @@
           {% endfor %} 
         </tbody>
       </table>
-
   <br>
   <div class="paginator">
-
       {% if price.has_other_pages %}
       <ul class="pagination">
         {% if price.has_previous %}
@@ -141,8 +129,6 @@
   </div>
   <br>
   <br>
-
-
 <!-- {% for row in excel_data %}
     {% for cell in row %}
         {{ cell }}&nbsp;&nbsp;
@@ -150,16 +136,13 @@
     <br>
 {% endfor %} -->
 </div>
-
 <script>
     $(document).ready(function() {
       $('.brandselect').select2();
   });
-
   $(document).ready(function() {
       $('.cityselect').select2();
   });
-
   $(document).ready(function() {
       $('.modelselect').select2();
   });

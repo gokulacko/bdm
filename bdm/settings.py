@@ -57,7 +57,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_filters',
-    'storages'
+    # 'storages'
     
 ]
 SITE_ID = 1
