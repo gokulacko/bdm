@@ -1,21 +1,66 @@
 {% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
 
 <div class="container">
-    <h1 id="show">Price details</h1>
-    <div class="upload">
-      <form action="{% url 'dealer:marketprice' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
+    <div class="message">
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == "success" %}
+    
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> {{ message }}.
+            </div>
+        {% endif %}
+        {% if message.tags == "error" %}
+    
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Oops!</strong> {{ message }}.
+            </div>
+        {% endif %}
         
-        <input type="file"
-           title="Upload excel file"
-           name="excel_file"
-           style="border: 1px solid black; padding: 5px;"
-           required="required" />
-        <div><label>city</label>
-        <input type="text", title="city", name="city", required="required" /></div>
-        <button type="submit" class="btn btn-success">Save</button>
-      </form>
-    </div><hr />
+        
+        {%  endfor %}
+        
+        {% endif %}
+    </div> 
+
+    <center><h3>MarketPrice Upload</h3><hr /></center>
+    <div class="upload">
+        <form action="{% url 'dealer:marketprice' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- <div>
+                <label>city*</label>
+                <input type="text" class="textinput textInput form-control" title="city" name="city" required="required" />
+            </div><br />
+            <div>
+                <label>File name</label>
+                <input type="file"
+                title="Upload excel file"
+                name="excel_file"
+                class="file-upload-button"/>
+            </div><br /> -->
+            {{uploadform | crispy}}
+            <button type="submit" class="btn btn-success upload-button">Upload</button>
+        </form>
+        <button type="button" class="btn btn-success download-button" onClick="location.href='{% url 'dealer:download-file' value='marketprice' %}';">Download</button>
+    </div>
 </div>
 
+<script>
+    $(document).ready(function() {
+        $('.upload-button').prop('disabled', true);
+        $('.download-button').prop('disabled', true);
+        $('.select-city').change(function(){
+            if($(this).val() != ''){
+                $('.download-button').removeAttr('disabled');
+            }
+        })
+        $('.file-upload-button').change(function() {
+            if($(this).val() != '') {
+                $('.upload-button').removeAttr('disabled');
+            }
+        });
+    });
+</script>
 {% endblock %}

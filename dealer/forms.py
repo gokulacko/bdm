@@ -1,6 +1,6 @@
 from django import forms
 from django.forms import widgets
-from .models import Dealer, Bdm, Contact, Outlet, DealerPriceFile, Inventory, DealerDiscountUpload 
+from .models import Dealer, Bdm, Contact, Outlet, Inventory, City 
 # from easy_select2 import select2
 
 class BdmForm(forms.ModelForm):
@@ -203,22 +203,15 @@ class OutletEditForm(forms.ModelForm):
 			# 'dealer',
 		]
 
-# class DealerPriceForm(forms.ModelForm):
-# 	class Meta:
-# 		model = DealerPriceFile
-# 		fields = [
-# 			'file',
-# 			'dealer'   
-# 		]
-class DealerDiscountForm(forms.ModelForm):
-	class Meta:
-		model = DealerDiscountUpload
-		fields = [
-			'file_name',
-			'dealer_name',
-			'city_name' 
-		]
+class PriceUploadDealerForm(forms.Form):
+	dealer_name = forms.ModelChoiceField(queryset= Dealer.objects.all(), widget=forms.Select(attrs={'class': 'select-dealer'}))
+	city_name = forms.ModelChoiceField(queryset=City.objects.all(), widget=forms.Select(attrs={'class': 'select-city'}))
+	file_name = forms.FileField(widget=forms.FileInput(attrs={'class': 'file-upload-button'}))
 
+class PriceUploadForm(forms.Form):
+	city_name = forms.ModelChoiceField(queryset=City.objects.all(), widget=forms.Select(attrs={'class': 'select-city'}))
+	file_name = forms.FileField(widget=forms.FileInput(attrs={'class': 'file-upload-button'}))
+	
 class InventoryForm(forms.ModelForm):
 	class Meta:
 		model = Inventory

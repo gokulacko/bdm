@@ -57,7 +57,7 @@ admin.site.register(m.Booking)
 admin.site.register(m.Testdrive)
 admin.site.register(m.VariantCorporateDiscount)
 admin.site.register(m.AckodriveQuote)
-admin.site.register(m.DealerKindOffer)
+# admin.site.register(m.DealerKindOffer)
 admin.site.register(m.PriceConfig)
 @admin.register(m.AckodriveDiscount)
 class AckodriveDiscountAdmin(ImportExportActionModelAdmin):
@@ -106,10 +106,10 @@ class BrandAdmin(ImportExportActionModelAdmin):
 
 
 
-admin.site.register(m.DealerPriceFile)
+# admin.site.register(m.DealerPriceFile)
 admin.site.register(m.City)
 
-admin.site.register(m.DealerDiscountUpload)
+# admin.site.register(m.DealerDiscountUpload)
 admin.site.register(m.Inventory)
 
 class BdmAdmin(ImportExportActionModelAdmin):
