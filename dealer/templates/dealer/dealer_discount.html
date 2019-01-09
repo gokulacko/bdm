@@ -1,6 +1,29 @@
 {% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
 
 <div class="container">
+    <div class="message">
+        {% if messages %}
+        {% for message in messages %}
+        {% if message.tags == "success" %}
+    
+        <div class="alert alert-success">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Success!</strong> {{ message }}.
+            </div>
+        {% endif %}
+        {% if message.tags == "error" %}
+    
+        <div class="alert alert-danger">
+            <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+            <strong>Oops!</strong> {{ message }}.
+            </div>
+        {% endif %}
+        
+        
+        {%  endfor %}
+        
+        {% endif %}
+    </div> 
     <center><h3>Dealer Discount Upload</h3><hr /></center>
     <div class="upload">
         <form action="{% url 'dealer:dealer-discount' %}" method="POST" enctype="multipart/form-data">
@@ -8,7 +31,7 @@
             {{ dealerdiscountform | crispy }}
             <button type="submit" class="btn btn-success upload-button">Upload</button>
         </form>
-        <button type="button" class="btn btn-success download-button" onClick="location.href='{% url 'dealer:download-file' value='dealer' %}';">Download Format</button>
+        <button type="button" class="btn btn-success download-button" onClick="location.href='{% url 'dealer:download-file' value='dealer' %}';">Download</button>
     </div>
     <!-- <div>
       <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-price-download/">

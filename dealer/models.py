@@ -178,7 +178,7 @@ class Rto(models.Model):
         return str(self.rto_name)
 
 class DealerDiscount(models.Model):
-    discount =  models.DecimalField(max_digits=10, decimal_places=2)
+    discount =  models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
     city = models.ForeignKey(City, on_delete=models.CASCADE)
@@ -187,7 +187,8 @@ class DealerDiscount(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class DealerOffer(models.Model):
-   offers = models.DecimalField(max_digits=10, decimal_places=8)
+   offers = models.TextField(blank=True, null=True)
+#    offers = models.DecimalField(max_digits=10, decimal_places=8, default=0.0)
    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
    city = models.ForeignKey(City, on_delete=models.CASCADE)
@@ -264,10 +265,10 @@ class PriceConfig(models.Model):
    def __str__(self):
         return str(self.variant.name)
 
-class DealerKindOffer(models.Model):
-    BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
+# class DealerKindOffer(models.Model):
+#     BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
 
 #     class Visit(models.Model):
 #         ip = models.CharField(max_length=50 )
