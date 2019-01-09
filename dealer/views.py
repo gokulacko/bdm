@@ -27,6 +27,7 @@ import xlwt
 import traceback
 # from itertools import islice
 
+@login_required(login_url='/accounts/login/')
 def index(request):
     
     if request.method == "POST":
@@ -503,6 +504,7 @@ def download(request, value):
 def welcome(request):
     return render(request, 'dealer/welcome.html')
 
+@login_required(login_url='/accounts/login/')
 def dealerPrice(request):
     
     price_list = PriceConfig.objects.all()
