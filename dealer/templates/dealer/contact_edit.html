@@ -49,7 +49,7 @@
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
-  <form action="/dealer/{{ contact.id }}/contact-edit/" method="POST">
+  <form action="{% url 'dealer:contact-edit' contact.id %}" method="POST">
     {% csrf_token %}
     <!--
       {{ contactform.name.auto_id}}

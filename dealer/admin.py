@@ -1,28 +1,116 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User, Permission
+
+from import_export.admin import ImportExportActionModelAdmin
+from import_export import fields, resources
+from import_export.widgets import ForeignKeyWidget
+
+from django import forms
+import dealer.models as m
+from users.models import Profile
+from users.form import ProfileForm
+
+class ProfileInline(admin.StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name_plural = 'Profile'
+    fk_name = 'user'
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (ProfileInline, )
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return list()
+        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
 
 # Register your models here.
 
-from .models import Dealer, Contact, Outlet, Bdm, Payment, Booking, VariantCorporateDiscount, AckodriveQuote, DealerKindOffer, Rto
-from .models import PriceConfig, AckodriveKindOffers, DealerDiscount, InsuranceType, Variant, PriceType, Model, TransmissionType, Testdrive, AckodriveDiscount, Brand
-admin.site.register(Dealer)
-admin.site.register(Contact)
-admin.site.register(Outlet)
-admin.site.register(Bdm)
-admin.site.register(Payment)
+@admin.register(m.Dealer)
+class DealerAdmin(ImportExportActionModelAdmin):
+    bdm = fields.Field(
+        column_name='bdm',
+        attribute='bdm',
+        widget=ForeignKeyWidget(m.Bdm, 'id'))
+    brand = fields.Field(
+        column_name='brand',
+        attribute='brand',
+        widget=ForeignKeyWidget(m.Brand, 'id'))
+    pass
+admin.site.register(m.Contact)
+admin.site.register(m.Outlet)
+@admin.register(m.Bdm)
+class BdmAdmin(ImportExportActionModelAdmin):
+    
+    import_id_fields = ('name', 'city', 'contact_no', 'alt_contact_no', 'email')
+    pass
 
-admin.site.register(Booking)
-admin.site.register(Testdrive)
-admin.site.register(VariantCorporateDiscount)
-admin.site.register(AckodriveQuote)
-admin.site.register(DealerKindOffer)
-admin.site.register(PriceConfig)
-admin.site.register(AckodriveDiscount)
+admin.site.register(m.Payment)
 
-admin.site.register(AckodriveKindOffers)
-admin.site.register(DealerDiscount)
-admin.site.register(Rto)
-admin.site.register(PriceType)
-admin.site.register(Variant)
-admin.site.register(Model)
-admin.site.register(TransmissionType)
-admin.site.register(Brand)
+admin.site.register(m.Booking)
+admin.site.register(m.Testdrive)
+admin.site.register(m.VariantCorporateDiscount)
+admin.site.register(m.AckodriveQuote)
+# admin.site.register(m.DealerKindOffer)
+admin.site.register(m.PriceConfig)
+@admin.register(m.AckodriveDiscount)
+class AckodriveDiscountAdmin(ImportExportActionModelAdmin):
+    list_display = ("variant",  "city", "discount" )
+
+@admin.register(m.AckodriveKindOffers)
+class AckodriveKindOffersAdmin(ImportExportActionModelAdmin):
+    list_display = ("variant",  "city", "offers" )
+
+@admin.register(m.DealerDiscount)
+class DealerDiscountAdmin(ImportExportActionModelAdmin):
+    list_display = ("dealer","variant",  "city","discount" )
+
+@admin.register(m.DealerOffer)
+class DealerOfferAdmin(ImportExportActionModelAdmin):
+    list_display = ("dealer","variant",  "city", "offers" )
+
+
+
+admin.site.register(m.Rto)
+admin.site.register(m.PriceType)
+# admin.site.register(m.Variant)
+@admin.register(m.Variant)
+
+class VariantAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+@admin.register(m.Model)
+
+class ModelAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+
+admin.site.register(m.TransmissionType)
+# admin.site.register(m.Brand)
+@admin.register(m.Brand)
+
+class BrandAdmin(ImportExportActionModelAdmin):
+    list_display = ("name", )
+    # list_filter = ("first_name", "phone", "email")
+    search_fields = ('name',  )
+
+
+
+# admin.site.register(m.DealerPriceFile)
+admin.site.register(m.City)
+
+# admin.site.register(m.DealerDiscountUpload)
+admin.site.register(m.Inventory)
+
+class BdmAdmin(ImportExportActionModelAdmin):
+    pass

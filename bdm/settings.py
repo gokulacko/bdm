@@ -25,23 +25,42 @@ SECRET_KEY = 'tz+&b(gd&f-#qj7&wngibidhy*hco$up^$)j(%g!6at9rtnupq'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
     'dealer',
+    'users',
+    'api',
+    # 'geopy',
+    
     'geopy',
     'crispy_forms',
+    'django_select2',
+    'rest_framework',
+    'import_export',
+    'mathfilters',
+
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
 
+    'django.contrib.sites',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'django_filters',
+    # 'storages'
+    
+]
+SITE_ID = 1
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -52,13 +71,43 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# REST_FRAMEWORK = {
+#     # Use Django's standard `django.contrib.auth` permissions,
+#     # or allow read-only access for unauthenticated users.
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+#     ]
+# }
+
 ROOT_URLCONF = 'bdm.urls'
+
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+IMPORT_EXPORT_USE_TRANSACTIONS = True
+
+ACCOUNT_EMAIL_VERIFICATION = 'none'
+
+AUTHENTICATION_BACKENDS = (
+   
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+    
+)
+
+ACCOUNT_FORMS = {'signup': 'users.form.MyCustomSignupForm'}
+# ACCOUNT_USER_MODEL_USERNAME_FIELD = None
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # 'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,16 +122,34 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'bdm.wsgi.application'
 
+MEDIA_ROOT = os.path.join(BASE_DIR)
+MEDIA_URL = '/dealerprice/'
+
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'bdm',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'acko1',
+#         'USER': 'root',
+#         'PASSWORD': 'root',
+#         'HOST': 'localhost',
+#         'PORT': '',
+#     }
+# }
 
 
 # Password validation
@@ -122,6 +189,31 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, './dealer/static'),  # Here you tell django to look for a folder named 'assets'
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, './dealer/static'),  # Here you tell django to look for a folder named 'assets'
+    # 'static'
+]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
+
+
+LOGIN_REDIRECT_URL = '/workspace'
+LOGOUT_REDIRECT_URL = '/workspace'
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_LOGOUT_REDIRECT_URL ="/accounts/login"
+
+
+# AWS_ACCESS_KEY_ID = 'DGYMRXB4QJSRMLHET5JA'
+# AWS_SECRET_ACCESS_KEY = 'bsX2nXTuaGfNhkdOVdU+Ikt2o35expK0c30webSkB00'
+# AWS_STORAGE_BUCKET_NAME = 'ackodrive'
+# AWS_S3_ENDPOINT_URL = 'https://sgp1.digitaloceanspaces.com'
+# AWS_S3_OBJECT_PARAMETERS = {
+#     'CacheControl': 'max-age=86400',
+# }
+# AWS_LOCATION = 'static'
+
+# STATIC_URL = 'https://%s/%s/' % (AWS_S3_ENDPOINT_URL, AWS_LOCATION)
+# AWS_S3_CUSTOM_DOMAIN = '%s.sgp1.digitaloceanspaces.com' %AWS_STORAGE_BUCKET_NAME
+
+# DEFAULT_FILE_STORAGE = 'bdm.utils.MediaRootS3BotoStorage'
+# STATICFILES_STORAGE = 'bdm.utils.StaticRootS3BotoStorage'

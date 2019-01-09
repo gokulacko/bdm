@@ -6,10 +6,13 @@
 	<link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <title>AckoDrive</title>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
   
   <script src="//platform-api.sharethis.com/js/sharethis.js#property=5bcffb96e0bd050011105875&product=inline-share-buttons"></script>
   <script type="text/javascript" src="//platform-api.sharethis.com/js/sharethis.js#property=5bcffb96e0bd050011105875&product=custom-share-buttons"></script>
@@ -29,27 +32,64 @@
 
             {% if request.user.id %}
                 <li> <a><span class="glyphicon glyphicon-user"></span> {{request.user.username}}</span></a></li>
-		        <li><a href="/signup/logout"> Logout</a></li>
+		        <li><a href="/accounts/logout"> Logout</a></li>
 
 
 		    {% else %}
-		      <li><a href="/signup/register"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-		      <li><a href="/signup"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+		      <li><a href="/accounts/signup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+		      <li><a href="/accounts/login"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
 		    {% endif %}
 	    </ul>
 	  </div>
 	</nav>
+	
+
+	
+	<div class="row">
+		<div class="col-sm-2">
+			<div class="w3-sidebar w3-light-grey w3-bar-block" >
+				<br>
+				<br>
+				<a href="/workspace" class="w3-bar-item w3-button">Home</a>
+				{% if request.user.id %}
+					<a href="/workspace/dealer/dashboard" class="w3-bar-item w3-button">Dealer</a>
+					<a href="{% url 'dealer:add-dealer' %}" class="w3-bar-item w3-button ">Add Dealer</a>
+					<a href="{% url 'dealer:inventory' %}" class="w3-bar-item w3-button ">Inventory Search</a>
+					<a href="{% url 'dealer:price' %}" class="w3-bar-item w3-button ">Price Search</a>
+					<div class="w3-dropdown-hover">
+						<button class="w3-button">Upload <i class="glyphicon glyphicon-chevron-down"></i></button>
+						<div class="w3-dropdown-content w3-bar-block">
+							<a href="{% url 'dealer:marketprice' %}" class="w3-bar-item w3-button">Market Price</a>
+							<a href="{% url 'dealer:dealer-discount' %}" class="w3-bar-item w3-button">Dealer Discount</a>
+							<a href="{% url 'dealer:ackodrive-discount' %}" class="w3-bar-item w3-button">AckoDrive Discount</a>
+						</div>
+					</div>
+					
+					<a href="{% url 'dealer:discount' %}" class="w3-bar-item w3-button ">Cash Discount/Offer</a>
+				
+				{% endif %}
+
+			</div>
+		
+		</div>
+		<div class="bodydiv col-sm-10">
+			{% block banner %} {% endblock %}
+			{% block head %}{% endblock %}
+			{% block content %}{% endblock %}
+				
+			</div>
+			{% block javascript %}{% endblock %}
+		</div>
+	
+
 
 <!-- <h1>Welocme {{request.user.username}}</h1> -->
 
 
-	{% block banner %} {% endblock %}
-  <h1>{% block head %}{% endblock %}</h1>
-      {% block content %}{% endblock %}
+	
 
-</div>
 
-{% block javascript %}{% endblock %}
+
 
 </body>
 </html>

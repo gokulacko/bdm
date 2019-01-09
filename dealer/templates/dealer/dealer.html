@@ -1,4 +1,5 @@
-{% extends "base.html" %}{% block content %}
+{% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
+
 
 
 <div class="container">
@@ -27,8 +28,9 @@
   </div> 
   <ul class="nav nav-tabs">
     <li class="active"><a data-toggle="tab" href="#home">Dealer Details</a></li>
-    <li><a data-toggle="tab" href="#price">Inventory & Prices</a></li>
-      <li class="pull-right"><a href="{% url 'index' %}">Back</a></li>
+    <!-- <li><a data-toggle="tab" href="#price">Prices</a></li> -->
+    <li><a data-toggle="tab" href="#inventory">Inventory</a></li>
+    <li class="pull-right"><a href="{% url 'dealer:index' %}">Back</a></li>
   </ul>
 </div>
 <div class="tab-content">
@@ -40,9 +42,11 @@
           <td align="right">Company Name:</td>
           <td>{{ dealer_info.dealer_company }}</td>
           <td>Brand: {{ dealer_info.brand }}</td>
-          <td>Acko Manager: {{ dealer_info.bdm.name }}</td>
+          <td>Acko Manager: {{ dealer_info.manager.first_name }}</td>
           <td align="right">
-            <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>
+            {% if request.user.is_superuser %}
+              <a href="{% url 'dealer:dealer-edit' dealer_info.id %}"><button class="btn btn-success">Edit</button></a>
+            {% endif %}
           </td>
         </tr>
         <tr>
@@ -55,17 +59,24 @@
           <td align="right">Contact:</td>
           
           <td>
-              {% for dc in dealer_contact %}
-            <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} <a href="{% url 'dealer:contact-edit' dc.id %}"><span class="glyphicon glyphicon-pencil"></span></a> <br />
-            {{ dc.contact_no_1 }} <br />
-            {{ dc.contact_no_2 }} <br>
-            <br>
+            {% for dc in dealer_contact %}
+              <span class="glyphicon glyphicon-user"> </span> {{ dc.name }} 
+              {% if request.user.is_superuser %}
+                <a href="{% url 'dealer:contact-edit' dc.id %}"><span class="glyphicon glyphicon-pencil"></span></a> 
+              {% endif %}
+              <br />
+              {{ dc.contact_no_1 }} <br />
+              {{ dc.contact_no_2 }} <br>
+              <br>
             {% endfor%}
           </td>
           
           <td>
-            <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
+            {% if request.user.is_superuser %}
+              <a href="{% url 'dealer:add-dealer-contact' dealer_info.id %}"><button class="btn btn-info">Add Contact</button></a>
+            {% endif %}
           </td>
+          <td>Address: {{ dealer_info.address }} {{ dealer_info.pincode }}</td>
         </tr>
 
        
@@ -75,7 +86,9 @@
     <br />
     <div class="outlet">
       <h3>{{ dealer_info.dealership_name }} - New Car Sales Outlets  
-        <a href="{% url 'dealer:add-outlet' dealer_info.id %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+        {% if request.user.is_superuser %}
+          <a href="{% url 'dealer:add-outlet' dealer_info.id %}"><button class="btn btn-primary outletButton">Add Outlet</button></a>
+        {% endif %}
       </h3>
     </div>
 
@@ -87,7 +100,9 @@
             <th>Area - Pincode</th>
             <th>contact</th>
             <th>Status</th>
-            <th>Action</th>
+            {% if request.user.is_superuser %}
+              <th>Action</th>
+            {% endif %}
           </tr>
         </thead>
 
@@ -102,19 +117,24 @@
                 {% if contact.outlet.id == outlet.id %}
                     <span class="glyphicon glyphicon-user"> </span>
                     {{ contact.name }} - {{ contact.contact_no_1 }}
-                    <a href="{% url 'dealer:edit-outlet-contact' contact.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
-
+                    {% if request.user.is_superuser %}
+                      <a href="{% url 'dealer:edit-outlet-contact' contact.id %}"><span class="glyphicon glyphicon-pencil"></span></a>
+                    {% endif %}
                     <br>
                 {% endif %}
               {% endfor %}
-              <a href="{% url 'dealer:add-outlet-contact' outlet.id %}">+</a>
+              {% if request.user.is_superuser %}
+                <a href="{% url 'dealer:add-outlet-contact' outlet.id %}">+</a>
+              {% endif %}
             </td>
             <td>{{ outlet.status }}</td>
-            <td align="center">
-              <a href="{% url 'dealer:outlet-edit' outlet.id %}">
-                <button class="btn btn-success">Edit</button>
-              </a>
-            </td>
+            {% if request.user.is_superuser %}
+              <td align="center">
+                <a href="{% url 'dealer:outlet-edit' outlet.id %}">
+                  <button class="btn btn-success">Edit</button>
+                </a>
+              </td>
+            {% endif %}
           </tr>
           {% endfor %}
         </tbody>
@@ -138,6 +158,104 @@
 
   <div id="price" class="tab-pane fade container">
     <h1 id="show">Price details</h1>
+    <div class="upload">
+      <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ priceform | crispy }}
+        <button type="submit" class="btn btn-success">Save</button
+        >
+      </form>
+      <!-- <form action="/dealer/{{ dealer_info.id }}/dealer-view/" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <input type="date" name="month"/>
+        <button type="submit" class="btn btn-success">Search</button
+        >
+      </form>
+      {{searchfiles.file}} -->
+  </div><hr />
+  <div>
+      <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-price-download/">
+        {% csrf_token %}
+        <h3>Download Price file for Dealer</h3><br />
+        <label for="price-download">Month & Year:</label>
+        <input
+          type="month"
+          class="upload"
+          id="dealership_name"
+          name="dealership_name"
+          
+        />
+        <button type="submit" class="btn btn-success">Download</button>
+      </form>
+      <!-- {{ FilterDateForm | crispy }} -->
+  </div>
+
+  </div>
+  <div id="inventory" class="tab-pane fade container">
+    {% if request.user.is_superuser %}
+      <h4>Add Inventory</h4>
+      <form action="{% url 'dealer:dealer-view' dealer_info.id  %}" method="POST">
+        {% csrf_token %}
+        
+        <!-- {{ inventoryform | crispy }} -->
+        <div class="row">
+          <div class="col-sm-2">
+            {{ inventoryform.variant|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ inventoryform.count|as_crispy_field}}
+          </div>
+          <div class="col-sm-2 invadd">
+              <button type="submit" class="btn btn-success btn-small">Add</button
+                >
+          </div>
+        
+      </div>
+      </form>
+    {% endif %}
+    <div>
+      <h3>Inventory Details </h3>
+
+        <table class="dashboard table table-striped table-bordered table-hover">
+            <thead>
+              <tr class="head info">
+                <th>Dealer</th>
+                <th>Brand</th>
+                <th>Model</th>
+                <th>Variant</th>
+                <th>Inventory</th>
+                <th>Booked</th>
+                {% if request.user.is_superuser %}
+                  <th>Action</th>
+                {% endif %}
+              </tr>
+            </thead>
+            <tbody>
+              {% for i in inventory %}
+                <tr>
+                  <td>{{ i.dealer.dealership_name }}</td>
+                  <td>{{ i.dealer.brand }}</td>
+                  <td>{{ i.variant.model.name }}</td>
+                  <td>{{ i.variant.name }}</td>
+                  <td>{{ i.count }}</td>
+                  <td>Future</td>
+                  {% if request.user.is_superuser %}
+                    <td align="center">
+                      
+                        <a href="{% url 'dealer:inventory-edit' i.id %}">
+                          <button class="btn btn-success">Edit</button>
+                        </a>
+                      
+                    </td>
+                  {% endif %}
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+    </div>
+    
   </div>
 </div>
 {% endblock%}

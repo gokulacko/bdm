@@ -1,0 +1,150 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}{% load mathfilters %}
+{% block content %}
+<div class="container">
+  <h2>Price details </h2>
+  <!-- <form action="{% url "dealer:price" %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file"
+           title="Upload excel file"
+           name="excel_file"
+           style="border: 1px solid black; padding: 5px;"
+           required="required">
+    <p>
+    <input type="submit"
+           value="Upload"
+           style="border: 1px solid green; padding:5px; border-radius: 2px; cursor: pointer;">
+</form> -->
+<p></p>
+<br>
+<!-- <div class="filter">
+    {{fitler.form}}
+   
+  </div> --> 
+  <div class="filter">
+    <form method="get">
+      <div class="row">
+        <div class="col-sm-2">
+          {{ filter.form.city__name|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+          {{ filter.form.variant__model__name|as_crispy_field}}
+        </div>
+        <div class="col-sm-2">
+          {{ filter.form.variant__model__brand__name|as_crispy_field}}
+        </div>
+        
+        <div class="col-sm-1 invadd">
+            <button type="submit" class="btn btn-danger btn-small">Search</button
+              >
+        </div>
+        <div class="col-sm-3 invadd">
+          <a href="{% url 'dealer:price'%}"
+            ><button type="button" class="save btn btn-info">Clear</button></a
+          >
+        </div>
+      
+      </div>
+    </form>
+  
+    </div>
+  
+  <table class="dashboard table table-striped table-bordered table-hover">
+        <thead>
+          <tr class="head info">
+            <th>Brand</th>
+            <th>Model</th>
+            <th>Variant</th>
+            <th>Color</th>
+            <th>Fuel type</th>
+            <th>Ackodrive Price</th>
+            <th>Market Price</th>
+            <!-- <th>Dealer</th>
+            <th>Dealer Discount</th>
+            <th>Dealer offer</th>
+            <th>Ackodrive Discount</th>
+            <th>Ackodrive offer</th> -->
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in price %}
+          <tr>
+            <td>{{p.variant.model.brand.name}}</td>
+            <td>{{p.variant.model.name}}</td>
+            <td>{{p.variant.name}}</td>
+            <td>{{p.variant.body}}</td>
+            <td>{{p.variant.fuel_type}}</td>
+            <!-- <td>{{p.insurance_premium}}</td> -->
+            <!-- {% if inventory  %}
+              {% for inv in inventory %}
+              {% if inv.variant.id == p.variant.id %}
+              <td>{{ inv.dealer.dealership_name }}</td>
+              {% endif %}
+              {% endfor %}
+              {% else %}
+              <td>0</td>
+              {% endif %}--->
+              {% if ackodiscount  %}
+                {% for ddis in ackodiscount %}
+                  {% if ddis.variant.id == p.variant.id %}
+                  <td>{{p.ex_showroom|sub:ddis.discount }}</td>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+              <td>0</td>
+              {% endif %}
+              <td>{{p.ex_showroom}}</td>
+            <td align="center">
+              <a href="{% url 'dealer:price-details' p.id %}">
+                <button class="btn btn-success">View</button>
+              </a>
+            </td>
+          </tr>
+          {% endfor %} 
+        </tbody>
+      </table>
+  <br>
+  <div class="paginator">
+      {% if price.has_other_pages %}
+      <ul class="pagination">
+        {% if price.has_previous %}
+          <li><a href="?page={{ price.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in price.paginator.page_range %}
+          {% if price.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+          {% else %}
+            <li><a href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+        {% if price.has_next %}
+          <li><a href="?page={{ price.next_page_number }}">&raquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+      </ul>
+    {% endif %}
+  </div>
+  <br>
+  <br>
+<!-- {% for row in excel_data %}
+    {% for cell in row %}
+        {{ cell }}&nbsp;&nbsp;
+    {% endfor %}
+    <br>
+{% endfor %} -->
+</div>
+<script>
+    $(document).ready(function() {
+      $('.brandselect').select2();
+  });
+  $(document).ready(function() {
+      $('.cityselect').select2();
+  });
+  $(document).ready(function() {
+      $('.modelselect').select2();
+  });
+</script
+{% endblock %}

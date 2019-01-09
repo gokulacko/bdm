@@ -2,14 +2,16 @@ from __future__ import unicode_literals
 
 from django.db import models
 import datetime
-
+from datetime import date
+import os
+from users.models import Profile
 
 # Create your models here.
 class Bdm(models.Model):
     name = models.CharField(max_length=30)
     city = models.CharField(max_length=30)
-    contact_no = models.IntegerField()
-    alt_contact_no = models.IntegerField(null=True, blank=True)
+    contact_no = models.CharField(max_length=10)
+    alt_contact_no = models.CharField(null=True, blank=True, max_length=10)
     email = models.CharField(max_length=50)
 
     def __unicode__(self):
@@ -17,9 +19,25 @@ class Bdm(models.Model):
     def __str__(self):
         return str(self.name)
 
+class Brand(models.Model):
+    name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return str(self.name)
+    def __str__(self):
+        return str(self.name)
+
+class City(models.Model):
+    name = models.CharField(max_length=30)
+    
+    def __unicode__(self):
+        return str(self.name)
+    def __str__(self):
+        return str(self.name)
+
 
 class Dealer(models.Model):
-    brand = models.CharField(max_length=30 )
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, blank=True, null=True)
     dealer_company = models.CharField(max_length=30)
     dealership_name = models.CharField(max_length=30)
     status = models.CharField(max_length=30, default="Active")
@@ -29,7 +47,8 @@ class Dealer(models.Model):
     sales_outlet = models.BooleanField(default=True)
     latitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
     longitude = models.DecimalField(max_digits=10, decimal_places=8, blank=True, null=True)
-    bdm = models.ForeignKey(Bdm, on_delete=models.CASCADE)
+    bdm = models.ForeignKey(Bdm, on_delete=models.CASCADE, blank=True, null=True)
+    manager = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
 
     def __unicode__(self):
         return str(self.dealership_name)
@@ -56,8 +75,8 @@ class Contact(models.Model):
     name = models.CharField(max_length=30)
     designation = models.CharField(max_length=30)
     email = models.CharField(max_length=50)
-    contact_no_1 = models.IntegerField(null=True)
-    contact_no_2 = models.IntegerField(null=True)
+    contact_no_1 = models.CharField(max_length=10)
+    contact_no_2 = models.CharField(null=True, max_length=10)
     is_primary_contact = models.BooleanField(default=False)
     type = models.CharField(max_length=20)#for dealer or outlet
     active = models.BooleanField(default=True)
@@ -65,7 +84,21 @@ class Contact(models.Model):
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE, blank=True, null=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, blank=True, null=True)
 
+#for price module
+# class DealerPriceFile(models.Model):
+#     period = models.DateField(auto_now_add=True)
+#     file = models.FileField(upload_to="./dealerprice")
+#     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+
+#     # def filename(self):
+#     #     return os.path.basename(self.file.name)
+#     def __unicode__(self):
+#         return str(self.period)
+#     def __str__(self):
+#         return str(self.period)
+
 #new db model
+# automobile
 class TransmissionType(models.Model):
     type = models.CharField(max_length=30)
     
@@ -76,6 +109,7 @@ class TransmissionType(models.Model):
 
 
 class Model(models.Model):
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
     vehicle_type = models.CharField(max_length=30)
     
@@ -86,24 +120,38 @@ class Model(models.Model):
 
 
 class Variant(models.Model):
-    name = models.CharField(max_length=30)
-    cc = models.IntegerField()
-    seating_capacity = models.IntegerField()
-    fuel_type = models.CharField(max_length=30)
+    name = models.CharField(max_length=100)
+    cc = models.IntegerField(blank=True, null=True)
+    seating_capacity = models.IntegerField(blank=True, null=True)
+    fuel_type = models.CharField(max_length=50, blank=True, null=True)
     #transmission_type = models.CharField(max_length=30)
-    body = models.CharField(max_length=50)#for dealer or outlet
-    category = models.CharField(max_length=30)
+    body = models.CharField(max_length=50, blank=True, null=True)#for dealer or outlet
+    category = models.CharField(max_length=50, blank=True, null=True)
     is_active = models.BooleanField(default=False)
     iscorporatediscount = models.BooleanField(default=True)
     #image = models.ImageField(null=True, blank=True, upload_to="image/")
     model = models.ForeignKey(Model, on_delete=models.CASCADE)
-    transmission_type_id = models.ForeignKey(TransmissionType, on_delete=models.CASCADE)
+    transmission_type_id = models.ForeignKey(TransmissionType, on_delete=models.CASCADE, blank=True, null=True)
     
     def __unicode__(self):
         return str(self.name)
     def __str__(self):
-        return str(self.name)
+        return str(self.model.name + "," + self.name)
 
+
+class Inventory(models.Model):
+    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    count = models.IntegerField()
+   
+    
+    def __unicode__(self):
+        return str(self.variant.name + self.variant.model.name )
+    def __str__(self):
+        return str(self.variant.model.name + "," + self.variant.name )
+
+
+# price
 class PriceType(models.Model):
     type = models.CharField(max_length=30)
     
@@ -130,68 +178,97 @@ class Rto(models.Model):
         return str(self.rto_name)
 
 class DealerDiscount(models.Model):
-    discount = models.IntegerField()
+    discount =  models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+class DealerOffer(models.Model):
+   offers = models.TextField(blank=True, null=True)
+#    offers = models.DecimalField(max_digits=10, decimal_places=8, default=0.0)
+   dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+   city = models.ForeignKey(City, on_delete=models.CASCADE)
+   is_latest = models.BooleanField(default=False)
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
+
+   def __unicode__(self):
+       return str(self.dealer)
+   def __str__(self):
+       return str(self.dealer)
 
 
 class AckodriveKindOffers(models.Model):
-    type = models.CharField(max_length=30)
+    offers = models.TextField(blank=True, null=True)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     def __unicode__(self):
-        return str(self.type)
+        return str(self.offers)
     def __str__(self):
-        return str(self.type)
+        return str(self.offers)
 
 
 class AckodriveDiscount(models.Model):
-    discount = models.IntegerField()
+    discount = models.DecimalField(max_digits=10, decimal_places=2)
     variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-
+    city = models.ForeignKey(City, on_delete=models.CASCADE)
+    is_latest = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class PriceConfig(models.Model):
-    valid_till = models.DateField()
-    ex_showroom = models.DecimalField(max_digits=10, decimal_places=2)
-    registration_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    insurance_premium = models.DecimalField(max_digits=10, decimal_places=2)
-    environment_compensation = models.DecimalField(max_digits=10, decimal_places=2)
-    octroi = models.CharField(max_length=50)
-    depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    rsa_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    extended_warranty_amount = models.DecimalField(max_digits=10, decimal_places=2)
-    govt_employee_scheme = models.CharField(max_length=50)
-    corporate_discount = models.DecimalField(max_digits=10, decimal_places=2)
-    cash_discount = models.DecimalField(max_digits=10, decimal_places=2)
-    amc = models.DecimalField(max_digits=10, decimal_places=2)
-    basic_accessories = models.DecimalField(max_digits=10, decimal_places=2)
-    number_plate = models.DecimalField(max_digits=10, decimal_places=2)
-    smart_card = models.CharField(max_length=50)
-    mcd_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    tax_collected_at_source = models.DecimalField(max_digits=10, decimal_places=2)
-    road_tax = models.DecimalField(max_digits=10, decimal_places=2)
-    other_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    logistic_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
-    nexa_card = models.CharField(max_length=50)
-    honda_connect = models.CharField(max_length=50)
-    honda_genius_access = models.CharField(max_length=50)
-    fast_tag = models.CharField(max_length=50)
-    #fk
-    dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
-    variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
-    price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
-    insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE)
-    ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
-    rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
+   # valid_till = models.DateField()
+   variant = models.ForeignKey(Variant, on_delete=models.CASCADE)
+   ex_showroom = models.DecimalField(max_digits=10, decimal_places=2)
+   registration_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   insurance_premium = models.DecimalField(max_digits=10, decimal_places=2)
+   environment_compensation = models.DecimalField(max_digits=10, decimal_places=2)
+   octroi = models.DecimalField(max_digits=10, decimal_places=2)
+   depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   rsa_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   extended_warranty_amount = models.DecimalField(max_digits=10, decimal_places=2)
+   # govt_employee_scheme = models.CharField(max_length=50)#
+   # corporate_discount = models.DecimalField(max_digits=10, decimal_places=2)#
+   cash_discount = models.DecimalField(max_digits=10, decimal_places=2)
+   amc = models.DecimalField(max_digits=10, decimal_places=2)
+   basic_accessories = models.DecimalField(max_digits=10, decimal_places=2)
+   number_plate = models.DecimalField(max_digits=10, decimal_places=2)
+   smart_card = models.DecimalField(max_digits=10, decimal_places=2)
+   mcd_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   tax_collected_at_source = models.DecimalField(max_digits=10, decimal_places=2)
+   road_tax = models.DecimalField(max_digits=10, decimal_places=2)
+   other_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # logistic_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # depot_charges = models.DecimalField(max_digits=10, decimal_places=2)
+   # nexa_card = models.CharField(max_length=50)
+   # honda_connect = models.CharField(max_length=50)
+   # honda_genius_access = models.CharField(max_length=50)
+   # fast_tag = models.CharField(max_length=50)
+   #fk
+   # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+   city = models.ForeignKey(City, on_delete=models.CASCADE, blank=True, null=True)
+   is_latest = models.BooleanField(default=False)
+   created_at = models.DateTimeField(auto_now_add=True)
+   updated_at = models.DateTimeField(auto_now=True)
+   # price_type = models.ForeignKey(PriceType, on_delete=models.CASCADE)
+   # insurance_type = models.ForeignKey(InsuranceType, on_delete=models.CASCADE)
+   # ackodrive_discount = models.ForeignKey(AckodriveDiscount, on_delete=models.CASCADE)
+   # rto = models.ForeignKey(Rto, on_delete=models.CASCADE)
 
+   def __str__(self):
+        return str(self.variant.name)
 
-
-class DealerKindOffer(models.Model):
-    BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
-    price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
-
-
+# class DealerKindOffer(models.Model):
+#     BestPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     MarketPrice = models.DecimalField(max_digits=10, decimal_places=2)
+#     price_config = models.ForeignKey(PriceConfig, on_delete=models.CASCADE)
 
 #     class Visit(models.Model):
 #         ip = models.CharField(max_length=50 )
@@ -276,11 +353,14 @@ class Payment(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     # form_data = 
 
-    
-class Brand(models.Model):
-    name = models.CharField(max_length=30)
-    
-    def __unicode__(self):
-        return str(self.name)
-    def __str__(self):
-        return str(self.name)
+# class DealerDiscountUpload(models.Model):
+#     file_name = models.FileField(upload_to="./dealerprice", default="settings.MEDIA_ROOT/dealerprice/anonymous.png")
+#     model_name = models.CharField(max_length=50)
+#     variant_name = models.CharField(max_length=50)
+#     cash_discount = models.DecimalField(max_digits=10, decimal_places=8)
+#     non_cash_offer = models.DecimalField(max_digits=10, decimal_places=8) 
+#     dealer_name = models.CharField(max_length=50) 
+#     # dealer = models.ForeignKey(Dealer, on_delete=models.CASCADE)
+#     # city = models.ForeignKey(City, on_delete=models.CASCADE)
+#     city_name = models.CharField(max_length=30)
+

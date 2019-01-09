@@ -1,148 +1,5 @@
 {% extends "base.html" %} {% load crispy_forms_tags %}{% block content %}
-<!--
-  <button
-    type="button"
-    class="btn btn-primary "
-    data-toggle="modal"
-    data-target="#myModal"
-  >
-    Add Manager
-  </button>
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-toggle="modal"
-    data-target="#Modal"
-  >
-    Add Dealer
-  </button>
-  <button
-    type="button"
-    class="btn btn-primary"
-    data-toggle="modal"
-    data-target="#contact"
-  >
-    Add Contact
-  </button>
--->
 
-
-<div class="modal fade" id="myModal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Manager</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="bdmform">
-          {% csrf_token %} {{ form | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="Modal" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Dealer</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="dealerform">
-          {% csrf_token %} {{ dealerform | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="contact" role="dialog">
-  <div class="modal-dialog">
-    <!-- Modal content -->
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">
-          &times;
-        </button>
-        <h4 class="modal-title">Add Contact</h4>
-      </div>
-      <div class="modal-body">
-        <form method="POST" class="contactform">
-          {% csrf_token %} {{ contactform | crispy }}
-
-          <button type="submit" class="save btn btn-success">Save</button>
-        </form>
-      </div>
-      <!--
-        <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">
-            Close
-          </button>
-        </div>
-      -->
-    </div>
-  </div>
-</div>
-<!--
-  <div class="container">
-    <h2>Add Dealer</h2>
-    <form method="Post" action="/dealer/index/">
-      {% csrf_token%}
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input
-          type="email"
-          class="form-control"
-          id="email"
-          placeholder="Enter email"
-          name="email"
-        />
-      </div>
-      <div class="form-group">
-        <label for="pwd">Password:</label>
-        <input
-          type="password"
-          class="form-control"
-          id="pwd"
-          placeholder="Enter password"
-          name="pwd"
-        />
-      </div>
-      <div class="checkbox">
-        <label><input type="checkbox" name="remember" /> Remember me</label>
-      </div>
-      <button type="submit" class="btn btn-default">Submit</button>
-    </form>
-  </div>
--->
-<br />
 <br />
 <div class="container">
     <div class="message">
@@ -168,12 +25,72 @@
       
         {% endif %}
       </div>
+
+     <div class="filter">
+        <form method="get">
+        <div class="row">
+          <div class="col-sm-2">
+            {{ filter.form.dealership_name|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.brand__name|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.city|as_crispy_field}}
+          </div>
+          <div class="col-sm-2">
+            {{ filter.form.status|as_crispy_field}}
+          </div>
+          <div class="col-sm-1 invadd">
+              <button type="submit" class="btn btn-danger btn-small">Search</button
+                >
+          </div>
+          <div class="col-sm-3 invadd">
+            <a href="{% url 'dealer:index'%}"
+              ><button type="button" class="save btn btn-info">Clear</button></a
+            >
+          </div>
+        
+      </div>
+    </form>
+
+    </div>
+
+<!--       
   <div class="filter">
-    <form action="/" method="POST" class=" form-inline">
-      {% csrf_token %}
+    <form action="{% url 'dealer:index'%}" method="POST" class=" form-inline">
+        {% csrf_token %}
+
       <div class="form-group filterform">
-        <select class="form-control" id="Brand" name="brand">
-          <option disabled selected>Brand</option>
+        <input type="text" name="namesearch" value="" placeholder="Dealer Name" >
+      </div>
+      
+      <div class="form-group filterform">
+       
+          <select class="form-control dealerselect" id="dealer" name="dealer[]" multiple="multiple" >
+            
+            {% if dealerpram %}
+              <option selected value="{{dealerpram}}">
+                  {{dealerpram}}
+              </option>
+            {% endif %}
+            {% for d in dealermaster %}
+              <option value="{{d.dealership_name}}">
+                  {{d.dealership_name}}
+              </option>
+            {% endfor %}
+            
+          </select>
+
+      <div class="form-group filterform">
+        <select class="form-control brandselect" id="Brand" name="brand[]" multiple="multiple" placeholder="Dealer Name">
+          
+          {% if brandpram %}
+            <option selected value="{{brandpram}}">
+                {{brandpram}}
+            </option>
+          
+          {% endif %}
           {% for bra in brand %}
             <option value="{{bra.name}}">
                 {{bra.name}}
@@ -183,31 +100,45 @@
         </select>
       </div>
       <div class="form-group filterform">
-        <select class="form-control" id="City" name="city">
-          <option disabled selected>City</option>
-          <option value="bangalore">Bangalore</option>
-          <option value="chennai">Chennai</option>
-          <option value="mumbai">Mumbai</option>
-          <option value="delhi">Delhi</option>
+        <select class="form-control cityselect" id="City" name="city[]" multiple="multiple">
+          
+          {% if citypram %}
+            <option selected value="{{citypram}}">
+                {{citypram}}
+            </option>
+          
+          {% endif %}
+          {% for c in city %}
+            <option value="{{c.name}}">
+                {{c.name}}
+            </option>
+          {% endfor %}
         </select>
       </div>
       <div class="form-group filterform">
         <select class="form-control" id="Status" name="status">
-          <option disabled selected>Status</option>
+          
+          {% if statuspram %}
+          <option selected value="{{statuspram}}">
+              {{statuspram}}
+          </option>
+       
+          {% endif %}
+          <option value=""></option>
           <option value="Active">Active</option>
-          <option value="inactive">In-Active</option>
-          <option value="expired">Expired</option>
+          <option value="In-Active">In-Active</option>
+          <option value="Expired">Expired</option>
         </select>
       </div>
       <input type="hidden" name="filter" value="filter" />
       <button type="submit" class="save btn btn-danger filterform">
         Filter
       </button>
-      <a href="{% url 'index'%}"
+      <a href="{% url 'dealer:index'%}"
         ><button type="button" class="save btn btn-info">Clear</button></a
       >
     </form>
-  </div>
+  </div>  -->
 
   <br />
   <br />
@@ -231,7 +162,17 @@
         <td>{{ d.city }}</td>
         <td>{{ d.brand }}</td>
         <td>{{ d.outlet_set.count }}</td>
-        <td>Future</td>
+        {% if inventorysum  %}
+          {% for sum in inventorysum %}
+            {% if sum.dealer == d.id %}
+              <td>{{ sum.inventory_sum }}</td>
+            {% else %}
+              <td>0</td>
+            {% endif %}
+          {% endfor %}
+        {% else %}
+          <td>0</td>
+        {% endif %}
         <td>Future</td>
         <td>{{ d.status }}</td>
         <td align="center">
@@ -269,27 +210,27 @@
   {% endif %}
 </div>
 
-<div class="container">
+<!-- <div class="container">
   <ul class="nav nav-tabs">
     <li><a data-toggle="tab" href="#dealer">Add Dealership</a></li>
-    <!-- <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li> -->
+    <li><a data-toggle="tab" href="#addcontact">Add Contact</a></li>
     <li><a data-toggle="tab" href="#manager">Add Manager</a></li>
   </ul>
-</div>
-<div class="tab-content">
+</div> -->
+<!-- <div class="tab-content">
   <div class=" tab-pane fade container" id="dealer">
     <form method="POST" class="dealerform">
       {% csrf_token %} 
       {{ dealerform | crispy }}
-      <!-- {{ dealerform.brand.label_tag }}
+      {{ dealerform.brand.label_tag }}
       {{dealerform.brand}}
       {{ dealerform.status.label_tag }}
-      {{dealerform.status}} -->
+      {{dealerform.status}}
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
     <br>
-  </div>
+  </div> -->
 
   <!-- <div class=" tab-pane fade container" id="addcontact">
     <form method="POST" class="contactform">
@@ -299,13 +240,28 @@
     </form>
   </div> -->
 
-  <div class="tab-pane fade container" id="manager">
+  <!-- <div class="tab-pane fade container" id="manager">
     <form method="POST" class="bdmform">
       {% csrf_token %} {{ form | crispy }}
 
       <button type="submit" class="save btn btn-success">Save</button>
     </form>
   </div>
-</div>
+</div> -->
+
+
+<script>
+    $(document).ready(function() {
+      $('.brandselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.cityselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.dealerselect').select2();
+  });
+</script>
 
 {% endblock %}

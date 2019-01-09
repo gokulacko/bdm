@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}{% block content %}
+
+<div class="container">
+    <center><h3>AckoDrive Discount Upload</h3><hr /></center>
+    <div class="upload">
+        <form action="{% url 'dealer:ackodrive-discount' %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- <div>
+                <label>City*</label>
+                <input type="text" class="textinput textInput form-control" title="city" name="city" required="required" />
+            </div><br />
+
+            <div>
+                <label>File name*</label>
+                <input type="file"
+                    title="Upload excel file"
+                    name="excel_file"
+                    required="required"
+                    class="file-upload-button" />
+            </div><br /> -->
+            {{uploadform | crispy}}
+            <button type="submit" class="btn btn-success upload-button">Upload</button>
+        </form>
+        <button type="button" class="btn btn-success download-button" onClick="location.href='{% url 'dealer:download-file' value='ackodrive' %}';">Download</button>
+    </div>
+</div>
+<script>
+    $(document).ready(function() {
+        $('.upload-button').prop('disabled', true);
+        $('.download-button').prop('disabled', true);
+        $('.select-city').change(function(){
+            if($(this).val() != ''){
+                $('.download-button').removeAttr('disabled');
+            }
+        })
+        $('.file-upload-button').change(function() {
+            if($(this).val() != '') {
+                $('.upload-button').removeAttr('disabled');
+            }
+        });
+    });
+</script>
+{% endblock %}

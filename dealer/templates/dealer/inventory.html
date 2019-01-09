@@ -1,0 +1,203 @@
+{% extends "base.html" %}{% load crispy_forms_tags %}
+
+
+
+{% block content %}
+<div class="container">
+  <h2>Inventory</h2>
+
+  <div class="filter">
+    <form method="get">
+    <div class="row">
+      <div class="col-sm-2">
+        {{ filter.form.dealer|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.dealer__brand__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.variant__model__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-2">
+        {{ filter.form.variant__name|as_crispy_field}}
+      </div>
+      <div class="col-sm-1 invadd">
+          <button type="submit" class="btn btn-danger btn-small">Search</button
+            >
+      </div>
+      <div class="col-sm-3 invadd">
+        <a href="{% url 'dealer:inventory'%}"
+          ><button type="button" class="save btn btn-info">Clear</button></a
+        >
+      </div>
+    
+  </div>
+</form>
+
+  </div>
+<!-- 
+  <div class="filter">
+    <form action="{% url 'dealer:inventory'%}" method="POST" class=" form-inline">
+      {% csrf_token %}
+
+      <div class="form-group filterform">
+        <input type="text" name="namesearch" value="{{namesearch}}" placeholder="Dealer Name">
+      </div>
+
+      <div class="form-group filterform">
+        <select class="form-control" id="Brand" name="brand">
+          
+          {% if brandpram %}
+            <option selected value="{{brandpram}}">
+                {{brandpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Brand</option>
+          {% endif %}
+          {% for bra in brand %}
+            <option value="{{bra.name}}">
+                {{bra.name}}
+            </option>
+          {% endfor %}
+          
+        </select>
+      </div>
+      <div class="form-group filterform">
+        <select class="form-control" id="model" name="model">
+          
+          {% if modelpram %}
+            <option selected value="{{modelpram}}">
+                {{modelpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Model</option>
+          {% endif %}
+          {% for m in model %}
+            <option value="{{m.name}}">
+                {{m.name}}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group filterform">
+        <select class="form-control" id="variant" name="variant">
+          
+          {% if variantpram %}
+            <option selected value="{{variantpram}}">
+                {{variantpram}}
+            </option>
+          {% else %}
+            <option disabled selected>Variant</option>
+          {% endif %}
+          {% for v in variant %}
+            <option value="{{v.name}}">
+                {{v.name}}
+            </option>
+          {% endfor %}
+          
+        </select>
+      </div>
+      
+      <input type="hidden" name="filter" value="filter" />
+      <button type="submit" class="save btn btn-danger filterform">
+        Filter
+      </button>
+      <a href="{% url 'dealer:inventory'%}"
+        ><button type="button" class="save btn btn-info">Clear</button></a
+      >
+    </form>
+  </div> -->
+
+  <div>
+    <h3>Inventory Details </h3>
+
+      <table class="dashboard table table-striped table-bordered table-hover">
+          <thead>
+            <tr class="head info">
+              <th>Dealer</th>
+              <th>Brand</th>
+              <th>Model</th>
+              <th>Variant</th>
+              <th>Inventory</th>
+              <th>Booked</th>
+              {% if request.user.is_superuser %}
+                <th>Action</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in inventory %}
+            <tr>
+              <td>{{ i.dealer.dealership_name }}</td>
+              <td>{{ i.dealer.brand }}</td>
+              <td>{{ i.variant.model.name }}</td>
+              <td>{{ i.variant.name }}</td>
+              <td>{{ i.count }}</td>
+              <td>Future</td>
+              {% if request.user.is_superuser %}
+                <td align="center">
+                  <a href="{% url 'dealer:inventory-edit' i.id %}">
+                    <button class="btn btn-success">Edit</button>
+                  </a>
+                </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+  </div>
+  <div class="paginator">
+
+    {% if inventory.has_other_pages %}
+    <ul class="pagination">
+      {% if inventory.has_previous %}
+        <li><a href="?page={{ inventory.previous_page_number }}">&laquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+      {% endif %}
+      {% for i in inventory.paginator.page_range %}
+        {% if inventory.number == i %}
+          <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+          <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+      {% endfor %}
+      {% if inventory.has_next %}
+        <li><a href="?page={{ inventory.next_page_number }}">&raquo;</a></li>
+      {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+      {% endif %}
+    </ul>
+  {% endif %}
+</div>
+  
+  <!-- <form method="get">
+    {{ filter.form.as_p }}
+    <button type="submit">Search</button>
+  </form>
+  <ul>
+    {% for user in filter.qs %}
+      <li>{{ user.count }} - {{ user.variant.name }}</li>
+    {% endfor %}
+    </ul> -->
+
+</div>
+
+<script>
+    $(document).ready(function() {
+      $('.brandselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.modelselect').select2();
+  });
+
+  $(document).ready(function() {
+      $('.variantselect').select2();
+  });
+  $(document).ready(function() {
+      $('.dealerselect').select2();
+  });
+</script>
+{% endblock %}

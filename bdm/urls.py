@@ -14,12 +14,20 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.conf.urls.static import static
+from django.conf import settings
 from django.urls import path
 from django.conf.urls import include, url
-from dealer.views import index
+from dealer.views import index, dealerPrice, welcome
 urlpatterns = [
     path('admin/', admin.site.urls),
-    url(r'^$', index, name='index'),
-    url(r'^dealer/', include('dealer.urls')),
+    
+    
+    url(r'^workspace/dealer/', include('dealer.urls')),
+    url(r'^api/', include('api.urls')),
+    url(r'^accounts/', include('allauth.urls')),
+    url(r'^workspace', welcome, name='welcome'),
+    url(r'^select2/', include('django_select2.urls')),
+    url(r'^api-auth/', include('rest_framework.urls'))
 
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.html" %}{% load crispy_forms_tags %}
 
 <!--
   <h÷3>dealer edit</h3>
@@ -26,9 +26,9 @@
       ><button type="button" class="btn btn-primary back">Back</button></a
     >
   </h2>
-  <form method="POST" action="/dealer/{{ dealer_info.id }}/dealer-edit/">
+  <form method="POST" action="{% url 'dealer:dealer-edit' dealer_info.id %}">
     {% csrf_token %}
-    <div class="form-group">
+    <!-- <div class="form-group">
       <label for="email">Dealership Name:</label>
       <input
         type="text"
@@ -107,14 +107,14 @@
         name="pincode"
         value="{{dealer_info.pincode}}"
       />
-    </div>
+    </div> -->
     <!--
       <div class="form-group">
         <label for="pwd">Status:</label>
         <input type="text" class="form-control" id="status" name="status" />
       </div>
     -->
-
+    {{ form | crispy }}
     <button type="submit" class="btn btn-success">Edit</button>
     <a href="{% url 'dealer:dealer-delete' dealer_info.id %}"
       ><button type="button" class="btn btn-danger dealerDelete">Delete</button></a
