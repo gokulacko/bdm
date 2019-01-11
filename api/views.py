@@ -22,7 +22,7 @@ class LeadViewSet(APIView):
     
         # return Response(serializer.data, status=status.HTTP_201_CREATED)
         if serializer.is_valid():
-            
+            print(serializer.data)
             serializer.save()
             # print("ser",serializer.data["Phone"])
             data = serializer.data
