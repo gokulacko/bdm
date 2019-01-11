@@ -72,6 +72,6 @@ class LeadViewSet(APIView):
             
             # json_data = JSONRenderer().render(total)
             # print(json_data)
-            return Response(r)
+            return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
